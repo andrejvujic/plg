@@ -1,0 +1,11 @@
+|||||function main() -> int {
+    a: int = 5;
+    b: int = 10;
+    c: int = a * a;
+    d: int = b * b;
+
+    if (c == d) {
+        return 1;
+    }
+    return 69;
+}

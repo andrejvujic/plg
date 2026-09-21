@@ -1,0 +1,38 @@
+#include "token_type.hpp"
+
+// https://stackoverflow.com/a/3342891/13646430
+std::ostream &operator<<(std::ostream &out, const TokenType &value)
+{
+    static const std::map<TokenType, std::string_view> strings = []
+    {
+        std::map<TokenType, std::string_view> result;
+
+#define INSERT_ELEMENT(p) result.emplace(p, #p);
+        INSERT_ELEMENT(KW_FUNCTION);
+        INSERT_ELEMENT(KW_RETURN);
+        INSERT_ELEMENT(KW_IF);
+        INSERT_ELEMENT(KW_TYPE);
+        INSERT_ELEMENT(ARROW);
+        INSERT_ELEMENT(IDENTIFIER);
+        INSERT_ELEMENT(NUM_LITERAL);
+        INSERT_ELEMENT(O_CURLY);
+        INSERT_ELEMENT(C_CURLY);
+        INSERT_ELEMENT(O_PAREN);
+        INSERT_ELEMENT(C_PAREN);
+        INSERT_ELEMENT(COLON);
+        INSERT_ELEMENT(SEMICOLON);
+        INSERT_ELEMENT(ASSIGNMENT);
+        INSERT_ELEMENT(AR_OPERATOR);
+        INSERT_ELEMENT(REL_OPERATOR);
+#undef INSERT_ELEMENT
+
+        return result;
+    }();
+
+    const auto iterator = strings.find(value);
+
+    if (iterator != strings.end())
+        return out << iterator->second;
+
+    return out << "UNKNOWN_TOKEN";
+}
