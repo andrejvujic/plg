@@ -105,6 +105,7 @@ std::unique_ptr<Token> Lexer::GetToken()
             if (!hasFoundValidToken)
                 continue;
 
+            index = lastValidTokenEndIndex;
             const std::string lexeme = content.substr(lastStopIndex, lastValidTokenEndIndex - lastStopIndex);
             return std::make_unique<Token>(Token(lexeme, lastValidTokenType, (TokenPosition){.line = line, .column = column}));
         }
@@ -115,6 +116,7 @@ std::unique_ptr<Token> Lexer::GetToken()
 
     if (hasFoundValidToken)
     {
+        index = lastValidTokenEndIndex;
         const std::string lexeme = content.substr(lastStopIndex, lastValidTokenEndIndex - lastStopIndex);
         return std::make_unique<Token>(Token(lexeme, lastValidTokenType, (TokenPosition){.line = line, .column = column}));
     }
