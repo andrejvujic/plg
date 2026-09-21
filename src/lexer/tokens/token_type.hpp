@@ -7,22 +7,22 @@
 
 enum TokenType
 {
-    KW_FUNCTION,
-    KW_RETURN,
-    KW_IF,
-    KW_TYPE,
-    ARROW,
-    IDENTIFIER,
-    NUM_LITERAL,
-    O_CURLY,
-    C_CURLY,
-    O_PAREN,
-    C_PAREN,
-    COLON,
-    SEMICOLON,
-    ASSIGNMENT,
-    AR_OPERATOR,
-    REL_OPERATOR,
+    KEYWORD_FUNCTION = 1,
+    KEYWORD_RETURN = 2,
+    KEYWORD_IF = 4,
+    KEYWORD_TYPE = 8,
+    ARROW = 16,
+    ID = 32,
+    NUM_LITERAL = 64,
+    O_CURLY = 128,
+    C_CURLY = 256,
+    O_PAREN = 512,
+    C_PAREN = 1024,
+    COLON = 2048,
+    SEMICOLON = 4096,
+    ASSIGNMENT = 8192,
+    ARITHMETIC_OPERATOR = 16384,
+    RELATIONAL_OPERATOR = 32768,
 };
 
 std::ostream &operator<<(std::ostream &out, const TokenType &value);

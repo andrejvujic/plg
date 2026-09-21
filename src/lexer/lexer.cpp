@@ -69,7 +69,7 @@ std::unique_ptr<Token> Lexer::GetAlphaNumToken()
     TokenPosition position = (TokenPosition){.line = line, .column = column};
     TokenType type;
     if (!GetTypeByLexeme(lexeme, type))
-        return std::make_unique<Token>(Token(lexeme, TokenType::IDENTIFIER, position));
+        return std::make_unique<Token>(Token(lexeme, TokenType::ID, position));
 
     return std::make_unique<Token>(Token(lexeme, type, (TokenPosition){.line = line, .column = column}));
 }
@@ -154,9 +154,8 @@ bool Lexer::GetTypeByLexeme(std::string_view lexeme, TokenType &type)
 
 bool Lexer::Tokenize()
 {
-    std::cout << "Tokenizing -> " << path << std::endl;
-    std::cout << "Content:" << std::endl;
-    std::cout << content << std::endl;
+    // std::cout << "Content:" << std::endl;
+    // std::cout << content << std::endl;
 
     const std::size_t length = content.size();
 
@@ -174,7 +173,7 @@ bool Lexer::Tokenize()
         }
         else
         {
-            std::cout << *token << std::endl;
+            // std::cout << *token << std::endl;
             tokens.push_back(std::move(token));
         }
         SkipWhitespace();

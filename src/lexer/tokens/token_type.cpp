@@ -8,12 +8,12 @@ std::ostream &operator<<(std::ostream &out, const TokenType &value)
         std::map<TokenType, std::string_view> result;
 
 #define INSERT_ELEMENT(p) result.emplace(p, #p);
-        INSERT_ELEMENT(KW_FUNCTION);
-        INSERT_ELEMENT(KW_RETURN);
-        INSERT_ELEMENT(KW_IF);
-        INSERT_ELEMENT(KW_TYPE);
+        INSERT_ELEMENT(KEYWORD_FUNCTION);
+        INSERT_ELEMENT(KEYWORD_RETURN);
+        INSERT_ELEMENT(KEYWORD_IF);
+        INSERT_ELEMENT(KEYWORD_TYPE);
         INSERT_ELEMENT(ARROW);
-        INSERT_ELEMENT(IDENTIFIER);
+        INSERT_ELEMENT(ID);
         INSERT_ELEMENT(NUM_LITERAL);
         INSERT_ELEMENT(O_CURLY);
         INSERT_ELEMENT(C_CURLY);
@@ -22,8 +22,8 @@ std::ostream &operator<<(std::ostream &out, const TokenType &value)
         INSERT_ELEMENT(COLON);
         INSERT_ELEMENT(SEMICOLON);
         INSERT_ELEMENT(ASSIGNMENT);
-        INSERT_ELEMENT(AR_OPERATOR);
-        INSERT_ELEMENT(REL_OPERATOR);
+        INSERT_ELEMENT(ARITHMETIC_OPERATOR);
+        INSERT_ELEMENT(RELATIONAL_OPERATOR);
 #undef INSERT_ELEMENT
 
         return result;

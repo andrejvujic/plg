@@ -32,7 +32,8 @@ public:
     size_t GetColumnNumber() const;
 
     TokenType GetType() const;
-    bool HasType(TokenType type) const;
+    bool Matches(TokenType type) const;
+    bool MatchesAny(std::initializer_list<TokenType> types) const;
 
     friend std::ostream &operator<<(std::ostream &out, const Token &t);
 };

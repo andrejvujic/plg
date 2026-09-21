@@ -1,0 +1,20 @@
+function main() -> int {
+    a: int = a + a;
+    b: int;
+    b = 5 + b;
+}
+
+function main() -> int {
+    return 1;
+}
+
+function main() -> int {
+    a: int = 5 - 2;
+    b: int = 6 * 10 + 1;
+    if (a > b) {
+        c: int = a + b - 10;
+        return c * c;
+    }
+
+    return b + b;
+}

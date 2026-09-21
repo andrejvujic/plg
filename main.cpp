@@ -10,14 +10,19 @@
 
 int main()
 {
-    const std::string path = "samples/sample_1.plg";
+    const std::string path = "samples/sample_2.plg";
+
+    std::cout << "Tokenizing -> " << path << std::endl;
     Lexer l(path);
     if (!l.Tokenize())
         return EXIT_FAILURE;
+    std::cout << "Tokenized successfully." << std::endl;
 
+    std::cout << "Parsing -> " << path << std::endl;
     Parser p(l.GetTokens());
     if (!p.Parse())
         return EXIT_FAILURE;
+    std::cout << "Parsed successfully." << std::endl;
 
     return EXIT_SUCCESS;
 }
