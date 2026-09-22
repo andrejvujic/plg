@@ -13,8 +13,7 @@
 class Lexer
 {
 private:
-    const std::string path;
-    const std::string content;
+    const std::string text;
     std::size_t index = 0, lastStopIndex = 0;
     std::size_t line = 1, lineStartIndex = 0;
     std::string ReadEntireFile();
@@ -37,7 +36,7 @@ private:
     size_t GetCurrentColumnNumber() const;
 
 public:
-    Lexer(std::string path);
+    Lexer(std::string &&text);
 
     bool Tokenize();
     std::vector<std::unique_ptr<const Token>> &GetTokens();

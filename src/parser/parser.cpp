@@ -26,6 +26,7 @@ bool Parser::NextMatches(TokenType type) const
     if (!HasMoreTokens())
     {
         std::cerr << "[Parser] ERROR: Unexpected EOF" << std::endl;
+        PrintExpectedType(type);
         exit(EXIT_FAILURE);
     }
 
@@ -33,11 +34,12 @@ bool Parser::NextMatches(TokenType type) const
     return token->Matches(type);
 }
 
-bool Parser::NextMatchesAny(std::initializer_list<TokenType> types) const
+bool Parser::NextMatchesAny(const std::initializer_list<TokenType> &types) const
 {
     if (!HasMoreTokens())
     {
         std::cerr << "[Parser] ERROR: Unexpected EOF" << std::endl;
+        PrintExpectedAnyOfTypes(types);
         exit(EXIT_FAILURE);
     }
 
@@ -49,14 +51,16 @@ bool Parser::Consume(TokenType type)
 {
     if (!HasMoreTokens())
     {
-        std::cout << "[Parser] ERROR: Unexpected EOF" << std::endl;
-        return false;
+        std::cerr << "[Parser] ERROR: Unexpected EOF" << std::endl;
+        PrintExpectedType(type);
+        exit(EXIT_FAILURE);
     }
 
     const std::unique_ptr<const Token> &token = tokens.at(index);
     if (!token->Matches(type))
     {
-        std::cout << "[Parser] ERROR: Unexpected token " << token->GetType() << " (\"" << token->GetLexeme() << "\")" << " at line " << token->GetLineNumber() << " column " << token->GetColumnNumber() << ", expected " << type << std::endl;
+        PrintUnexpectedToken(token);
+        PrintExpectedType(type);
         return false;
     }
 
@@ -68,25 +72,16 @@ bool Parser::ConsumeAny(std::initializer_list<TokenType> types)
 {
     if (!HasMoreTokens())
     {
-        std::cout << "[Parser] ERROR: Unexpected EOF" << std::endl;
-        return false;
+        std::cerr << "[Parser] ERROR: Unexpected EOF" << std::endl;
+        PrintExpectedAnyOfTypes(types);
+        exit(EXIT_FAILURE);
     }
 
     const std::unique_ptr<const Token> &token = tokens.at(index);
     if (!token->MatchesAny(types))
     {
-        std::cout << "[Parser] ERROR: Unexpected token " << token->GetType() << " (\"" << token->GetLexeme() << "\")" << " at line " << token->GetLineNumber() << " column " << token->GetColumnNumber() << ", expected any of ";
-
-        size_t currentTypeIndex = 0;
-        std::cout << "{";
-        for (auto type : types)
-        {
-            std::cout << type;
-            if (currentTypeIndex++ < types.size() - 1)
-                std::cout << ", ";
-        }
-        std::cout << "}" << std::endl;
-
+        PrintUnexpectedToken(token);
+        PrintExpectedAnyOfTypes(types);
         return false;
     }
 
@@ -129,7 +124,10 @@ bool Parser::ParseComplexStatement()
         }
 
         if (!ParseStatement())
+        {
+            PrintUnexpectedToken(tokens.at(index));
             return false;
+        }
     }
 
     return false;
@@ -217,4 +215,29 @@ bool Parser::ParseExpression()
     }
 
     return true;
+}
+
+void Parser::PrintUnexpectedToken(const std::unique_ptr<const Token> &token) const
+{
+    std::cerr << "[Parser] ERROR: Unexpected token " << token->GetType() << " (\"" << token->GetLexeme() << "\")" << " at line " << token->GetLineNumber() << " column " << token->GetColumnNumber() << std::endl;
+}
+
+void Parser::PrintExpectedType(TokenType type) const
+{
+    std::cerr << "[Parser] Expected -> " << type << std::endl;
+}
+
+void Parser::PrintExpectedAnyOfTypes(const std::initializer_list<TokenType> &types) const
+{
+    std::cerr << "[Parser] Expected any of -> ";
+
+    size_t currentTypeIndex = 0;
+    std::cerr << "{";
+    for (auto type : types)
+    {
+        std::cerr << type;
+        if (currentTypeIndex++ < types.size() - 1)
+            std::cerr << ", ";
+    }
+    std::cerr << "}" << std::endl;
 }

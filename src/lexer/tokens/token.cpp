@@ -31,7 +31,7 @@ bool Token::Matches(TokenType type) const
     return static_cast<bool>(this->type & type);
 }
 
-bool Token::MatchesAny(std::initializer_list<TokenType> types) const
+bool Token::MatchesAny(const std::initializer_list<TokenType> &types) const
 {
     int targetTypes = 0;
     for (auto type : types)

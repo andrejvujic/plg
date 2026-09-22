@@ -13,7 +13,7 @@ private:
 
     bool HasMoreTokens() const;
     bool NextMatches(TokenType type) const;
-    bool NextMatchesAny(std::initializer_list<TokenType> types) const;
+    bool NextMatchesAny(const std::initializer_list<TokenType> &types) const;
 
     bool ParseFunction();
 
@@ -27,6 +27,10 @@ private:
 
     bool Consume(TokenType type);
     bool ConsumeAny(std::initializer_list<TokenType> types);
+
+    void PrintUnexpectedToken(const std::unique_ptr<const Token> &token) const;
+    void PrintExpectedType(TokenType type) const;
+    void PrintExpectedAnyOfTypes(const std::initializer_list<TokenType> &types) const;
 
 public:
     Parser(const std::vector<std::unique_ptr<const Token>> &t);

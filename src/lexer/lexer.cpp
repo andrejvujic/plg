@@ -1,25 +1,8 @@
 #include "lexer.hpp"
 #include "tokens/token.hpp"
 
-Lexer::Lexer(const std::string p) : path(p), content(ReadEntireFile())
+Lexer::Lexer(std::string &&t) : text(t)
 {
-}
-
-std::string Lexer::ReadEntireFile()
-{
-    std::ifstream file(path);
-    if (!file.is_open())
-    {
-        std::cerr << "[Lexer] ERROR: Couldn't open file -> " << path << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
-
-    std::string tmp;
-    std::stringstream ss;
-    while (std::getline(file, tmp))
-        ss << tmp << std::endl;
-
-    return ss.str();
 }
 
 bool Lexer::IsWhitespace(const char &character) const
@@ -44,10 +27,10 @@ bool Lexer::IsNum(const char &character) const
 
 void Lexer::SkipWhitespace()
 {
-    const std::size_t length = content.size();
-    while (index < length && IsWhitespace(content.at(index)))
+    const std::size_t length = text.size();
+    while (index < length && IsWhitespace(text.at(index)))
     {
-        if (content.at(index++) == '\n')
+        if (text.at(index++) == '\n')
         {
             ++line;
             lineStartIndex = index;
@@ -58,11 +41,11 @@ void Lexer::SkipWhitespace()
 std::unique_ptr<Token> Lexer::GetAlphaNumToken()
 {
     std::stringstream ss;
-    const size_t length = content.size();
+    const size_t length = text.size();
     const size_t column = GetCurrentColumnNumber();
 
-    while (index < length && IsAlphaNum(content[index]))
-        ss << content[index++];
+    while (index < length && IsAlphaNum(text[index]))
+        ss << text[index++];
 
     const std::string lexeme = ss.str();
 
@@ -77,11 +60,11 @@ std::unique_ptr<Token> Lexer::GetAlphaNumToken()
 std::unique_ptr<Token> Lexer::GetNumToken()
 {
     std::stringstream ss;
-    const size_t length = content.size();
+    const size_t length = text.size();
     const size_t column = GetCurrentColumnNumber();
 
-    while (index < length && IsNum(content[index]))
-        ss << content[index++];
+    while (index < length && IsNum(text[index]))
+        ss << text[index++];
 
     const std::string lexeme = ss.str();
     TokenPosition position = (TokenPosition){.line = line, .column = column};
@@ -90,23 +73,23 @@ std::unique_ptr<Token> Lexer::GetNumToken()
 
 std::unique_ptr<Token> Lexer::GetToken()
 {
-    const size_t length = content.size();
+    const size_t length = text.size();
     const size_t column = GetCurrentColumnNumber();
 
     TokenType lastValidTokenType;
     bool hasFoundValidToken = false;
     size_t lastValidTokenEndIndex = 0;
 
-    while (index < length && !IsWhitespace(content[index]) && !IsAlphaNum(content[index]))
+    while (index < length && !IsWhitespace(text[index]) && !IsAlphaNum(text[index]))
     {
         ++index;
-        if (!GetTypeByLexeme(content.substr(lastStopIndex, index - lastStopIndex), lastValidTokenType))
+        if (!GetTypeByLexeme(text.substr(lastStopIndex, index - lastStopIndex), lastValidTokenType))
         {
             if (!hasFoundValidToken)
                 continue;
 
             index = lastValidTokenEndIndex;
-            const std::string lexeme = content.substr(lastStopIndex, lastValidTokenEndIndex - lastStopIndex);
+            const std::string lexeme = text.substr(lastStopIndex, lastValidTokenEndIndex - lastStopIndex);
             return std::make_unique<Token>(Token(lexeme, lastValidTokenType, (TokenPosition){.line = line, .column = column}));
         }
 
@@ -117,7 +100,7 @@ std::unique_ptr<Token> Lexer::GetToken()
     if (hasFoundValidToken)
     {
         index = lastValidTokenEndIndex;
-        const std::string lexeme = content.substr(lastStopIndex, lastValidTokenEndIndex - lastStopIndex);
+        const std::string lexeme = text.substr(lastStopIndex, lastValidTokenEndIndex - lastStopIndex);
         return std::make_unique<Token>(Token(lexeme, lastValidTokenType, (TokenPosition){.line = line, .column = column}));
     }
 
@@ -131,7 +114,7 @@ size_t Lexer::GetCurrentColumnNumber() const
 
 std::unique_ptr<Token> Lexer::GetNextToken()
 {
-    const char &c = content[index];
+    const char &c = text[index];
 
     if (IsAlpha(c))
         return GetAlphaNumToken();
@@ -154,10 +137,10 @@ bool Lexer::GetTypeByLexeme(std::string_view lexeme, TokenType &type)
 
 bool Lexer::Tokenize()
 {
-    // std::cout << "Content:" << std::endl;
-    // std::cout << content << std::endl;
+    // std::cout << "text:" << std::endl;
+    // std::cout << text << std::endl;
 
-    const std::size_t length = content.size();
+    const std::size_t length = text.size();
 
     SkipWhitespace();
     size_t errors = 0;
@@ -168,7 +151,7 @@ bool Lexer::Tokenize()
         std::unique_ptr<Token> token = GetNextToken();
         if (token == nullptr)
         {
-            std::cout << "ERROR: Unknown token at line " << line << " column " << lastStopIndex - lineStartIndex + 1 << " -> " << content.substr(lastStopIndex, index - lastStopIndex) << std::endl;
+            std::cerr << "ERROR: Unknown token at line " << line << " column " << lastStopIndex - lineStartIndex + 1 << " -> " << text.substr(lastStopIndex, index - lastStopIndex) << std::endl;
             ++errors;
         }
         else
@@ -179,7 +162,10 @@ bool Lexer::Tokenize()
         SkipWhitespace();
     }
 
-    return errors == 0;
+    if (errors > 0)
+        std::cerr << "[Lexer] Tokenization completed with " << errors << " errors" << std::endl;
+
+    return !errors;
 }
 
 std::vector<std::unique_ptr<const Token>> &Lexer::GetTokens()
