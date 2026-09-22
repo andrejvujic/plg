@@ -1,19 +1,26 @@
 #include "parser.hpp"
+#include "ast/ast.hpp"
+#include "ast/program.hpp"
+#include "ast/expressions/num_literal_expression.hpp"
 
 #include <iostream>
 
-Parser::Parser(const std::vector<std::unique_ptr<const Token>> &t) : tokens(t)
+Parser::Parser(const std::vector<std::unique_ptr<const Token>> &t) : ast(std::make_unique<Program>()), tokens(t)
 {
 }
 
-bool Parser::Parse()
+void Parser::Parse()
 {
     while (HasMoreTokens())
     {
-        if (!ParseFunction())
-            return false;
+        auto function = ParseFunction();
+        ast->AddFunction(function);
     }
-    return true;
+}
+
+const std::unique_ptr<Program> &Parser::GetAst() const
+{
+    return ast;
 }
 
 bool Parser::HasMoreTokens() const
@@ -47,7 +54,7 @@ bool Parser::NextMatchesAny(const std::initializer_list<TokenType> &types) const
     return token->MatchesAny(types);
 }
 
-bool Parser::Consume(TokenType type)
+const std::unique_ptr<const Token> &Parser::Consume(TokenType type)
 {
     if (!HasMoreTokens())
     {
@@ -61,14 +68,14 @@ bool Parser::Consume(TokenType type)
     {
         PrintUnexpectedToken(token);
         PrintExpectedType(type);
-        return false;
+        exit(EXIT_FAILURE);
     }
 
     ++index;
-    return true;
+    return token;
 }
 
-bool Parser::ConsumeAny(std::initializer_list<TokenType> types)
+const std::unique_ptr<const Token> &Parser::ConsumeAny(std::initializer_list<TokenType> types)
 {
     if (!HasMoreTokens())
     {
@@ -82,61 +89,58 @@ bool Parser::ConsumeAny(std::initializer_list<TokenType> types)
     {
         PrintUnexpectedToken(token);
         PrintExpectedAnyOfTypes(types);
-        return false;
+        exit(EXIT_FAILURE);
     }
 
     ++index;
-    return true;
+    return token;
 }
 
-bool Parser::ParseFunction()
+std::unique_ptr<const Function> Parser::ParseFunction()
 {
-    if (!Consume(TokenType::KEYWORD_FUNCTION))
-        return false;
-    if (!Consume(TokenType::ID))
-        return false;
-    if (!Consume(TokenType::O_PAREN))
-        return false;
-    if (!Consume(TokenType::C_PAREN))
-        return false;
-    if (!Consume(TokenType::ARROW))
-        return false;
-    if (!Consume(TokenType::KEYWORD_TYPE))
-        return false;
+    auto function = std::make_unique<Function>();
 
-    if (!ParseComplexStatement())
-        return false;
+    Consume(TokenType::KEYWORD_FUNCTION);
 
-    return true;
+    auto &name = Consume(TokenType::ID);
+    function->SetName(name->GetLexeme());
+
+    Consume(TokenType::O_PAREN);
+    Consume(TokenType::C_PAREN);
+    Consume(TokenType::ARROW);
+
+    auto &returnType = Consume(TokenType::KEYWORD_TYPE);
+    function->SetReturnType(returnType->GetLexeme());
+
+    auto body = ParseComplexStatement();
+    function->SetBody(body);
+
+    return function;
 }
 
-bool Parser::ParseComplexStatement()
+std::unique_ptr<const ComplexStatement> Parser::ParseComplexStatement()
 {
-    if (!Consume(TokenType::O_CURLY))
-        return false;
-
+    auto complexStatement = std::make_unique<ComplexStatement>();
+    Consume(TokenType::O_CURLY);
     while (true)
     {
         if (NextMatches(TokenType::C_CURLY))
         {
             Consume(TokenType::C_CURLY);
-            return true;
+            return complexStatement;
         }
 
-        if (!ParseStatement())
-        {
-            PrintUnexpectedToken(tokens.at(index));
-            return false;
-        }
+        auto statement = ParseStatement();
+        complexStatement->AddStatement(statement);
     }
 
-    return false;
+    return complexStatement;
 }
 
-bool Parser::ParseStatement()
+std::unique_ptr<const Statement> Parser::ParseStatement()
 {
     if (NextMatches(TokenType::ID))
-        return ParseAssignmentStatement();
+        return ParseVarDeclarationStatement();
 
     if (NextMatches(TokenType::KEYWORD_IF))
         return ParseIfStatement();
@@ -144,77 +148,109 @@ bool Parser::ParseStatement()
     if (NextMatches(TokenType::KEYWORD_RETURN))
         return ParseReturnStatement();
 
-    return false;
+    auto &token = tokens.at(index);
+    PrintUnexpectedToken(token);
+    exit(EXIT_FAILURE);
 }
 
-bool Parser::ParseAssignmentStatement()
+std::unique_ptr<const VarDeclarationStatement> Parser::ParseVarDeclarationStatement()
 {
-    if (!Consume(TokenType::ID))
-        return false;
+    auto &varName = Consume(TokenType::ID);
+    auto statement = std::make_unique<VarDeclarationStatement>();
+    statement->SetVarName(varName->GetLexeme());
 
-    if (NextMatches(TokenType::COLON))
+    Consume(TokenType::COLON);
+    auto &varType = Consume(TokenType::KEYWORD_TYPE);
+    statement->SetVarType(varType->GetLexeme());
+
+    if (NextMatches(TokenType::SEMICOLON))
     {
-        if (!Consume(TokenType::COLON))
-            return false;
-        if (!Consume(TokenType::KEYWORD_TYPE))
-            return false;
-        if (NextMatches(TokenType::SEMICOLON))
-            return Consume(TokenType::SEMICOLON);
+        Consume(TokenType::SEMICOLON);
+        return statement;
     }
 
-    if (!Consume(TokenType::ASSIGNMENT))
-        return false;
-
-    if (!ParseExpression())
-        return false;
-
-    return Consume(TokenType::SEMICOLON);
+    Consume(TokenType::ASSIGNMENT);
+    auto expression = ParseExpression();
+    statement->SetInitialValue(expression);
+    Consume(TokenType::SEMICOLON);
+    return statement;
 }
 
-bool Parser::ParseIfStatement()
+std::unique_ptr<const IfStatement> Parser::ParseIfStatement()
 {
-    if (!Consume(TokenType::KEYWORD_IF))
-        return false;
-    if (!Consume(TokenType::O_PAREN))
-        return false;
-    if (!ParseExpression())
-        return false;
-    if (!Consume(TokenType::C_PAREN))
-        return false;
+    auto statement = std::make_unique<IfStatement>();
+
+    Consume(TokenType::KEYWORD_IF);
+    Consume(TokenType::O_PAREN);
+    ParseExpression();
+    Consume(TokenType::C_PAREN);
 
     if (NextMatches(TokenType::O_CURLY))
-        return ParseComplexStatement();
-
-    return ParseStatement();
-}
-
-bool Parser::ParseReturnStatement()
-{
-    if (!Consume(TokenType::KEYWORD_RETURN))
-        return false;
-
-    if (!NextMatchesAny({TokenType::ID, TokenType::NUM_LITERAL}))
-        return Consume(TokenType::SEMICOLON);
-
-    if (!ParseExpression())
-        return false;
-
-    return Consume(TokenType::SEMICOLON);
-}
-
-bool Parser::ParseExpression()
-{
-    if (!ConsumeAny({TokenType::ID, TokenType::NUM_LITERAL}))
-        return false;
-
-    if (NextMatchesAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR}))
     {
-        if (!ConsumeAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR}))
-            return false;
-        return ParseExpression();
+        auto body = ParseComplexStatement();
+        return statement;
     }
 
-    return true;
+    auto body = ParseStatement();
+    return statement;
+}
+
+std::unique_ptr<const ReturnStatement> Parser::ParseReturnStatement()
+{
+    auto statement = std::make_unique<ReturnStatement>();
+    Consume(TokenType::KEYWORD_RETURN);
+
+    if (!NextMatchesAny({TokenType::ID, TokenType::NUM_LITERAL}))
+    {
+        Consume(TokenType::SEMICOLON);
+        return statement;
+    }
+
+    auto expression = ParseExpression();
+
+    Consume(TokenType::SEMICOLON);
+    return statement;
+}
+
+std::unique_ptr<const Expression> Parser::ParseExpression()
+{
+    std::unique_ptr<const Expression> left = ParsePrimaryExpression();
+    return left;
+
+    /*
+    if (NextMatchesAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR}))
+    {
+        ConsumeAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR});
+        ParseExpression();
+        return;
+    }
+    */
+
+    auto &token = tokens.at(index);
+    PrintUnexpectedToken(token);
+    exit(EXIT_FAILURE);
+}
+
+std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
+{
+    if (NextMatches(TokenType::ID))
+    {
+        Consume(TokenType::ID);
+        std::cerr << "Not implemeneted" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    if (NextMatches(TokenType::NUM_LITERAL))
+    {
+        auto &literal = Consume(TokenType::NUM_LITERAL);
+        auto expression = std::make_unique<NumLiteralExpression>();
+        expression->SetRawValue(literal->GetLexeme());
+        return expression;
+    }
+
+    auto &token = tokens.at(index);
+    PrintUnexpectedToken(token);
+    exit(EXIT_FAILURE);
 }
 
 void Parser::PrintUnexpectedToken(const std::unique_ptr<const Token> &token) const

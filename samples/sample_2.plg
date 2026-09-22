@@ -1,18 +1,11 @@
 function main() -> int {
-
+    a: int = 5;
+    test: int = 2928;
 }
 
 function main() -> int {
-    return 1;
-}
-
-function main() -> int {
-    a: int = 5 - 2;
-    b: int = 6 * 10 + 1;
-    if (a > b) {
-        c: int = a + b - 10;
-        return c * c;
-    }
-
-    return b + b;
+    a: int = 3;
+    test: int = 2928;
+    c: int;
+    d: int;
 }

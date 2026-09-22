@@ -4,10 +4,15 @@
 #include <vector>
 
 #include "../lexer/tokens/token.hpp"
+#include "ast/ast.hpp"
+#include "ast/program.hpp"
+#include "ast/statements/statements.hpp"
+#include "ast/expressions/expression.hpp"
 
 class Parser
 {
 private:
+    std::unique_ptr<Program> ast;
     const std::vector<std::unique_ptr<const Token>> &tokens;
     size_t index = 0;
 
@@ -15,18 +20,19 @@ private:
     bool NextMatches(TokenType type) const;
     bool NextMatchesAny(const std::initializer_list<TokenType> &types) const;
 
-    bool ParseFunction();
+    std::unique_ptr<const Function> ParseFunction();
 
-    bool ParseComplexStatement();
-    bool ParseStatement();
-    bool ParseAssignmentStatement();
-    bool ParseIfStatement();
-    bool ParseReturnStatement();
+    std::unique_ptr<const ComplexStatement> ParseComplexStatement();
+    std::unique_ptr<const Statement> ParseStatement();
+    std::unique_ptr<const VarDeclarationStatement> ParseVarDeclarationStatement();
+    std::unique_ptr<const IfStatement> ParseIfStatement();
+    std::unique_ptr<const ReturnStatement> ParseReturnStatement();
 
-    bool ParseExpression();
+    std::unique_ptr<const Expression> ParseExpression();
+    std::unique_ptr<const Expression> ParsePrimaryExpression();
 
-    bool Consume(TokenType type);
-    bool ConsumeAny(std::initializer_list<TokenType> types);
+    const std::unique_ptr<const Token> &Consume(TokenType type);
+    const std::unique_ptr<const Token> &ConsumeAny(std::initializer_list<TokenType> types);
 
     void PrintUnexpectedToken(const std::unique_ptr<const Token> &token) const;
     void PrintExpectedType(TokenType type) const;
@@ -35,7 +41,9 @@ private:
 public:
     Parser(const std::vector<std::unique_ptr<const Token>> &t);
 
-    bool Parse();
+    void Parse();
+
+    const std::unique_ptr<Program> &GetAst() const;
 };
 
 #endif

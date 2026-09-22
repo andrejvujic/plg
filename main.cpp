@@ -38,9 +38,11 @@ int main()
 
     std::cout << "Parsing -> " << path << std::endl;
     Parser p(l.GetTokens());
-    if (!p.Parse())
-        return EXIT_FAILURE;
+    p.Parse();
     std::cout << "[Parser] Success" << std::endl;
+
+    auto &ast = p.GetAst();
+    ast->Print(std::cout);
 
     return EXIT_SUCCESS;
 }
