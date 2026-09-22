@@ -2,7 +2,7 @@
 
 Token::Token() {}
 
-Token::Token(std::string l, TokenType t, TokenPosition p) : lexeme(l), type(t), position(p)
+Token::Token(std::string l, TokenType t, TokenPosition p) : position(p), type(t), lexeme(l)
 {
 }
 
