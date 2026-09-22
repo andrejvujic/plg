@@ -1,6 +1,6 @@
 function main() -> int {
     a: int = 5;
-    test: int = 2928;
+    test: int = a;
 }
 
 function main() -> int {

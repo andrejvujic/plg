@@ -16,6 +16,7 @@ enum class AstNodeType
     ReturnStatement,
     VarDeclartaionStatement,
     NumLiteralExpression,
+    IdExpression,
 };
 
 class AstNode

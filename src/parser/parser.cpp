@@ -2,6 +2,7 @@
 #include "ast/ast.hpp"
 #include "ast/program.hpp"
 #include "ast/expressions/num_literal_expression.hpp"
+#include "ast/expressions/id_expression.hpp"
 
 #include <iostream>
 
@@ -235,9 +236,10 @@ std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
 {
     if (NextMatches(TokenType::ID))
     {
-        Consume(TokenType::ID);
-        std::cerr << "Not implemeneted" << std::endl;
-        exit(EXIT_FAILURE);
+        auto &id = Consume(TokenType::ID);
+        auto expression = std::make_unique<IdExpression>();
+        expression->SetValue(id->GetLexeme());
+        return expression;
     }
 
     if (NextMatches(TokenType::NUM_LITERAL))
