@@ -17,6 +17,7 @@ enum class AstNodeType
     VarDeclartaionStatement,
     NumLiteralExpression,
     IdExpression,
+    BinaryExpression,
 };
 
 class AstNode

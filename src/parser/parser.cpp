@@ -3,6 +3,7 @@
 #include "ast/program.hpp"
 #include "ast/expressions/num_literal_expression.hpp"
 #include "ast/expressions/id_expression.hpp"
+#include "ast/expressions/binary_expression.hpp"
 
 #include <iostream>
 
@@ -216,20 +217,24 @@ std::unique_ptr<const ReturnStatement> Parser::ParseReturnStatement()
 std::unique_ptr<const Expression> Parser::ParseExpression()
 {
     std::unique_ptr<const Expression> left = ParsePrimaryExpression();
-    return left;
+    std::unique_ptr<const Expression> right;
 
-    /*
-    if (NextMatchesAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR}))
+    while (NextMatchesAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR}))
     {
-        ConsumeAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR});
-        ParseExpression();
-        return;
-    }
-    */
+        const auto &op = ConsumeAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR});
+        if (op->GetLexeme() == BinaryExpression::OP_MUL || op->GetLexeme() == BinaryExpression::OP_DIV)
+            right = ParsePrimaryExpression();
+        else
+            right = ParseExpression();
 
-    auto &token = tokens.at(index);
-    PrintUnexpectedToken(token);
-    exit(EXIT_FAILURE);
+        auto tmp = std::make_unique<BinaryExpression>();
+        tmp->SetOperator(op->GetLexeme());
+        tmp->SetLeft(left);
+        tmp->SetRight(right);
+        left = std::move(tmp);
+    }
+
+    return left;
 }
 
 std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
