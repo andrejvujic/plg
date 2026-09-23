@@ -1,3 +1,4 @@
 function main() -> int {
     test: int = d * a + b + c * c - a;
+    return test + a * 3;
 }

@@ -209,6 +209,7 @@ std::unique_ptr<const ReturnStatement> Parser::ParseReturnStatement()
     }
 
     auto expression = ParseExpression();
+    statement->SetValue(expression);
 
     Consume(TokenType::SEMICOLON);
     return statement;
