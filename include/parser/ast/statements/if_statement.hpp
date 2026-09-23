@@ -1,7 +1,7 @@
 #ifndef IF_STATEMENT_HPP_INCLUDED
 #define IF_STATEMENT_HPP_INCLUDED
 
-#include "statement.hpp"
+#include "parser/ast/statements/statement.hpp"
 
 class IfStatement : public Statement
 {

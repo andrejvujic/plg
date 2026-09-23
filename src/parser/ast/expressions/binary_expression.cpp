@@ -1,4 +1,4 @@
-#include "binary_expression.hpp"
+#include "parser/ast/expressions/binary_expression.hpp"
 
 BinaryExpression::BinaryExpression() : Expression(AstNodeType::BinaryExpression)
 {

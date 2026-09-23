@@ -1,4 +1,4 @@
-#include "token_type.hpp"
+#include "lexer/tokens/token_type.hpp"
 
 // https://stackoverflow.com/a/3342891/13646430
 std::ostream &operator<<(std::ostream &out, const TokenType &value)

@@ -1,4 +1,4 @@
-#include "num_literal_expression.hpp"
+#include "parser/ast/expressions/num_literal_expression.hpp"
 
 NumLiteralExpression::NumLiteralExpression() : Expression(AstNodeType::NumLiteralExpression) {}
 

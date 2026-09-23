@@ -1,4 +1,4 @@
-#include "return_statement.hpp"
+#include "parser/ast/statements/return_statement.hpp"
 
 ReturnStatement::ReturnStatement() : Statement(AstNodeType::ReturnStatement)
 {

@@ -1,7 +1,7 @@
 #ifndef NUM_LITERAL_EXPRESSION_HPP_INCLUD
 #define NUM_LITERAL_EXPRESSION_HPP_INCLUD
 
-#include "expression.hpp"
+#include "parser/ast/expressions/expression.hpp"
 
 class NumLiteralExpression : public Expression
 {

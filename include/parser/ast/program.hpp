@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "ast.hpp"
-#include "functions/functions.hpp"
+#include "parser/ast/ast.hpp"
+#include "parser/ast/function.hpp"
 
 class Program : public AstNode
 {

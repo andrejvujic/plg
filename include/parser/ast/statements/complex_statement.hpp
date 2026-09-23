@@ -1,7 +1,7 @@
 #ifndef COMPLEX_STATEMENT_HPP_INCLUDED
 #define COMPLEX_STATEMENT_HPP_INCLUDED
 
-#include "statement.hpp"
+#include "parser/ast/statements/statement.hpp"
 
 class ComplexStatement : public AstNode
 {

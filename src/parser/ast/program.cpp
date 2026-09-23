@@ -1,4 +1,4 @@
-#include "program.hpp"
+#include "parser/ast/program.hpp"
 
 Program::Program() : AstNode(AstNodeType::Program)
 {

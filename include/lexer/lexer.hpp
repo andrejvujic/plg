@@ -7,8 +7,8 @@
 #include <string>
 #include <list>
 
-#include "tokens/token.hpp"
-#include "tokens/token_type.hpp"
+#include "lexer/tokens/token.hpp"
+#include "lexer/tokens/token_type.hpp"
 
 class Lexer
 {

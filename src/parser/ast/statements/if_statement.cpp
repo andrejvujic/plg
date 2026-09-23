@@ -1,4 +1,4 @@
-#include "if_statement.hpp"
+#include "parser/ast/statements/if_statement.hpp"
 
 IfStatement::IfStatement() : Statement(AstNodeType::IfStatement)
 {

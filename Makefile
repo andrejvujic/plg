@@ -1,5 +1,5 @@
 CXX      ?= c++
-CXXFLAGS ?= -std=c++17 -Wall -Wextra -pedantic -I.
+CXXFLAGS ?= -std=c++17 -Wall -Wextra -pedantic -Iinclude
 LDFLAGS  ?=
 LDLIBS   ?=
 
@@ -8,7 +8,7 @@ BUILD_DIR := build
 
 # Keep the source list in one place so adding a .cpp file under src/ includes
 # it automatically in the build.
-SOURCES := main.cpp $(shell find src -type f -name '*.cpp' -print)
+SOURCES := $(shell find src -type f -name '*.cpp' -print)
 OBJECTS := $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 
 .PHONY: all clean run

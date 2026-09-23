@@ -1,7 +1,7 @@
 #ifndef BINARY_EXPRESSION_HPP_INCLUDED
 #define BINARY_EXPRESSION_HPP_INCLUDED
 
-#include "expression.hpp"
+#include "parser/ast/expressions/expression.hpp"
 
 class BinaryExpression : public Expression
 {

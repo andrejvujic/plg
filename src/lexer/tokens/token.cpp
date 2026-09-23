@@ -1,4 +1,4 @@
-#include "token.hpp"
+#include "lexer/tokens/token.hpp"
 
 Token::Token() {}
 

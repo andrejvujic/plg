@@ -1,8 +1,8 @@
 #ifndef STATEMENTS_HPP_INCLUDED
 #define STATEMENTS_HPP_INCLUDED
 
-#include "../ast.hpp"
-#include "../expressions/expression.hpp"
+#include "parser/ast/ast.hpp"
+#include "parser/ast/expressions/expression.hpp"
 
 class Statement : public AstNode
 {

@@ -1,4 +1,4 @@
-#include "ast.hpp"
+#include "parser/ast/ast.hpp"
 
 AstNode::AstNode(AstNodeType t) : type(t)
 {

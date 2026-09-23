@@ -1,7 +1,7 @@
 #ifndef IDENTIFIER_EXPRESSION_HPP_INCLUD
 #define IDENTIFIER_EXPRESSION_HPP_INCLUD
 
-#include "expression.hpp"
+#include "parser/ast/expressions/expression.hpp"
 
 class IdExpression : public Expression
 {

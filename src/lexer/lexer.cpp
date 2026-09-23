@@ -1,5 +1,5 @@
-#include "lexer.hpp"
-#include "tokens/token.hpp"
+#include "lexer/lexer.hpp"
+#include "lexer/tokens/token.hpp"
 
 Lexer::Lexer(std::string &&t) : text(t)
 {

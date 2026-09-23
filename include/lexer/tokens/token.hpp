@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-#include "token_type.hpp"
+#include "lexer/tokens/token_type.hpp"
 
 typedef struct
 {

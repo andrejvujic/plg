@@ -1,4 +1,4 @@
-#include "var_declaration_statement.hpp"
+#include "parser/ast/statements/var_declaration_statement.hpp"
 
 VarDeclarationStatement::VarDeclarationStatement() : Statement(AstNodeType::VarDeclartaionStatement)
 {

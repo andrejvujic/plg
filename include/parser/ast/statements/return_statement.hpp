@@ -1,7 +1,7 @@
 #ifndef RETURN_STATEMENT_HPP_INCLUDED
 #define RETURN_STATEMENT_HPP_INCLUDED
 
-#include "statement.hpp"
+#include "parser/ast/statements/statement.hpp"
 
 class ReturnStatement : public Statement
 {

@@ -1,4 +1,4 @@
-#include "functions.hpp"
+#include "parser/ast/function.hpp"
 
 Function::Function() : AstNode(AstNodeType::Function)
 {

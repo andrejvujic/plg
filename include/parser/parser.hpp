@@ -3,16 +3,16 @@
 
 #include <vector>
 
-#include "../lexer/tokens/token.hpp"
-#include "ast/ast.hpp"
-#include "ast/program.hpp"
+#include "lexer/tokens/token.hpp"
+#include "parser/ast/ast.hpp"
+#include "parser/ast/program.hpp"
 
-#include "ast/statements/statement.hpp"
-#include "ast/statements/var_declaration_statement.hpp"
-#include "ast/statements/return_statement.hpp"
-#include "ast/statements/if_statement.hpp"
+#include "parser/ast/statements/statement.hpp"
+#include "parser/ast/statements/var_declaration_statement.hpp"
+#include "parser/ast/statements/return_statement.hpp"
+#include "parser/ast/statements/if_statement.hpp"
 
-#include "ast/expressions/expression.hpp"
+#include "parser/ast/expressions/expression.hpp"
 
 class Parser
 {

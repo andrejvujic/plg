@@ -3,10 +3,10 @@
 #include <iostream>
 #include <list>
 
-#include "src/lexer/lexer.hpp"
-#include "src/lexer/tokens/token.hpp"
+#include "lexer/lexer.hpp"
+#include "lexer/tokens/token.hpp"
 
-#include "src/parser/parser.hpp"
+#include "parser/parser.hpp"
 
 std::string ReadEntireFile(const std::string &path)
 {

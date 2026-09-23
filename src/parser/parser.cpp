@@ -1,9 +1,9 @@
-#include "parser.hpp"
-#include "ast/ast.hpp"
-#include "ast/program.hpp"
-#include "ast/expressions/num_literal_expression.hpp"
-#include "ast/expressions/id_expression.hpp"
-#include "ast/expressions/binary_expression.hpp"
+#include "parser/parser.hpp"
+#include "parser/ast/ast.hpp"
+#include "parser/ast/program.hpp"
+#include "parser/ast/expressions/num_literal_expression.hpp"
+#include "parser/ast/expressions/id_expression.hpp"
+#include "parser/ast/expressions/binary_expression.hpp"
 
 #include <iostream>
 

@@ -1,9 +1,9 @@
 #ifndef FUNCTIONS_HPP_INCLUDED
 #define FUNCTIONS_HPP_INCLUDED
 
-#include "../ast.hpp"
-#include "../statements/statement.hpp"
-#include "../statements/complex_statement.hpp"
+#include "parser/ast/ast.hpp"
+#include "parser/ast/statements/statement.hpp"
+#include "parser/ast/statements/complex_statement.hpp"
 
 class Function : public AstNode
 {
