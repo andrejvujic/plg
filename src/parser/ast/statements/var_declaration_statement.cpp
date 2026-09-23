@@ -32,7 +32,11 @@ void VarDeclarationStatement::SetVarType(std::string varType)
 void VarDeclarationStatement::SetInitialValue(std::unique_ptr<const Expression> &expression)
 {
     this->initialValue = std::move(expression);
-    this->hasInitialValue = true;
+}
+
+bool VarDeclarationStatement::HasInitialValue() const
+{
+    return initialValue != nullptr;
 }
 
 void VarDeclarationStatement::Print(std::ostream &out, size_t depth) const

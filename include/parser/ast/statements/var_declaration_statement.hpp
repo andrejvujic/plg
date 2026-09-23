@@ -8,7 +8,6 @@ class VarDeclarationStatement : public Statement
 private:
     std::string varName, varType;
     std::unique_ptr<const Expression> initialValue;
-    bool hasInitialValue = false;
 
 public:
     VarDeclarationStatement();
