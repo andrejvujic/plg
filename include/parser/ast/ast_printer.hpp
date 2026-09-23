@@ -12,10 +12,10 @@ class AstPrinter
 private:
     std::ostream &out;
     size_t depth = 0;
-    bool indentBeginNode = true;
+    bool isAtLineStart = true, skipNull = false;
 
 public:
-    AstPrinter(std::ostream &);
+    AstPrinter(std::ostream &out, bool skipNull = false);
 
     void BeginNode(std::string_view name);
     void Field(std::string_view name, std::string_view value);

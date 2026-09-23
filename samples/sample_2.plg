@@ -6,7 +6,5 @@ function main() -> int {
             c: int = 2;
     } else if (a > b) {
 
-    } else {
-
     }
 }

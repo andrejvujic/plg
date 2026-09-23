@@ -1,14 +1,16 @@
 #include "parser/ast/ast_printer.hpp"
 #include "parser/ast/ast.hpp"
 
-AstPrinter::AstPrinter(std::ostream &o) : out(o) {}
+AstPrinter::AstPrinter(std::ostream &out, bool skipNull) : out(out), skipNull(skipNull)
+{
+}
 
 void AstPrinter::BeginNode(std::string_view name)
 {
-    if (indentBeginNode)
+    if (isAtLineStart)
         out << std::string(depth * 2, ' ');
     out << "[" << name << "] {\n";
-    indentBeginNode = true;
+    isAtLineStart = true;
     ++depth;
 }
 
@@ -19,14 +21,16 @@ void AstPrinter::Field(std::string_view name, std::string_view value)
 
 void AstPrinter::Field(std::string_view name, const AstNode *node)
 {
-    out << std::string(depth * 2, ' ') << name << " -> ";
+
     if (node)
     {
-        indentBeginNode = false;
+        out << std::string(depth * 2, ' ') << name << " -> ";
+        isAtLineStart = false;
         node->Print(*this);
     }
-    else
+    else if (!skipNull)
     {
+        out << std::string(depth * 2, ' ') << name << " -> ";
         out << "null\n";
     }
 }
