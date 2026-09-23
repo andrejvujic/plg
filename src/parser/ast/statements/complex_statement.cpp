@@ -1,6 +1,6 @@
 #include "parser/ast/statements/complex_statement.hpp"
 
-ComplexStatement::ComplexStatement() : AstNode(AstNodeType::ComplexStatement)
+ComplexStatement::ComplexStatement() : Statement(AstNodeType::ComplexStatement)
 {
 }
 

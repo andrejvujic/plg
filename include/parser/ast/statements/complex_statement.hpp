@@ -3,7 +3,7 @@
 
 #include "parser/ast/statements/statement.hpp"
 
-class ComplexStatement : public AstNode
+class ComplexStatement : public Statement
 {
 private:
     std::vector<std::unique_ptr<const Statement>> body;

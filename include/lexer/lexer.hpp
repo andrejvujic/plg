@@ -44,6 +44,7 @@ public:
 
 static const std::map<std::string_view, TokenType> TOKENS{
     {"if", TokenType::KEYWORD_IF},
+    {"else", TokenType::KEYWORD_ELSE},
     {"return", TokenType::KEYWORD_RETURN},
     {"function", TokenType::KEYWORD_FUNCTION},
     {"int", TokenType::KEYWORD_TYPE},

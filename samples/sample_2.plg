@@ -1,4 +1,12 @@
 function main() -> int {
-    test: int = d * a + b + c * c - a;
-    return test + a * 3;
+    if (a + b) {
+        if (a == 5)
+            c: int = 1;
+        else
+            c: int = 2;
+    } else if (a > b) {
+
+    } else {
+
+    }
 }

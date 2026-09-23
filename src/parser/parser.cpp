@@ -184,16 +184,46 @@ std::unique_ptr<const IfStatement> Parser::ParseIfStatement()
 
     Consume(TokenType::KEYWORD_IF);
     Consume(TokenType::O_PAREN);
-    ParseExpression();
+
+    auto condition = ParseExpression();
+    statement->SetCondition(condition);
+
     Consume(TokenType::C_PAREN);
 
     if (NextMatches(TokenType::O_CURLY))
     {
-        auto body = ParseComplexStatement();
+        std::unique_ptr<const Statement> consequent = ParseComplexStatement();
+        statement->SetConsequentStatement(consequent);
+    }
+    else
+    {
+        auto consequent = ParseStatement();
+        statement->SetConsequentStatement(consequent);
+    }
+
+    if (!NextMatches(TokenType::KEYWORD_ELSE))
+        return statement;
+
+    Consume(TokenType::KEYWORD_ELSE);
+
+    if (NextMatches(TokenType::KEYWORD_IF))
+    {
+        std::unique_ptr<const Statement> alternate = ParseIfStatement();
+        statement->SetAlternateStatement(alternate);
         return statement;
     }
 
-    auto body = ParseStatement();
+    if (NextMatches(TokenType::O_CURLY))
+    {
+        std::unique_ptr<const Statement> alternate = ParseComplexStatement();
+        statement->SetAlternateStatement(alternate);
+    }
+    else
+    {
+        auto alternate = ParseStatement();
+        statement->SetAlternateStatement(alternate);
+    }
+
     return statement;
 }
 

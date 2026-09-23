@@ -10,8 +10,8 @@ enum TokenType
     KEYWORD_FUNCTION = 1,
     KEYWORD_RETURN = 2,
     KEYWORD_IF = 4,
-    KEYWORD_TYPE = 8,
-    ARROW = 16,
+    KEYWORD_ELSE = 8,
+    KEYWORD_TYPE = 16,
     ID = 32,
     NUM_LITERAL = 64,
     O_CURLY = 128,
@@ -23,6 +23,7 @@ enum TokenType
     ASSIGNMENT = 8192,
     ARITHMETIC_OPERATOR = 16384,
     RELATIONAL_OPERATOR = 32768,
+    ARROW = 65536,
 };
 
 std::ostream &operator<<(std::ostream &out, const TokenType &value);
