@@ -6,7 +6,12 @@
 #include "../lexer/tokens/token.hpp"
 #include "ast/ast.hpp"
 #include "ast/program.hpp"
-#include "ast/statements/statements.hpp"
+
+#include "ast/statements/statement.hpp"
+#include "ast/statements/var_declaration_statement.hpp"
+#include "ast/statements/return_statement.hpp"
+#include "ast/statements/if_statement.hpp"
+
 #include "ast/expressions/expression.hpp"
 
 class Parser

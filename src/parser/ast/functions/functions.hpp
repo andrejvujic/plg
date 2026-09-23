@@ -2,7 +2,8 @@
 #define FUNCTIONS_HPP_INCLUDED
 
 #include "../ast.hpp"
-#include "../statements/statements.hpp"
+#include "../statements/statement.hpp"
+#include "../statements/complex_statement.hpp"
 
 class Function : public AstNode
 {

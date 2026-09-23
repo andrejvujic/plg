@@ -1,9 +1,4 @@
-#include "statements.hpp"
-#include "../expressions/expression.hpp"
-
-Statement::Statement(AstNodeType type) : AstNode(type)
-{
-}
+#include "var_declaration_statement.hpp"
 
 VarDeclarationStatement::VarDeclarationStatement() : Statement(AstNodeType::VarDeclartaionStatement)
 {
@@ -50,46 +45,4 @@ void VarDeclarationStatement::Print(std::ostream &out, size_t depth) const
     if (initialValue)
         initialValue->Print(out, depth + 1);
     out << indent << "}\n";
-}
-
-ComplexStatement::ComplexStatement() : AstNode(AstNodeType::ComplexStatement)
-{
-}
-
-void ComplexStatement::AddStatement(std::unique_ptr<const Statement> &statement)
-{
-    body.push_back(std::move(statement));
-}
-
-const std::vector<std::unique_ptr<const Statement>> &ComplexStatement::GetStatements()
-{
-    return body;
-}
-
-IfStatement::IfStatement() : Statement(AstNodeType::IfStatement)
-{
-}
-
-ReturnStatement::ReturnStatement() : Statement(AstNodeType::ReturnStatement)
-{
-}
-
-void ComplexStatement::Print(std::ostream &out, size_t depth) const
-{
-    const std::string indent(depth * 2, ' ');
-    out << indent << "[ComplexStatement] {\n";
-    for (const auto &statement : body)
-        if (statement)
-            statement->Print(out, depth + 1);
-    out << indent << "}\n";
-}
-
-void IfStatement::Print(std::ostream &out, size_t depth) const
-{
-    out << std::string(depth * 2, ' ') << "[IfStatement] {}\n";
-}
-
-void ReturnStatement::Print(std::ostream &out, size_t depth) const
-{
-    out << std::string(depth * 2, ' ') << "[ReturnStatement] {}\n";
 }
