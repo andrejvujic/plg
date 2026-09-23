@@ -15,7 +15,7 @@ public:
     std::string_view GetRawValue() const;
     void SetRawValue(std::string rawValue);
 
-    void Print(std::ostream &out, size_t depth = 0) const override;
+    void Print(AstPrinter &printer) const override;
 };
 
 #endif

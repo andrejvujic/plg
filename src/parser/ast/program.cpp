@@ -14,13 +14,11 @@ const std::vector<std::unique_ptr<const Function>> &Program::GetFunctions() cons
     return body;
 }
 
-void Program::Print(std::ostream &out, size_t depth) const
+void Program::Print(AstPrinter &printer) const
 {
-    const std::string indent(depth * 2, ' ');
-    out << indent << "[Program] {\n";
+    printer.BeginNode("Program");
     for (const auto &function : body)
-    {
-        function->Print(out, depth + 1);
-    }
-    out << indent << "}\n";
+        if (function)
+            function->Print(printer);
+    printer.EndNode();
 }

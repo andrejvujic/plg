@@ -29,14 +29,11 @@ void Function::SetBody(std::unique_ptr<const ComplexStatement> &body)
     this->body = std::move(body);
 }
 
-void Function::Print(std::ostream &out, size_t depth) const
+void Function::Print(AstPrinter &printer) const
 {
-    const std::string indent(depth * 2, ' ');
-    const std::string fieldIndent((depth + 1) * 2, ' ');
-    out << indent << "[Function] {\n"
-        << fieldIndent << "Name -> " << name << '\n'
-        << fieldIndent << "Return Type -> " << returnType << '\n';
-    if (body)
-        body->Print(out, depth + 1);
-    out << indent << "}\n";
+    printer.BeginNode("Function");
+    printer.Field("Name", name);
+    printer.Field("Return Type", returnType);
+    printer.Field("Body", body.get());
+    printer.EndNode();
 }

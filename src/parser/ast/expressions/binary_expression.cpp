@@ -34,16 +34,13 @@ std::string_view BinaryExpression::GetOperator() const
     return op;
 }
 
-void BinaryExpression::Print(std::ostream &out, size_t depth) const
+void BinaryExpression::Print(AstPrinter &printer) const
 {
-    const std::string indent(depth * 2, ' ');
-    const std::string fieldIndent((depth + 1) * 2, ' ');
-
-    out << indent << "[BinaryExpression] {\n";
-    left->Print(out, depth + 1);
-    out << fieldIndent << "Operator -> " << op << "\n";
-    right->Print(out, depth + 1);
-    out << indent << "}\n";
+    printer.BeginNode("BinaryExpression");
+    printer.Field("Operator", op);
+    printer.Field("Left", left.get());
+    printer.Field("Right", right.get());
+    printer.EndNode();
 }
 
 std::string_view BinaryExpression::OP_PLUS = "+";

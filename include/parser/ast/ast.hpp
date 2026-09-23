@@ -7,6 +7,8 @@
 #include <string_view>
 #include <iostream>
 
+#include "ast_printer.hpp"
+
 enum class AstNodeType
 {
     Program,
@@ -28,7 +30,7 @@ private:
 public:
     AstNode(AstNodeType type);
     AstNodeType GetType() const;
-    virtual void Print(std::ostream &out, size_t depth = 0) const;
+    virtual void Print(AstPrinter &printer) const;
     virtual ~AstNode() = default;
 };
 #endif

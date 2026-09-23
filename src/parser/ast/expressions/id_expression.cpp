@@ -12,11 +12,9 @@ std::string_view IdExpression::GetValue() const
     return value;
 }
 
-void IdExpression::Print(std::ostream &out, size_t depth) const
+void IdExpression::Print(AstPrinter &printer) const
 {
-    const std::string indent(depth * 2, ' ');
-    const std::string fieldIndent((depth + 1) * 2, ' ');
-    out << indent << "[IdExpression] {\n"
-        << fieldIndent << "Value -> " << value << '\n'
-        << indent << "}\n";
+    printer.BeginNode("IdExpression");
+    printer.Field("Value", value);
+    printer.EndNode();
 }

@@ -14,12 +14,11 @@ const std::vector<std::unique_ptr<const Statement>> &ComplexStatement::GetStatem
     return body;
 }
 
-void ComplexStatement::Print(std::ostream &out, size_t depth) const
+void ComplexStatement::Print(AstPrinter &printer) const
 {
-    const std::string indent(depth * 2, ' ');
-    out << indent << "[ComplexStatement] {\n";
+    printer.BeginNode("ComplexStatement");
     for (const auto &statement : body)
         if (statement)
-            statement->Print(out, depth + 1);
-    out << indent << "}\n";
+            statement->Print(printer);
+    printer.EndNode();
 }

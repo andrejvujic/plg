@@ -42,7 +42,8 @@ int main()
     std::cout << "[Parser] Success" << std::endl;
 
     auto &ast = p.GetAst();
-    ast->Print(std::cout);
+    AstPrinter printer(std::cout);
+    ast->Print(printer);
 
     return EXIT_SUCCESS;
 }

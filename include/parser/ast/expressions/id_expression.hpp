@@ -14,7 +14,7 @@ public:
     std::string_view GetValue() const;
     void SetValue(std::string value);
 
-    void Print(std::ostream &out, size_t depth = 0) const override;
+    void Print(AstPrinter &printer) const override;
 };
 
 #endif

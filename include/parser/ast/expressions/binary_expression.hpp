@@ -20,7 +20,7 @@ public:
     const std::unique_ptr<const Expression> &GetRight() const;
     std::string_view GetOperator() const;
 
-    void Print(std::ostream &out, size_t depth = 0) const override;
+    void Print(AstPrinter &printer) const override;
 
     static std::string_view OP_PLUS, OP_MINUS, OP_MUL, OP_DIV;
 };

@@ -15,7 +15,7 @@ public:
     const std::unique_ptr<const Expression> &GetValue() const;
     void SetValue(std::unique_ptr<const Expression> &value);
 
-    void Print(std::ostream &out, size_t depth = 0) const override;
+    void Print(AstPrinter &printer) const override;
 };
 
 #endif

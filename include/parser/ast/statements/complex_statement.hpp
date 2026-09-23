@@ -14,7 +14,7 @@ public:
     const std::vector<std::unique_ptr<const Statement>> &GetStatements();
     void AddStatement(std::unique_ptr<const Statement> &statement);
 
-    void Print(std::ostream &out, size_t depth = 0) const override;
+    void Print(AstPrinter &printer) const override;
 };
 
 #endif

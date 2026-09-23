@@ -16,7 +16,7 @@ public:
 
     void AddFunction(std::unique_ptr<const Function> &function);
     const std::vector<std::unique_ptr<const Function>> &GetFunctions() const;
-    void Print(std::ostream &out, size_t depth = 0) const override;
+    void Print(AstPrinter &printer) const override;
 };
 
 #endif

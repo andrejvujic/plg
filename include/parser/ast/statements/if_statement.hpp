@@ -20,7 +20,7 @@ public:
     void SetConsequentStatement(std::unique_ptr<const Statement> &statement);
     void SetAlternateStatement(std::unique_ptr<const Statement> &statement);
     void SetCondition(std::unique_ptr<const Expression> &condition);
-    void Print(std::ostream &out, size_t depth = 0) const override;
+    void Print(AstPrinter &printer) const override;
 };
 
 #endif

@@ -21,6 +21,6 @@ public:
     void SetVarType(std::string varType);
     void SetInitialValue(std::unique_ptr<const Expression> &initialValue);
 
-    void Print(std::ostream &out, size_t depth = 0) const override;
+    void Print(AstPrinter &printer) const override;
 };
 #endif

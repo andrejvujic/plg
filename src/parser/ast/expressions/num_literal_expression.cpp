@@ -17,11 +17,9 @@ int NumLiteralExpression::GetValue() const
     return atoi(rawValue.c_str());
 }
 
-void NumLiteralExpression::Print(std::ostream &out, size_t depth) const
+void NumLiteralExpression::Print(AstPrinter &printer) const
 {
-    const std::string indent(depth * 2, ' ');
-    const std::string fieldIndent((depth + 1) * 2, ' ');
-    out << indent << "[NumLiteralExpression] {\n"
-        << fieldIndent << "Raw Value -> " << rawValue << '\n'
-        << indent << "}\n";
+    printer.BeginNode("NumLiteralExpression");
+    printer.Field("Raw Value", rawValue);
+    printer.EndNode();
 }

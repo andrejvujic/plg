@@ -19,11 +19,9 @@ void ReturnStatement::SetValue(std::unique_ptr<const Expression> &value)
     this->value = std::move(value);
 }
 
-void ReturnStatement::Print(std::ostream &out, size_t depth) const
+void ReturnStatement::Print(AstPrinter &printer) const
 {
-    auto indent = std::string(depth * 2, ' ');
-    out << indent << "[ReturnStatement] {\n";
-    if (value)
-        value->Print(out, depth + 1);
-    out << indent << "}\n";
-};
+    printer.BeginNode("ReturnStatement");
+    printer.Field("Value", value.get());
+    printer.EndNode();
+}

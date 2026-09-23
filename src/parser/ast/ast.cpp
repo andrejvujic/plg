@@ -9,11 +9,9 @@ AstNodeType AstNode::GetType() const
     return type;
 }
 
-void AstNode::Print(std::ostream &out, size_t depth) const
+void AstNode::Print(AstPrinter &printer) const
 {
-    const std::string indent(depth * 2, ' ');
-    const std::string fieldIndent((depth + 1) * 2, ' ');
-    out << indent << "[AstNode] {\n"
-        << fieldIndent << "Type -> " << static_cast<int>(type) << '\n'
-        << indent << "}\n";
+    printer.BeginNode("AstNode");
+    printer.Field("Type", std::to_string(static_cast<int>(type)));
+    printer.EndNode();
 }

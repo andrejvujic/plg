@@ -39,13 +39,11 @@ void IfStatement::SetCondition(std::unique_ptr<const Expression> &condition)
     this->condition = std::move(condition);
 }
 
-void IfStatement::Print(std::ostream &out, size_t depth) const
+void IfStatement::Print(AstPrinter &printer) const
 {
-    const auto indent = std::string(depth * 2, ' ');
-    out << indent << "[IfStatement] {\n";
-    condition->Print(out, depth + 1);
-    consequent->Print(out, depth + 1);
-    if (alternate)
-        alternate->Print(out, depth + 1);
-    out << indent << "}\n";
+    printer.BeginNode("IfStatement");
+    printer.Field("Condition", condition.get());
+    printer.Field("Consequent", consequent.get());
+    printer.Field("Alternate", alternate.get());
+    printer.EndNode();
 }

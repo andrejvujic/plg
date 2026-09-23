@@ -21,7 +21,7 @@ public:
     void SetReturnType(std::string returnType);
     void SetBody(std::unique_ptr<const ComplexStatement> &body);
 
-    void Print(std::ostream &out, size_t depth = 0) const override;
+    void Print(AstPrinter &printer) const override;
 };
 
 #endif
