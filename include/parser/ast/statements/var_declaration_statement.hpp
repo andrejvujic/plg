@@ -19,7 +19,7 @@ public:
 
     void SetVarName(std::string varName);
     void SetVarType(std::string varType);
-    void SetInitialValue(std::unique_ptr<const Expression> &initialValue);
+    void SetInitialVarValue(std::unique_ptr<const Expression> &initialValue);
 
     void Print(AstPrinter &printer) const override;
 };

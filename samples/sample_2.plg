@@ -5,6 +5,6 @@ function main() -> int {
         else
             c: int = 2;
     } else if (a > b) {
-
+        a = a + 1;
     }
 }

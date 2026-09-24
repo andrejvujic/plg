@@ -17,6 +17,7 @@ enum class AstNodeType
     IfStatement,
     ReturnStatement,
     VarDeclartaionStatement,
+    VarAssignmentStatement,
     NumLiteralExpression,
     IdExpression,
     BinaryExpression,

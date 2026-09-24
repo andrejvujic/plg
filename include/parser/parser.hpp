@@ -9,6 +9,7 @@
 
 #include "parser/ast/statements/statement.hpp"
 #include "parser/ast/statements/var_declaration_statement.hpp"
+#include "parser/ast/statements/var_assignment_statement.hpp"
 #include "parser/ast/statements/return_statement.hpp"
 #include "parser/ast/statements/if_statement.hpp"
 
@@ -29,7 +30,9 @@ private:
 
     std::unique_ptr<const ComplexStatement> ParseComplexStatement();
     std::unique_ptr<const Statement> ParseStatement();
-    std::unique_ptr<const VarDeclarationStatement> ParseVarDeclarationStatement();
+    std::unique_ptr<const Statement> ParseVarDeclarationOrAssignmentStatement();
+    std::unique_ptr<const VarDeclarationStatement> ParseVarDeclarationStatement(const std::unique_ptr<const Token> &varName);
+    std::unique_ptr<const VarAssignmentStatement> ParseVarAssignmentStatement(const std::unique_ptr<const Token> &varName);
     std::unique_ptr<const IfStatement> ParseIfStatement();
     std::unique_ptr<const ReturnStatement> ParseReturnStatement();
 
@@ -38,6 +41,7 @@ private:
 
     const std::unique_ptr<const Token> &Consume(TokenType type);
     const std::unique_ptr<const Token> &ConsumeAny(std::initializer_list<TokenType> types);
+    void ConsumeAll(std::initializer_list<TokenType> types);
 
     void PrintUnexpectedToken(const std::unique_ptr<const Token> &token) const;
     void PrintExpectedType(TokenType type) const;

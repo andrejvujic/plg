@@ -29,7 +29,7 @@ void VarDeclarationStatement::SetVarType(std::string varType)
     this->varType = varType;
 }
 
-void VarDeclarationStatement::SetInitialValue(std::unique_ptr<const Expression> &expression)
+void VarDeclarationStatement::SetInitialVarValue(std::unique_ptr<const Expression> &expression)
 {
     this->initialValue = std::move(expression);
 }

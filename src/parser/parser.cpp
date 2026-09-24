@@ -98,6 +98,12 @@ const std::unique_ptr<const Token> &Parser::ConsumeAny(std::initializer_list<Tok
     return token;
 }
 
+void Parser::ConsumeAll(std::initializer_list<TokenType> types)
+{
+    for (auto type : types)
+        Consume(type);
+}
+
 std::unique_ptr<const Function> Parser::ParseFunction()
 {
     auto function = std::make_unique<Function>();
@@ -107,9 +113,7 @@ std::unique_ptr<const Function> Parser::ParseFunction()
     auto &name = Consume(TokenType::ID);
     function->SetName(name->GetLexeme());
 
-    Consume(TokenType::O_PAREN);
-    Consume(TokenType::C_PAREN);
-    Consume(TokenType::ARROW);
+    ConsumeAll({TokenType::O_PAREN, TokenType::C_PAREN, TokenType::ARROW});
 
     auto &returnType = Consume(TokenType::KEYWORD_TYPE);
     function->SetReturnType(returnType->GetLexeme());
@@ -142,7 +146,7 @@ std::unique_ptr<const ComplexStatement> Parser::ParseComplexStatement()
 std::unique_ptr<const Statement> Parser::ParseStatement()
 {
     if (NextMatches(TokenType::ID))
-        return ParseVarDeclarationStatement();
+        return ParseVarDeclarationOrAssignmentStatement();
 
     if (NextMatches(TokenType::KEYWORD_IF))
         return ParseIfStatement();
@@ -155,9 +159,18 @@ std::unique_ptr<const Statement> Parser::ParseStatement()
     exit(EXIT_FAILURE);
 }
 
-std::unique_ptr<const VarDeclarationStatement> Parser::ParseVarDeclarationStatement()
+std::unique_ptr<const Statement> Parser::ParseVarDeclarationOrAssignmentStatement()
 {
     auto &varName = Consume(TokenType::ID);
+
+    if (NextMatches(TokenType::COLON))
+        return ParseVarDeclarationStatement(varName);
+
+    return ParseVarAssignmentStatement(varName);
+}
+
+std::unique_ptr<const VarDeclarationStatement> Parser::ParseVarDeclarationStatement(const std::unique_ptr<const Token> &varName)
+{
     auto statement = std::make_unique<VarDeclarationStatement>();
     statement->SetVarName(varName->GetLexeme());
 
@@ -173,8 +186,22 @@ std::unique_ptr<const VarDeclarationStatement> Parser::ParseVarDeclarationStatem
 
     Consume(TokenType::ASSIGNMENT);
     auto expression = ParseExpression();
-    statement->SetInitialValue(expression);
+    statement->SetInitialVarValue(expression);
     Consume(TokenType::SEMICOLON);
+    return statement;
+}
+
+std::unique_ptr<const VarAssignmentStatement> Parser::ParseVarAssignmentStatement(const std::unique_ptr<const Token> &varName)
+{
+    auto statement = std::make_unique<VarAssignmentStatement>();
+    statement->SetVarName(varName->GetLexeme());
+
+    Consume(TokenType::ASSIGNMENT);
+    auto expression = ParseExpression();
+    statement->SetVarValue(expression);
+
+    Consume(TokenType::SEMICOLON);
+
     return statement;
 }
 
@@ -182,8 +209,7 @@ std::unique_ptr<const IfStatement> Parser::ParseIfStatement()
 {
     auto statement = std::make_unique<IfStatement>();
 
-    Consume(TokenType::KEYWORD_IF);
-    Consume(TokenType::O_PAREN);
+    ConsumeAll({TokenType::KEYWORD_IF, TokenType::O_PAREN});
 
     auto condition = ParseExpression();
     statement->SetCondition(condition);
