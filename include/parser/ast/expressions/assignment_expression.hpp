@@ -1,16 +1,16 @@
-#ifndef VAR_ASSIGNMENT_STATEMENT_HPP_INCLUDED
-#define VAR_ASSIGNMENT_STATEMENT_HPP_INCLUDED
+#ifndef ASSIGNMENT_EXPRESSION_HPP_INCLUDED
+#define ASSIGNMENT_EXPRESSION_HPP_INCLUDED
 
-#include "statement.hpp"
+#include "expression.hpp"
 
-class VarAssignmentStatement : public Statement
+class AssignmentExpression : public Expression
 {
 private:
     std::string varName;
     std::unique_ptr<const Expression> varValue;
 
 public:
-    VarAssignmentStatement();
+    AssignmentExpression();
 
     std::string_view GetVarName() const;
     const std::unique_ptr<const Expression> &GetVarValue() const;

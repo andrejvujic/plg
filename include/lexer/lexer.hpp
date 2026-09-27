@@ -48,6 +48,7 @@ static const std::map<std::string_view, TokenType> TOKENS{
     {"return", TokenType::KEYWORD_RETURN},
     {"function", TokenType::KEYWORD_FUNCTION},
     {"int", TokenType::KEYWORD_TYPE},
+    {"for", TokenType::KEYWORD_FOR},
     {"+", TokenType::ARITHMETIC_OPERATOR},
     {"-", TokenType::ARITHMETIC_OPERATOR},
     {"*", TokenType::ARITHMETIC_OPERATOR},
