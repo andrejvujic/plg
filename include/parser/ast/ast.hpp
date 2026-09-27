@@ -23,6 +23,7 @@ enum class AstNodeType
     NumLiteralExpression,
     IdExpression,
     BinaryExpression,
+    FunctionCallExpression,
 };
 
 class AstNode

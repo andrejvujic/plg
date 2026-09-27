@@ -11,7 +11,7 @@ const std::unique_ptr<const Expression> &ExpressionStatement::GetExpression() co
 
 void ExpressionStatement::SetExpression(std::unique_ptr<const Expression> &expression)
 {
-    expression = std::move(expression);
+    this->expression = std::move(expression);
 }
 
 void ExpressionStatement::Print(AstPrinter &printer) const

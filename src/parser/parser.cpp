@@ -5,6 +5,7 @@
 #include "parser/ast/expressions/id_expression.hpp"
 #include "parser/ast/expressions/binary_expression.hpp"
 #include "parser/ast/expressions/assignment_expression.hpp"
+#include "parser/ast/expressions/function_call_expression.hpp"
 
 #include <iostream>
 
@@ -352,6 +353,15 @@ std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
     if (NextMatches(TokenType::ID))
     {
         auto &id = Consume(TokenType::ID);
+
+        if (NextMatches(TokenType::O_PAREN))
+        {
+            ConsumeAll({TokenType::O_PAREN, TokenType::C_PAREN});
+            auto expression = std::make_unique<FunctionCallExpression>();
+            expression->SetFunction(id->GetLexeme());
+            return expression;
+        }
+
         auto expression = std::make_unique<IdExpression>();
         expression->SetValue(id->GetLexeme());
         return expression;
