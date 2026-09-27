@@ -121,6 +121,20 @@ std::unique_ptr<const Function> Parser::ParseFunction()
     {
         auto parameter = ParseFunctionParameter();
         function->AddParameter(parameter);
+
+        if (NextMatches(TokenType::COMMA))
+        {
+            Consume(TokenType::COMMA);
+            continue;
+        }
+
+        if (!NextMatches(TokenType::C_PAREN))
+        {
+            auto &token = tokens.at(index);
+            PrintUnexpectedToken(token);
+            PrintExpectedType(TokenType::COMMA);
+            exit(EXIT_FAILURE);
+        }
     }
 
     ConsumeAll({TokenType::C_PAREN, TokenType::ARROW});
@@ -143,9 +157,6 @@ std::unique_ptr<const FunctionParameter> Parser::ParseFunctionParameter()
 
     auto &parameterName = Consume(TokenType::ID);
     parameter->SetVarName(parameterName->GetLexeme());
-
-    if (NextMatches(TokenType::COMMA))
-        Consume(TokenType::COMMA);
 
     return parameter;
 }
@@ -380,10 +391,32 @@ std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
 
         if (NextMatches(TokenType::O_PAREN))
         {
-            ConsumeAll({TokenType::O_PAREN, TokenType::C_PAREN});
-            auto expression = std::make_unique<FunctionCallExpression>();
-            expression->SetFunction(id->GetLexeme());
-            return expression;
+            Consume(TokenType::O_PAREN);
+            auto functionCall = std::make_unique<FunctionCallExpression>();
+            functionCall->SetFunction(id->GetLexeme());
+
+            while (!NextMatches(TokenType::C_PAREN))
+            {
+                auto argument = ParseExpression();
+                functionCall->AddArgument(argument);
+
+                if (NextMatches(TokenType::COMMA))
+                {
+                    Consume(TokenType::COMMA);
+                    continue;
+                }
+
+                if (!NextMatches(TokenType::C_PAREN))
+                {
+                    auto &token = tokens.at(index);
+                    PrintUnexpectedToken(token);
+                    PrintExpectedType(TokenType::COMMA);
+                    exit(EXIT_FAILURE);
+                }
+            }
+
+            Consume(TokenType::C_PAREN);
+            return functionCall;
         }
 
         auto expression = std::make_unique<IdExpression>();

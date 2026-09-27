@@ -9,6 +9,6 @@ function main(int a, int b) -> int {
     }
 
     for (a = 5; a < 10; a = a + 1) {
-        a = f();
+        a = f(a, b);
     }
 }

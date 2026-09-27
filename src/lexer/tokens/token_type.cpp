@@ -21,6 +21,7 @@ std::ostream &operator<<(std::ostream &out, const TokenType &value)
         INSERT_ELEMENT(C_PAREN);
         INSERT_ELEMENT(COLON);
         INSERT_ELEMENT(SEMICOLON);
+        INSERT_ELEMENT(COMMA);
         INSERT_ELEMENT(ASSIGNMENT);
         INSERT_ELEMENT(ARITHMETIC_OPERATOR);
         INSERT_ELEMENT(RELATIONAL_OPERATOR);
