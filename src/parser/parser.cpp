@@ -1,6 +1,7 @@
 #include "parser/parser.hpp"
 #include "parser/ast/ast.hpp"
 #include "parser/ast/program.hpp"
+#include "parser/ast/function/function.hpp"
 #include "parser/ast/expressions/num_literal_expression.hpp"
 #include "parser/ast/expressions/id_expression.hpp"
 #include "parser/ast/expressions/binary_expression.hpp"
@@ -115,7 +116,14 @@ std::unique_ptr<const Function> Parser::ParseFunction()
     auto &name = Consume(TokenType::ID);
     function->SetName(name->GetLexeme());
 
-    ConsumeAll({TokenType::O_PAREN, TokenType::C_PAREN, TokenType::ARROW});
+    Consume(TokenType::O_PAREN);
+    while (!NextMatches(TokenType::C_PAREN))
+    {
+        auto parameter = ParseFunctionParameter();
+        function->AddParameter(parameter);
+    }
+
+    ConsumeAll({TokenType::C_PAREN, TokenType::ARROW});
 
     auto &returnType = Consume(TokenType::KEYWORD_TYPE);
     function->SetReturnType(returnType->GetLexeme());
@@ -124,6 +132,22 @@ std::unique_ptr<const Function> Parser::ParseFunction()
     function->SetBody(body);
 
     return function;
+}
+
+std::unique_ptr<const FunctionParameter> Parser::ParseFunctionParameter()
+{
+    auto parameter = std::make_unique<FunctionParameter>();
+
+    auto &parameterType = Consume(TokenType::KEYWORD_TYPE);
+    parameter->SetVarType(parameterType->GetLexeme());
+
+    auto &parameterName = Consume(TokenType::ID);
+    parameter->SetVarName(parameterName->GetLexeme());
+
+    if (NextMatches(TokenType::COMMA))
+        Consume(TokenType::COMMA);
+
+    return parameter;
 }
 
 std::unique_ptr<const ComplexStatement> Parser::ParseComplexStatement()

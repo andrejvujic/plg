@@ -19,6 +19,7 @@ public:
 
     void BeginNode(std::string_view name);
     void Field(std::string_view name, std::string_view value);
+    void Field(std::string_view name, int value);
     void Field(std::string_view name, const AstNode *node);
     void EndNode();
 };

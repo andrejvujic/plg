@@ -21,10 +21,11 @@ enum TokenType
     C_PAREN = 2048,
     COLON = 4096,
     SEMICOLON = 8192,
-    ASSIGNMENT = 16384,
-    ARITHMETIC_OPERATOR = 32768,
-    RELATIONAL_OPERATOR = 65536,
-    ARROW = 131072,
+    COMMA = 16384,
+    ASSIGNMENT = 32768,
+    ARITHMETIC_OPERATOR = 65536,
+    RELATIONAL_OPERATOR = 131072,
+    ARROW = 262144,
 };
 
 std::ostream &operator<<(std::ostream &out, const TokenType &value);

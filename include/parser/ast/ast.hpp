@@ -13,6 +13,7 @@ enum class AstNodeType
 {
     Program,
     Function,
+    FunctionParameter,
     ComplexStatement,
     IfStatement,
     ReturnStatement,
@@ -24,6 +25,7 @@ enum class AstNodeType
     IdExpression,
     BinaryExpression,
     FunctionCallExpression,
+    FunctionCallArguments,
 };
 
 class AstNode

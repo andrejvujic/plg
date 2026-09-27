@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "parser/ast/ast.hpp"
-#include "parser/ast/function.hpp"
+#include "parser/ast/function/function.hpp"
 
 class Program : public AstNode
 {

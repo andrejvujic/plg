@@ -29,6 +29,7 @@ private:
     bool NextMatchesAny(const std::initializer_list<TokenType> &types) const;
 
     std::unique_ptr<const Function> ParseFunction();
+    std::unique_ptr<const FunctionParameter> ParseFunctionParameter();
 
     std::unique_ptr<const ComplexStatement> ParseComplexStatement();
     std::unique_ptr<const Statement> ParseStatement();

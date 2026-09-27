@@ -64,6 +64,7 @@ static const std::map<std::string_view, TokenType> TOKENS{
     {")", TokenType::C_PAREN},
     {":", TokenType::COLON},
     {";", TokenType::SEMICOLON},
+    {",", TokenType::COMMA},
 };
 
 #endif

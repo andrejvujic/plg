@@ -19,6 +19,11 @@ void AstPrinter::Field(std::string_view name, std::string_view value)
     out << std::string(depth * 2, ' ') << name << " -> " << value << "\n";
 }
 
+void AstPrinter::Field(std::string_view name, int value)
+{
+    out << std::string(depth * 2, ' ') << name << " -> " << value << "\n";
+}
+
 void AstPrinter::Field(std::string_view name, const AstNode *node)
 {
 

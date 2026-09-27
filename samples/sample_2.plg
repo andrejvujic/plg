@@ -1,4 +1,4 @@
-function main() -> int {
+function main(int a, int b) -> int {
     if (a + b) {
         if (a == 5)
             int c = 1;
