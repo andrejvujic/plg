@@ -4,18 +4,18 @@
 #include <vector>
 
 #include "lexer/tokens/token.hpp"
-#include "parser/ast/ast.hpp"
-#include "parser/ast/program.hpp"
+#include "ast/ast.hpp"
+#include "ast/program.hpp"
 
-#include "parser/ast/statements/statement.hpp"
-#include "parser/ast/statements/var_declaration_statement.hpp"
-#include "parser/ast/statements/return_statement.hpp"
-#include "parser/ast/statements/if_statement.hpp"
-#include "parser/ast/statements/for_statement.hpp"
-#include "parser/ast/statements/expression_statement.hpp"
+#include "ast/statements/statement.hpp"
+#include "ast/statements/var_declaration_statement.hpp"
+#include "ast/statements/return_statement.hpp"
+#include "ast/statements/if_statement.hpp"
+#include "ast/statements/for_statement.hpp"
+#include "ast/statements/expression_statement.hpp"
 
-#include "parser/ast/expressions/expression.hpp"
-#include "parser/ast/expressions/assignment_expression.hpp"
+#include "ast/expressions/expression.hpp"
+#include "ast/expressions/assignment_expression.hpp"
 
 class Parser
 {
