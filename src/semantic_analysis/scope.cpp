@@ -1,4 +1,5 @@
 #include "semantic_analysis/scope.hpp"
+#include <iostream>
 
 Scope::Scope() {}
 
@@ -15,23 +16,31 @@ void Scope::DeclareSymbol(std::unique_ptr<const Symbol> &symbol)
     symbols[name] = std::move(symbol);
 }
 
-const std::unique_ptr<const Symbol> &Scope::GetSymbol(std::string_view name) const
+// TODO: Return multiple symbols for SymbolKind::Function to support function overloading?
+const std::unique_ptr<const Symbol> &Scope::GetSymbol(const std::string &name, SymbolKind kind) const
 {
-    auto iterator = symbols.find(std::string(name));
-    if (iterator != symbols.end())
-        return iterator->second;
+    for (auto iterator = symbols.begin(); iterator != symbols.end(); ++iterator)
+    {
+        const auto &symbol = iterator->second;
+        if (symbol->GetName() == name && symbol->IsOfKind(kind))
+            return symbol;
+    }
 
     if (parent)
-        return parent->GetSymbol(name);
+        return parent->GetSymbol(name, kind);
 
+    std::cerr << "[Scope] ERROR: Symbol with given name and kind doesn't exist, always call SymbolExists() before calling GetSymbol()" << std::endl;
     std::exit(EXIT_FAILURE);
 }
 
-bool Scope::SymbolExists(const std::string &name) const
+bool Scope::SymbolExists(const std::string &name, SymbolKind kind) const
 {
-    auto iterator = symbols.find(name);
-    if (iterator == symbols.end())
-        return parent ? parent->SymbolExists(name) : false;
+    for (auto iterator = symbols.begin(); iterator != symbols.end(); ++iterator)
+    {
+        const auto &symbol = iterator->second;
+        if (symbol->GetName() == name && symbol->IsOfKind(kind))
+            return true;
+    }
 
-    return true;
+    return parent ? parent->SymbolExists(name, kind) : false;
 }

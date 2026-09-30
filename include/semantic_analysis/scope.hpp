@@ -20,8 +20,8 @@ public:
     std::shared_ptr<Scope> GetParent() const;
 
     void DeclareSymbol(std::unique_ptr<const Symbol> &symbol);
-    const std::unique_ptr<const Symbol> &GetSymbol(std::string_view name) const;
-    bool SymbolExists(const std::string &name) const;
+    const std::unique_ptr<const Symbol> &GetSymbol(const std::string &name, SymbolKind kind) const;
+    bool SymbolExists(const std::string &name, SymbolKind kind) const;
 };
 
 #endif

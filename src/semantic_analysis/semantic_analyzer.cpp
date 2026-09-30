@@ -45,7 +45,7 @@ void SemanticAnalyzer::AnalyzeFunction(const std::unique_ptr<const Function> &fu
 {
     for (auto &parameter : function->GetParameters())
     {
-        if (!currentScope->SymbolExists(parameter->GetVarName()))
+        if (!currentScope->SymbolExists(parameter->GetVarName(), SymbolKind::Variable))
         {
             std::unique_ptr<const Symbol> symbol = std::make_unique<VariableSymbol>(
                 parameter->GetVarName(),
@@ -53,7 +53,7 @@ void SemanticAnalyzer::AnalyzeFunction(const std::unique_ptr<const Function> &fu
             currentScope->DeclareSymbol(symbol);
         }
         else
-            std::cerr << "[SemanticAnalyzer] ERROR: Redefinition of symbol \"" << parameter->GetVarName() << "\"" << std::endl;
+            std::cerr << "[SemanticAnalyzer] ERROR: Redefinition of variable \"" << parameter->GetVarName() << "\"" << std::endl;
     }
 
     auto &body = function->GetBody();
@@ -186,15 +186,12 @@ void SemanticAnalyzer::AnalyzeVarDeclarationStatement(const std::unique_ptr<cons
         return;
     }
 
-    if (currentScope->SymbolExists(declarationStatement->GetVarName()))
+    if (currentScope->SymbolExists(declarationStatement->GetVarName(), SymbolKind::Variable))
     {
-        const auto &symbol = currentScope->GetSymbol(declarationStatement->GetVarName());
-        if (symbol->IsOfKind(SymbolKind::Variable))
-        {
-            std::cerr << "[SemanticAnalyzer] ERROR: Redefinition of variable \""
-                      << declarationStatement->GetVarName() << "\""
-                      << std::endl;
-        }
+        std::cerr << "[SemanticAnalyzer] ERROR: Redefinition of variable \""
+                  << declarationStatement->GetVarName() << "\""
+                  << std::endl;
+        return;
     }
 
     if (declarationStatement->HasInitialValue())
@@ -241,44 +238,30 @@ void SemanticAnalyzer::AnalyzeExpression(const std::unique_ptr<const Expression>
 void SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<const Expression> &expression)
 {
     const IdExpression *e = dynamic_cast<const IdExpression *>(expression.get());
-    if (!currentScope->SymbolExists(e->GetValue()))
+    if (!currentScope->SymbolExists(e->GetValue(), SymbolKind::Variable))
     {
         std::cerr
-            << "[SemanticAnalyzer] ERROR: Variable used but not defined \"" << e->GetValue() << "\"" << std::endl;
+            << "[SemanticAnalyzer] ERROR: Variable \"" << e->GetValue()
+            << "\" doesn't exist"
+            << std::endl;
         return;
     }
-
-    auto &symbol = currentScope->GetSymbol(e->GetValue());
-    if (symbol->GetKind() == SymbolKind::Variable)
-        return;
-
-    std::cerr
-        << "[SemanticAnalyzer] ERROR: Variable used but not defined \"" << e->GetValue() << "\"" << std::endl;
 }
 
 void SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const Expression> &expression)
 {
     const FunctionCallExpression *call = dynamic_cast<const FunctionCallExpression *>(expression.get());
-    if (!currentScope->SymbolExists(call->GetFunction()))
+    if (!currentScope->SymbolExists(call->GetFunction(), SymbolKind::Function))
     {
         std::cerr
-            << "[SemanticAnalyzer] ERROR: Function \""
-            << call->GetFunction() << "\" doesn't exist"
+            << "[SemanticAnalyzer] ERROR: Function \"" << call->GetFunction()
+            << "\" doesn't exist"
             << std::endl;
         return;
     }
 
-    auto &symbol = currentScope->GetSymbol(call->GetFunction());
-    if (symbol->GetKind() != SymbolKind::Function)
-    {
-        std::cerr
-            << "[SemanticAnalyzer] ERROR: Variable \""
-            << call->GetFunction() << "\" isn't callable"
-            << std::endl;
-        return;
-    }
-
-    auto function = dynamic_cast<const FunctionSymbol *>(symbol.get());
+    auto &s = currentScope->GetSymbol(call->GetFunction(), SymbolKind::Function);
+    auto function = dynamic_cast<const FunctionSymbol *>(s.get());
     if (function->GetParameterCount() != call->GetArgumentCount())
     {
         std::cerr
@@ -317,7 +300,7 @@ void SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const E
     }
 
     auto assignment = dynamic_cast<const AssignmentExpression *>(expression.get());
-    if (!currentScope->SymbolExists(assignment->GetVarName()))
+    if (!currentScope->SymbolExists(assignment->GetVarName(), SymbolKind::Variable))
     {
         std::cerr
             << "[SemanticAnalyzer] ERROR: Variable \""
@@ -326,25 +309,16 @@ void SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const E
         return;
     }
 
-    auto &symbol = currentScope->GetSymbol(assignment->GetVarName());
-    if (!symbol->IsOfKind(SymbolKind::Variable))
-    {
-        std::cerr
-            << "[SemanticAnalyzer] ERROR: Symbol \""
-            << symbol->GetName() << "\" isn't assignable"
-            << std::endl;
-        return;
-    }
-
+    auto &s = currentScope->GetSymbol(assignment->GetVarName(), SymbolKind::Variable);
     AnalyzeExpression(assignment->GetVarValue());
 
     auto valueType = ResolveExpressionType(assignment->GetVarValue());
-    if (!symbol->IsOfType(valueType))
+    if (!s->IsOfType(valueType))
     {
         std::cerr
-            << "[SemanticAnalyzer] ERROR: Incompatible types, can't assign value of type \""
+            << "[SemanticAnalyzer] ERROR: Can't assign value of type \""
             << valueType << "\" to variable of type \""
-            << symbol->GetType() << "\""
+            << s->GetType() << "\""
             << std::endl;
     }
 }
@@ -376,16 +350,12 @@ std::string SemanticAnalyzer::ResolveExpressionType(const std::unique_ptr<const 
 
 std::string SemanticAnalyzer::GetIdExpressionType(const std::unique_ptr<const Expression> &expression)
 {
-    auto e = dynamic_cast<const IdExpression *>(expression.get());
-    if (!currentScope->SymbolExists(e->GetValue()))
+    auto idExpression = dynamic_cast<const IdExpression *>(expression.get());
+    if (!currentScope->SymbolExists(idExpression->GetValue(), SymbolKind::Variable))
         return Types::Unknown;
 
-    auto &symbol = currentScope->GetSymbol(e->GetValue());
-    if (!symbol->IsOfKind(SymbolKind::Variable))
-        return Types::Unknown;
-
-    auto s = dynamic_cast<const VariableSymbol *>(symbol.get());
-    return s->GetType();
+    auto &symbol = currentScope->GetSymbol(idExpression->GetValue(), SymbolKind::Variable);
+    return symbol->GetType();
 }
 
 std::string SemanticAnalyzer::GetNumLiteralExpressionType(const std::unique_ptr<const Expression> &expression)
@@ -396,16 +366,12 @@ std::string SemanticAnalyzer::GetNumLiteralExpressionType(const std::unique_ptr<
 
 std::string SemanticAnalyzer::GetFunctionCallExpressionType(const std::unique_ptr<const Expression> &expression)
 {
-    auto e = dynamic_cast<const FunctionCallExpression *>(expression.get());
-    if (!currentScope->SymbolExists(e->GetFunction()))
+    auto functionCallExpression = dynamic_cast<const FunctionCallExpression *>(expression.get());
+    if (!currentScope->SymbolExists(functionCallExpression->GetFunction(), SymbolKind::Function))
         return Types::Unknown;
 
-    auto &symbol = currentScope->GetSymbol(e->GetFunction());
-    if (!symbol->IsOfKind(SymbolKind::Function))
-        return Types::Unknown;
-
-    auto s = dynamic_cast<const FunctionSymbol *>(symbol.get());
-    return s->GetType();
+    auto &symbol = currentScope->GetSymbol(functionCallExpression->GetFunction(), SymbolKind::Function);
+    return symbol->GetType();
 }
 
 std::string SemanticAnalyzer::ResolveBinaryExpressionType(const std::unique_ptr<const Expression> &expression)
