@@ -4,14 +4,19 @@ Function::Function() : AstNode(AstNodeType::Function)
 {
 }
 
-std::string_view Function::GetName() const
+const std::string &Function::GetName() const
 {
     return name;
 }
 
-std::string_view Function::GetReturnType() const
+const std::string &Function::GetReturnType() const
 {
     return returnType;
+}
+
+const std::unique_ptr<const ComplexStatement> &Function::GetBody() const
+{
+    return body;
 }
 
 void Function::SetName(std::string name)
@@ -32,6 +37,11 @@ void Function::SetBody(std::unique_ptr<const ComplexStatement> &body)
 void Function::AddParameter(std::unique_ptr<const FunctionParameter> &parameter)
 {
     parameters.push_back(std::move(parameter));
+}
+
+const std::vector<std::unique_ptr<const FunctionParameter>> &Function::GetParameters() const
+{
+    return parameters;
 }
 
 size_t Function::GetParameterCount() const

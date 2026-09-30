@@ -12,8 +12,8 @@ private:
 public:
     VarDeclarationStatement();
 
-    std::string_view GetVarName() const;
-    std::string_view GetVarType() const;
+    const std::string &GetVarName() const;
+    const std::string &GetVarType() const;
     const std::unique_ptr<const Expression> &GetInitialValue() const;
     bool HasInitialValue() const;
 

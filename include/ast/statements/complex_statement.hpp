@@ -11,7 +11,7 @@ private:
 public:
     ComplexStatement();
 
-    const std::vector<std::unique_ptr<const Statement>> &GetStatements();
+    const std::vector<std::unique_ptr<const Statement>> &GetStatements() const;
     void AddStatement(std::unique_ptr<const Statement> &statement);
 
     void Print(AstPrinter &printer) const override;

@@ -5,10 +5,14 @@ function main(int a, int b) -> int {
         else
             int c = 2;
     } else if (a > b) {
-        a = a + 1;
+        a = a + 1 * gorjagjoarj112;
     }
 
     for (a = 5; a < 10; a = a + 1) {
         a = f(a, b);
     }
+}
+
+function f() -> int {
+
 }

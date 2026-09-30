@@ -6,13 +6,15 @@
 class NumLiteralExpression : public Expression
 {
 private:
-    std::string rawValue;
+    std::string rawValue, literalType;
 
 public:
     NumLiteralExpression();
 
-    int GetValue() const;
-    std::string_view GetRawValue() const;
+    const std::string &GetLiteralType() const;
+    void SetLiteralType(std::string literalType);
+
+    const std::string &GetRawValue() const;
     void SetRawValue(std::string rawValue);
 
     void Print(AstPrinter &printer) const override;

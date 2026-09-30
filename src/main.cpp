@@ -8,6 +8,8 @@
 
 #include "parser/parser.hpp"
 
+#include "semantic_analysis/semantic_analyzer.hpp"
+
 std::string ReadEntireFile(const std::string &path)
 {
     std::ifstream file(path);
@@ -44,6 +46,9 @@ int main()
     auto &ast = p.GetAst();
     AstPrinter printer(std::cout);
     ast->Print(printer);
+
+    SemanticAnalyzer s;
+    s.AnalyzeProgram(ast);
 
     return EXIT_SUCCESS;
 }

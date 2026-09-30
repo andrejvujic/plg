@@ -11,7 +11,7 @@ private:
 public:
     IdExpression();
 
-    std::string_view GetValue() const;
+    const std::string &GetValue() const;
     void SetValue(std::string value);
 
     void Print(AstPrinter &printer) const override;

@@ -14,22 +14,22 @@ const std::unique_ptr<const Statement> &ForStatement::GetBody() const
     return body;
 }
 
-void ForStatement::SetInitExpression(std::unique_ptr<const AssignmentExpression> &init)
+void ForStatement::SetInitExpression(std::unique_ptr<const Expression> &init)
 {
     this->init = std::move(init);
 }
 
-const std::unique_ptr<const AssignmentExpression> &ForStatement::GetInitExpression() const
+const std::unique_ptr<const Expression> &ForStatement::GetInitExpression() const
 {
     return init;
 }
 
-void ForStatement::SetUpdateExpression(std::unique_ptr<const AssignmentExpression> &update)
+void ForStatement::SetUpdateExpression(std::unique_ptr<const Expression> &update)
 {
     this->update = std::move(update);
 }
 
-const std::unique_ptr<const AssignmentExpression> &ForStatement::GetUpdateExpression() const
+const std::unique_ptr<const Expression> &ForStatement::GetUpdateExpression() const
 {
     return update;
 }

@@ -15,9 +15,11 @@ public:
     FunctionCallExpression();
 
     void SetFunction(std::string function);
-    std::string_view GetFunction() const;
+    const std::string &GetFunction() const;
 
     size_t GetArgumentCount() const;
+    const std::vector<std::unique_ptr<const Expression>> &GetArguments() const;
+
     void AddArgument(std::unique_ptr<const Expression> &argument);
 
     void Print(AstPrinter &printer) const override;

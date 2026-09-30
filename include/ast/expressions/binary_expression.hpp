@@ -18,7 +18,7 @@ public:
 
     const std::unique_ptr<const Expression> &GetLeft() const;
     const std::unique_ptr<const Expression> &GetRight() const;
-    std::string_view GetOperator() const;
+    const std::string &GetOperator() const;
 
     void Print(AstPrinter &printer) const override;
 

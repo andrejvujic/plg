@@ -4,7 +4,7 @@ FunctionCallExpression::FunctionCallExpression() : Expression(AstNodeType::Funct
 {
 }
 
-std::string_view FunctionCallExpression::GetFunction() const
+const std::string &FunctionCallExpression::GetFunction() const
 {
     return function;
 }
@@ -22,6 +22,11 @@ void FunctionCallExpression::AddArgument(std::unique_ptr<const Expression> &argu
 size_t FunctionCallExpression::GetArgumentCount() const
 {
     return arguments.size();
+}
+
+const std::vector<std::unique_ptr<const Expression>> &FunctionCallExpression::GetArguments() const
+{
+    return arguments;
 }
 
 void FunctionCallExpression::Print(AstPrinter &printer) const

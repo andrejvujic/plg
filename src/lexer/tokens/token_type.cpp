@@ -14,7 +14,7 @@ std::ostream &operator<<(std::ostream &out, const TokenType &value)
         INSERT_ELEMENT(KEYWORD_TYPE);
         INSERT_ELEMENT(ARROW);
         INSERT_ELEMENT(ID);
-        INSERT_ELEMENT(NUM_LITERAL);
+        INSERT_ELEMENT(INT_LITERAL);
         INSERT_ELEMENT(O_CURLY);
         INSERT_ELEMENT(C_CURLY);
         INSERT_ELEMENT(O_PAREN);

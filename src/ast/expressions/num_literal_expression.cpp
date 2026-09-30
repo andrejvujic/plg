@@ -7,14 +7,19 @@ void NumLiteralExpression::SetRawValue(std::string rawValue)
     this->rawValue = rawValue;
 }
 
-std::string_view NumLiteralExpression::GetRawValue() const
+const std::string &NumLiteralExpression::GetRawValue() const
 {
     return rawValue;
 }
 
-int NumLiteralExpression::GetValue() const
+const std::string &NumLiteralExpression::GetLiteralType() const
 {
-    return atoi(rawValue.c_str());
+    return literalType;
+}
+
+void NumLiteralExpression::SetLiteralType(std::string literalType)
+{
+    this->literalType = literalType;
 }
 
 void NumLiteralExpression::Print(AstPrinter &printer) const

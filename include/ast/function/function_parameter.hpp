@@ -12,8 +12,8 @@ private:
 public:
     FunctionParameter();
 
-    std::string_view GetVarName() const;
-    std::string_view GetVarType() const;
+    const std::string &GetVarName() const;
+    const std::string &GetVarType() const;
 
     void SetVarName(std::string varName);
     void SetVarType(std::string varType);

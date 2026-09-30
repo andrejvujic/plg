@@ -9,7 +9,7 @@ void ComplexStatement::AddStatement(std::unique_ptr<const Statement> &statement)
     body.push_back(std::move(statement));
 }
 
-const std::vector<std::unique_ptr<const Statement>> &ComplexStatement::GetStatements()
+const std::vector<std::unique_ptr<const Statement>> &ComplexStatement::GetStatements() const
 {
     return body;
 }

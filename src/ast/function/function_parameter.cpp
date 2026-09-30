@@ -4,12 +4,12 @@ FunctionParameter::FunctionParameter() : AstNode(AstNodeType::FunctionParameter)
 {
 }
 
-std::string_view FunctionParameter::GetVarName() const
+const std::string &FunctionParameter::GetVarName() const
 {
     return varName;
 }
 
-std::string_view FunctionParameter::GetVarType() const
+const std::string &FunctionParameter::GetVarType() const
 {
     return varType;
 }

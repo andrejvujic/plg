@@ -68,7 +68,7 @@ std::unique_ptr<Token> Lexer::GetNumToken()
 
     const std::string lexeme = ss.str();
     const TokenPosition position{.line = line, .column = column};
-    return std::make_unique<Token>(Token(lexeme, TokenType::NUM_LITERAL, position));
+    return std::make_unique<Token>(Token(lexeme, TokenType::INT_LITERAL, position));
 }
 
 std::unique_ptr<Token> Lexer::GetToken()

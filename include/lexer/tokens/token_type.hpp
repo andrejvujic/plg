@@ -14,7 +14,7 @@ enum TokenType
     KEYWORD_TYPE = 16,
     KEYWORD_FOR = 32,
     ID = 64,
-    NUM_LITERAL = 128,
+    INT_LITERAL = 128,
     O_CURLY = 256,
     C_CURLY = 512,
     O_PAREN = 1024,

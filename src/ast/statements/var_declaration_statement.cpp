@@ -4,12 +4,12 @@ VarDeclarationStatement::VarDeclarationStatement() : Statement(AstNodeType::VarD
 {
 }
 
-std::string_view VarDeclarationStatement::GetVarName() const
+const std::string &VarDeclarationStatement::GetVarName() const
 {
     return varName;
 }
 
-std::string_view VarDeclarationStatement::GetVarType() const
+const std::string &VarDeclarationStatement::GetVarType() const
 {
     return varType;
 }

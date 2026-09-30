@@ -12,7 +12,7 @@ private:
 public:
     AssignmentExpression();
 
-    std::string_view GetVarName() const;
+    const std::string &GetVarName() const;
     const std::unique_ptr<const Expression> &GetVarValue() const;
     void SetVarName(std::string varName);
     void SetVarValue(std::unique_ptr<const Expression> &varValue);

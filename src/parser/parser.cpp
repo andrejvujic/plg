@@ -312,7 +312,7 @@ std::unique_ptr<const ReturnStatement> Parser::ParseReturnStatement()
     auto statement = std::make_unique<ReturnStatement>();
     Consume(TokenType::KEYWORD_RETURN);
 
-    if (!NextMatchesAny({TokenType::ID, TokenType::NUM_LITERAL}))
+    if (!NextMatchesAny({TokenType::ID, TokenType::INT_LITERAL}))
     {
         Consume(TokenType::SEMICOLON);
         return statement;
@@ -331,7 +331,7 @@ std::unique_ptr<const ForStatement> Parser::ParseForStatement()
 
     ConsumeAll({TokenType::KEYWORD_FOR, TokenType::O_PAREN});
 
-    auto init = ParseVarAssignmentExpression();
+    std::unique_ptr<const Expression> init = ParseVarAssignmentExpression();
     statement->SetInitExpression(init);
 
     Consume(TokenType::SEMICOLON);
@@ -341,7 +341,7 @@ std::unique_ptr<const ForStatement> Parser::ParseForStatement()
 
     Consume(TokenType::SEMICOLON);
 
-    auto update = ParseVarAssignmentExpression();
+    std::unique_ptr<const Expression> update = ParseVarAssignmentExpression();
     statement->SetUpdateExpression(update);
 
     Consume(TokenType::C_PAREN);
@@ -424,11 +424,12 @@ std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
         return expression;
     }
 
-    if (NextMatches(TokenType::NUM_LITERAL))
+    if (NextMatches(TokenType::INT_LITERAL))
     {
-        auto &literal = Consume(TokenType::NUM_LITERAL);
+        auto &literal = Consume(TokenType::INT_LITERAL);
         auto expression = std::make_unique<NumLiteralExpression>();
         expression->SetRawValue(literal->GetLexeme());
+        expression->SetLiteralType("int");
         return expression;
     }
 

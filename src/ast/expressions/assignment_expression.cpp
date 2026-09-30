@@ -4,7 +4,7 @@ AssignmentExpression::AssignmentExpression() : Expression(AstNodeType::Assignmen
 {
 }
 
-std::string_view AssignmentExpression::GetVarName() const
+const std::string &AssignmentExpression::GetVarName() const
 {
     return varName;
 }

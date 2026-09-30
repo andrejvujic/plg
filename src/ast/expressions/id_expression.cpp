@@ -7,7 +7,7 @@ void IdExpression::SetValue(std::string value)
     this->value = value;
 }
 
-std::string_view IdExpression::GetValue() const
+const std::string &IdExpression::GetValue() const
 {
     return value;
 }

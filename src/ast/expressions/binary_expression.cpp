@@ -29,7 +29,7 @@ const std::unique_ptr<const Expression> &BinaryExpression::GetRight() const
     return right;
 };
 
-std::string_view BinaryExpression::GetOperator() const
+const std::string &BinaryExpression::GetOperator() const
 {
     return op;
 }
