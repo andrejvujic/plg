@@ -1,11 +1,12 @@
 function main(int a, int b) -> int {
+    uint d = 0u;
     if (a + b) {
         if (a == 5)
             int c = 1;
         else
             int c = 2;
     } else if (a > b) {
-        a = a + 1 * gorjagjoarj112;
+        a = 1u * 122u + d;
     }
 
     for (a = 5; a < 10; a = a + 1) {

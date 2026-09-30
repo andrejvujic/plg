@@ -1,7 +1,7 @@
 #include "semantic_analysis/semantic_analyzer.hpp"
 #include "semantic_analysis/symbols/function_symbol.hpp"
 #include "semantic_analysis/symbols/variable_symbol.hpp"
-#include "semantic_analysis/types.hpp"
+#include "shared/types.hpp"
 
 #include "ast/statements/if_statement.hpp"
 #include "ast/statements/return_statement.hpp"
@@ -329,7 +329,7 @@ bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const E
 
     PrintErrorPrefix(std::cerr, expression.get())
         << "Can't assign value of type \""
-        << valueType << "\" to variable of type \""
+        << valueType << "\" to variable \"" << assignment->GetVarName() << "\" of type \""
         << s->GetType() << "\""
         << std::endl;
     return false;
@@ -338,7 +338,25 @@ bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const E
 bool SemanticAnalyzer::AnalyzeBinaryExpression(const std::unique_ptr<const Expression> &expression)
 {
     const BinaryExpression *e = dynamic_cast<const BinaryExpression *>(expression.get());
-    return AnalyzeExpression(e->GetLeft()) && AnalyzeExpression(e->GetRight());
+
+    const auto leftType = ResolveExpressionType(e->GetLeft());
+    const auto rightType = ResolveExpressionType(e->GetRight());
+
+    if (leftType == Types::Unknown || rightType == Types::Unknown)
+    {
+        const auto leftResult = AnalyzeExpression(e->GetLeft());
+        const auto rightResult = AnalyzeExpression(e->GetRight());
+        return leftResult && rightResult;
+    }
+
+    if (leftType != rightType)
+        PrintErrorPrefix(std::cerr, expression.get())
+            << "Invalid operands, can't apply \""
+            << e->GetOperator() << "\" to operands of types \""
+            << leftType << "\" and \"" << rightType << "\""
+            << std::endl;
+
+    return true;
 }
 
 std::string SemanticAnalyzer::ResolveExpressionType(const std::unique_ptr<const Expression> &expression)

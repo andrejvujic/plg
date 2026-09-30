@@ -1,4 +1,7 @@
 #include "parser/parser.hpp"
+
+#include "shared/types.hpp"
+
 #include "ast/ast.hpp"
 #include "ast/program.hpp"
 #include "ast/function/function.hpp"
@@ -257,7 +260,7 @@ std::unique_ptr<const AssignmentExpression> Parser::ParseVarAssignmentExpression
     auto assignmentExpression = std::make_unique<AssignmentExpression>();
 
     auto &varNameToken = Consume(TokenType::ID);
-    assignmentExpression->SetLocation(assignmentExpression->GetLocation());
+    assignmentExpression->SetLocation(varNameToken->GetLocation());
     assignmentExpression->SetVarName(varNameToken->GetLexeme());
 
     Consume(TokenType::ASSIGNMENT);
@@ -322,7 +325,7 @@ std::unique_ptr<const ReturnStatement> Parser::ParseReturnStatement()
     const auto &startToken = Consume(TokenType::KEYWORD_RETURN);
     statement->SetLocation(startToken->GetLocation());
 
-    if (!NextMatchesAny({TokenType::ID, TokenType::INT_LITERAL}))
+    if (!NextMatchesAny({TokenType::ID, TokenType::NUMBER}))
     {
         Consume(TokenType::SEMICOLON);
         return statement;
@@ -439,13 +442,26 @@ std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
         return expression;
     }
 
-    if (NextMatches(TokenType::INT_LITERAL))
+    if (NextMatches(TokenType::NUMBER))
     {
-        auto &valueToken = Consume(TokenType::INT_LITERAL);
+        auto &valueToken = Consume(TokenType::NUMBER);
+
+        auto &value = valueToken->GetLexeme();
         auto expression = std::make_unique<NumLiteralExpression>();
         expression->SetLocation(valueToken->GetLocation());
-        expression->SetRawValue(valueToken->GetLexeme());
-        expression->SetLiteralType("int");
+
+        auto const length = value.size();
+        if (value.at(length - 1) == 'u')
+        {
+            expression->SetRawValue(value.substr(0, length - 1));
+            expression->SetLiteralType(Types::UsignedInt);
+        }
+        else
+        {
+            expression->SetRawValue(value);
+            expression->SetLiteralType(Types::Int);
+        }
+
         return expression;
     }
 
@@ -458,7 +474,7 @@ void Parser::PrintUnexpectedToken(const std::unique_ptr<const Token> &token) con
 {
     const auto location = token->GetLocation();
     std::cerr << "[Parser] ERROR: line " << location.line << " column " << location.column
-              << ": Unexpected token" << token->GetType()
+              << ": Unexpected token " << token->GetType()
               << " (\"" << token->GetLexeme() << "\")" << std::endl;
 }
 

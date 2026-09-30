@@ -44,7 +44,7 @@ std::unique_ptr<Token> Lexer::GetAlphaNumToken()
     const size_t length = text.size();
     const size_t column = GetCurrentColumnNumber();
 
-    while (index < length && IsAlphaNum(text[index]))
+    while (index < length && IsAlphaNum(text.at(index)))
         ss << text[index++];
 
     const std::string lexeme = ss.str();
@@ -63,12 +63,16 @@ std::unique_ptr<Token> Lexer::GetNumToken()
     const size_t length = text.size();
     const size_t column = GetCurrentColumnNumber();
 
-    while (index < length && IsNum(text[index]))
+    while (index < length && IsNum(text.at(index)))
+        ss << text[index++];
+
+    if (index < length && text.at(index) == 'u')
         ss << text[index++];
 
     const std::string lexeme = ss.str();
     const Location location{.line = line, .column = column};
-    return std::make_unique<Token>(Token(lexeme, TokenType::INT_LITERAL, location));
+
+    return std::make_unique<Token>(Token(lexeme, TokenType::NUMBER, location));
 }
 
 std::unique_ptr<Token> Lexer::GetToken()
@@ -116,12 +120,10 @@ size_t Lexer::GetCurrentColumnNumber() const
 
 std::unique_ptr<Token> Lexer::GetNextToken()
 {
-    const char &c = text[index];
-
-    if (IsAlpha(c))
+    if (IsAlpha(text.at(index)))
         return GetAlphaNumToken();
 
-    if (IsNum(c))
+    if (IsNum(text.at(index)))
         return GetNumToken();
 
     return GetToken();

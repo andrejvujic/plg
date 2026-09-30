@@ -26,5 +26,6 @@ void NumLiteralExpression::Print(AstPrinter &printer) const
 {
     printer.BeginNode("NumLiteralExpression");
     printer.Field("Raw Value", rawValue);
+    printer.Field("Literal Type", literalType);
     printer.EndNode();
 }
