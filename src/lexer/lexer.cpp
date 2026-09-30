@@ -153,7 +153,7 @@ bool Lexer::Tokenize()
         std::unique_ptr<Token> token = GetNextToken();
         if (token == nullptr)
         {
-            std::cerr << "ERROR: Unknown token at line " << line << " column " << lastStopIndex - lineStartIndex + 1 << " -> " << text.substr(lastStopIndex, index - lastStopIndex) << std::endl;
+            std::cerr << "ERROR: line " << line << " column " << lastStopIndex - lineStartIndex + 1 << ": Unknown token -> " << text.substr(lastStopIndex, index - lastStopIndex) << std::endl;
             ++errors;
         }
         else

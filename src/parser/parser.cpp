@@ -457,7 +457,9 @@ std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
 void Parser::PrintUnexpectedToken(const std::unique_ptr<const Token> &token) const
 {
     const auto location = token->GetLocation();
-    std::cerr << "[Parser] ERROR: Unexpected token " << token->GetType() << " (\"" << token->GetLexeme() << "\")" << " at line " << location.line << " column " << location.column << std::endl;
+    std::cerr << "[Parser] ERROR: line " << location.line << " column " << location.column
+              << ": Unexpected token" << token->GetType()
+              << " (\"" << token->GetLexeme() << "\")" << std::endl;
 }
 
 void Parser::PrintExpectedType(TokenType type) const
