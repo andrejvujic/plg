@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "ast_printer.hpp"
+#include "shared/location.hpp"
 
 enum class AstNodeType
 {
@@ -32,10 +33,15 @@ class AstNode
 {
 private:
     AstNodeType type;
+    Location location;
 
 public:
     AstNode(AstNodeType type);
     AstNodeType GetType() const;
+
+    Location GetLocation() const;
+    void SetLocation(Location location);
+
     virtual void Print(AstPrinter &printer) const;
     virtual ~AstNode() = default;
 };

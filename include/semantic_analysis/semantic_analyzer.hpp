@@ -34,6 +34,8 @@ private:
     std::string GetFunctionCallExpressionType(const std::unique_ptr<const Expression> &expression);
     std::string ResolveBinaryExpressionType(const std::unique_ptr<const Expression> &expression);
 
+    std::ostream &PrintErrorPrefix(std::ostream &out, const AstNode *node) const;
+
 public:
     SemanticAnalyzer();
 

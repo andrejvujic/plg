@@ -49,12 +49,12 @@ std::unique_ptr<Token> Lexer::GetAlphaNumToken()
 
     const std::string lexeme = ss.str();
 
-    const TokenPosition position{.line = line, .column = column};
+    const Location location{.line = line, .column = column};
     TokenType type;
     if (!GetTypeByLexeme(lexeme, type))
-        return std::make_unique<Token>(Token(lexeme, TokenType::ID, position));
+        return std::make_unique<Token>(Token(lexeme, TokenType::ID, location));
 
-    return std::make_unique<Token>(Token(lexeme, type, position));
+    return std::make_unique<Token>(Token(lexeme, type, location));
 }
 
 std::unique_ptr<Token> Lexer::GetNumToken()
@@ -67,8 +67,8 @@ std::unique_ptr<Token> Lexer::GetNumToken()
         ss << text[index++];
 
     const std::string lexeme = ss.str();
-    const TokenPosition position{.line = line, .column = column};
-    return std::make_unique<Token>(Token(lexeme, TokenType::INT_LITERAL, position));
+    const Location location{.line = line, .column = column};
+    return std::make_unique<Token>(Token(lexeme, TokenType::INT_LITERAL, location));
 }
 
 std::unique_ptr<Token> Lexer::GetToken()
@@ -90,8 +90,8 @@ std::unique_ptr<Token> Lexer::GetToken()
 
             index = lastValidTokenEndIndex;
             const std::string lexeme = text.substr(lastStopIndex, lastValidTokenEndIndex - lastStopIndex);
-            const TokenPosition position{.line = line, .column = column};
-            return std::make_unique<Token>(Token(lexeme, lastValidTokenType, position));
+            const Location location{.line = line, .column = column};
+            return std::make_unique<Token>(Token(lexeme, lastValidTokenType, location));
         }
 
         hasFoundValidToken = true;
@@ -102,8 +102,8 @@ std::unique_ptr<Token> Lexer::GetToken()
     {
         index = lastValidTokenEndIndex;
         const std::string lexeme = text.substr(lastStopIndex, lastValidTokenEndIndex - lastStopIndex);
-        const TokenPosition position = {.line = line, .column = column};
-        return std::make_unique<Token>(Token(lexeme, lastValidTokenType, position));
+        const Location location = {.line = line, .column = column};
+        return std::make_unique<Token>(Token(lexeme, lastValidTokenType, location));
     }
 
     return nullptr;

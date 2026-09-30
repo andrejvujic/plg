@@ -53,7 +53,7 @@ void SemanticAnalyzer::AnalyzeFunction(const std::unique_ptr<const Function> &fu
             currentScope->DeclareSymbol(symbol);
         }
         else
-            std::cerr << "[SemanticAnalyzer] ERROR: Redefinition of variable \"" << parameter->GetVarName() << "\"" << std::endl;
+            PrintErrorPrefix(std::cerr, parameter.get()) << "Redefinition of variable \"" << parameter->GetVarName() << "\"" << std::endl;
     }
 
     auto &body = function->GetBody();
@@ -80,7 +80,7 @@ bool SemanticAnalyzer::AnalyzeStatement(
     case AstNodeType::VarDeclartaionStatement:
         return AnalyzeVarDeclarationStatement(statement);
     default:
-        std::cerr << "[SemanticAnalyzer] ERROR: Semantic analysis not implemented for given statement type" << std::endl;
+        PrintErrorPrefix(std::cerr, statement.get()) << "Semantic analysis not implemented for given statement type" << std::endl;
         return false;
         break;
     }
@@ -151,17 +151,17 @@ bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<const Statem
 
     if (!returnStatement->HasValue() && function->GetReturnType() != Types::Void)
     {
-        std::cerr << "[SemanticAnalyzer] ERROR: Non-void function \""
-                  << function->GetName() << "\" must return a value"
-                  << std::endl;
+        PrintErrorPrefix(std::cerr, returnStatement) << "Non-void function \""
+                                                     << function->GetName() << "\" must return a value"
+                                                     << std::endl;
         return false;
     }
 
     if (returnStatement->HasValue() && function->GetReturnType() == Types::Void)
     {
-        std::cerr << "[SemanticAnalyzer] ERROR: Void function \""
-                  << function->GetName() << "\" can't return a value"
-                  << std::endl;
+        PrintErrorPrefix(std::cerr, returnStatement) << "Void function \""
+                                                     << function->GetName() << "\" can't return a value"
+                                                     << std::endl;
         return false;
     }
 
@@ -169,10 +169,10 @@ bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<const Statem
     if (returnType == function->GetReturnType())
         return true;
 
-    std::cerr << "[SemanticAnalyzer] ERROR: Invalid return type, expected \""
-              << function->GetReturnType() << "\" but got \""
-              << returnType << "\""
-              << std::endl;
+    PrintErrorPrefix(std::cerr, returnStatement) << "Invalid return type, expected \""
+                                                 << function->GetReturnType() << "\" but got \""
+                                                 << returnType << "\""
+                                                 << std::endl;
     return false;
 }
 
@@ -182,18 +182,18 @@ bool SemanticAnalyzer::AnalyzeVarDeclarationStatement(const std::unique_ptr<cons
 
     if (declarationStatement->GetVarType() == Types::Void)
     {
-        std::cerr << "[SemanticAnalyzer] ERROR: Variable \""
-                  << declarationStatement->GetVarName() << "\" can't have type \""
-                  << declarationStatement->GetVarType() << "\""
-                  << std::endl;
+        PrintErrorPrefix(std::cerr, declarationStatement) << "Variable \""
+                                                          << declarationStatement->GetVarName() << "\" can't have type \""
+                                                          << declarationStatement->GetVarType() << "\""
+                                                          << std::endl;
         return false;
     }
 
     if (currentScope->SymbolExists(declarationStatement->GetVarName(), SymbolKind::Variable))
     {
-        std::cerr << "[SemanticAnalyzer] ERROR: Redefinition of variable \""
-                  << declarationStatement->GetVarName() << "\""
-                  << std::endl;
+        PrintErrorPrefix(std::cerr, declarationStatement) << "Redefinition of variable \""
+                                                          << declarationStatement->GetVarName() << "\""
+                                                          << std::endl;
         return false;
     }
 
@@ -208,11 +208,11 @@ bool SemanticAnalyzer::AnalyzeVarDeclarationStatement(const std::unique_ptr<cons
         if (initialValueType == declarationStatement->GetVarType())
             return true;
 
-        std::cerr << "[SemanticAnalyzer] ERROR: Invalid initial value of \""
-                  << declarationStatement->GetVarName() << "\", expected \""
-                  << declarationStatement->GetVarType() << "\" but got \""
-                  << initialValueType << "\""
-                  << std::endl;
+        PrintErrorPrefix(std::cerr, declarationStatement) << "Invalid initial value of \""
+                                                          << declarationStatement->GetVarName() << "\", expected \""
+                                                          << declarationStatement->GetVarType() << "\" but got \""
+                                                          << initialValueType << "\""
+                                                          << std::endl;
         return false;
     }
 
@@ -234,7 +234,7 @@ bool SemanticAnalyzer::AnalyzeExpression(const std::unique_ptr<const Expression>
     case AstNodeType::AssignmentExpression:
         return AnalyzeAssignmentExpression(expression);
     default:
-        std::cerr << "[SemanticAnalyzer] ERROR: Semantic analysis not implemented for given expression" << std::endl;
+        PrintErrorPrefix(std::cerr, expression.get()) << "Semantic analysis not implemented for given expression" << std::endl;
         return false;
     }
 }
@@ -244,8 +244,8 @@ bool SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<const Expressio
     const IdExpression *e = dynamic_cast<const IdExpression *>(expression.get());
     if (!currentScope->SymbolExists(e->GetValue(), SymbolKind::Variable))
     {
-        std::cerr
-            << "[SemanticAnalyzer] ERROR: Variable \"" << e->GetValue()
+        PrintErrorPrefix(std::cerr, e)
+            << "Variable \"" << e->GetValue()
             << "\" doesn't exist"
             << std::endl;
         return false;
@@ -259,8 +259,8 @@ bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const
     const FunctionCallExpression *call = dynamic_cast<const FunctionCallExpression *>(expression.get());
     if (!currentScope->SymbolExists(call->GetFunction(), SymbolKind::Function))
     {
-        std::cerr
-            << "[SemanticAnalyzer] ERROR: Function \"" << call->GetFunction()
+        PrintErrorPrefix(std::cerr, call)
+            << "Function \"" << call->GetFunction()
             << "\" doesn't exist"
             << std::endl;
         return false;
@@ -270,8 +270,8 @@ bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const
     auto function = dynamic_cast<const FunctionSymbol *>(s.get());
     if (function->GetParameterCount() != call->GetArgumentCount())
     {
-        std::cerr
-            << "[SemanticAnalyzer] ERROR: Invalid number of arguments, expected "
+        PrintErrorPrefix(std::cerr, call)
+            << "Invalid number of arguments in function call, expected "
             << function->GetParameterCount() << " but got " << call->GetArgumentCount()
             << std::endl;
         return false;
@@ -291,8 +291,8 @@ bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const
         if (parameterType == argumentType)
             continue;
 
-        std::cerr
-            << "[SemanticAnalyzer] ERROR: Positional argument at position " << index
+        PrintErrorPrefix(std::cerr, argumentIterator->get())
+            << "Positional argument at position " << index
             << " is of wrong type, expected \"" << parameterType << "\" but got \"" << argumentType << "\""
             << std::endl;
 
@@ -306,17 +306,16 @@ bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const E
 {
     if (expression->GetType() != AstNodeType::AssignmentExpression)
     {
-        std::cerr << "[SemanticAnalyzer] ERROR: Invalid expression type, expected AssignmentExpression" << std::endl;
+        PrintErrorPrefix(std::cerr, expression.get()) << "Invalid expression type, expected AssignmentExpression" << std::endl;
         return false;
     }
 
     auto assignment = dynamic_cast<const AssignmentExpression *>(expression.get());
     if (!currentScope->SymbolExists(assignment->GetVarName(), SymbolKind::Variable))
     {
-        std::cerr
-            << "[SemanticAnalyzer] ERROR: Variable \""
-            << assignment->GetVarValue() << "\" doesn't exist"
-            << std::endl;
+        PrintErrorPrefix(std::cerr, assignment) << "Variable \""
+                                                << assignment->GetVarValue() << "\" doesn't exist"
+                                                << std::endl;
         return false;
     }
 
@@ -328,8 +327,8 @@ bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const E
     if (s->IsOfType(valueType))
         return true;
 
-    std::cerr
-        << "[SemanticAnalyzer] ERROR: Can't assign value of type \""
+    PrintErrorPrefix(std::cerr, expression.get())
+        << "Can't assign value of type \""
         << valueType << "\" to variable of type \""
         << s->GetType() << "\""
         << std::endl;
@@ -355,7 +354,7 @@ std::string SemanticAnalyzer::ResolveExpressionType(const std::unique_ptr<const 
     case AstNodeType::FunctionCallExpression:
         return GetFunctionCallExpressionType(expression);
     default:
-        std::cerr << "[SemanticAnalyzer] ERROR: Can't resolve type for given expression" << std::endl;
+        PrintErrorPrefix(std::cerr, expression.get()) << "Can't resolve type for given expression" << std::endl;
         return Types::Unknown;
     }
 }
@@ -399,4 +398,11 @@ std::string SemanticAnalyzer::ResolveBinaryExpressionType(const std::unique_ptr<
         return Types::Unknown;
 
     return leftType == rightType ? rightType : Types::Unknown;
+}
+
+std::ostream &SemanticAnalyzer::PrintErrorPrefix(std::ostream &out, const AstNode *node) const
+{
+    const auto location = node->GetLocation();
+    out << "[SemanticAnalyzer] ERROR: line " << location.line << " column " << location.column << ": ";
+    return out;
 }

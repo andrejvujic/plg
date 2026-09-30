@@ -2,7 +2,7 @@
 
 Token::Token() {}
 
-Token::Token(std::string l, TokenType t, TokenPosition p) : position(p), type(t), lexeme(l)
+Token::Token(std::string lexeme, TokenType type, Location location) : location(location), type(type), lexeme(lexeme)
 {
 }
 
@@ -11,14 +11,9 @@ const std::string &Token::GetLexeme() const
     return lexeme;
 }
 
-size_t Token::GetLineNumber() const
+Location Token::GetLocation() const
 {
-    return position.line;
-}
-
-size_t Token::GetColumnNumber() const
-{
-    return position.column;
+    return location;
 }
 
 TokenType Token::GetType() const

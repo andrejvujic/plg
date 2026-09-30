@@ -5,16 +5,12 @@
 #include <iostream>
 
 #include "lexer/tokens/token_type.hpp"
-
-typedef struct
-{
-    std::size_t line, column;
-} TokenPosition;
+#include "shared/location.hpp"
 
 class Token
 {
 protected:
-    TokenPosition position;
+    Location location;
     TokenType type;
     std::string name;
 
@@ -24,12 +20,11 @@ private:
 public:
     Token();
 
-    Token(std::string lexeme, TokenType t, TokenPosition p);
+    Token(std::string lexeme, TokenType type, Location location);
 
     const std::string &GetLexeme() const;
 
-    size_t GetLineNumber() const;
-    size_t GetColumnNumber() const;
+    Location GetLocation() const;
 
     TokenType GetType() const;
     bool Matches(TokenType type) const;
