@@ -61,98 +61,100 @@ void SemanticAnalyzer::AnalyzeFunction(const std::unique_ptr<const Function> &fu
         AnalyzeStatement(statement, function);
 }
 
-void SemanticAnalyzer::AnalyzeStatement(
+bool SemanticAnalyzer::AnalyzeStatement(
     const std::unique_ptr<const Statement> &statement,
     const std::unique_ptr<const Function> &function)
 {
     switch (statement->GetType())
     {
     case AstNodeType::IfStatement:
-        AnalyzeIfStatement(statement, function);
-        break;
+        return AnalyzeIfStatement(statement, function);
     case AstNodeType::ForStatement:
-        AnalyzeForStatement(statement, function);
-        break;
+        return AnalyzeForStatement(statement, function);
     case AstNodeType::ReturnStatement:
-        AnalyzeReturnStatement(statement, function);
-        break;
+        return AnalyzeReturnStatement(statement, function);
     case AstNodeType::ComplexStatement:
-        AnalyzeComplexStatement(statement, function);
-        break;
+        return AnalyzeComplexStatement(statement, function);
     case AstNodeType::ExpressionStatement:
-        AnalyzeExpressionStatement(statement);
-        break;
+        return AnalyzeExpressionStatement(statement);
     case AstNodeType::VarDeclartaionStatement:
-        AnalyzeVarDeclarationStatement(statement);
-        break;
+        return AnalyzeVarDeclarationStatement(statement);
     default:
         std::cerr << "[SemanticAnalyzer] ERROR: Semantic analysis not implemented for given statement type" << std::endl;
+        return false;
         break;
     }
 }
 
-void SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
+bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
 {
+    bool result = true;
     auto complexStatement = dynamic_cast<const ComplexStatement *>(statement.get());
     for (auto &childStatement : complexStatement->GetStatements())
-        AnalyzeStatement(childStatement, function);
+        result = result && AnalyzeStatement(childStatement, function);
+    return result;
 }
 
-void SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
+bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
 {
+    bool result = true;
     auto ifStatement = dynamic_cast<const IfStatement *>(statement.get());
-    AnalyzeExpression(ifStatement->GetCondition());
+    result = result && AnalyzeExpression(ifStatement->GetCondition());
 
     auto consequentScope = std::make_shared<Scope>(currentScope);
     currentScope = consequentScope;
-    AnalyzeStatement(ifStatement->GetConsequentStatement(), function);
+    result = result && AnalyzeStatement(ifStatement->GetConsequentStatement(), function);
 
     currentScope = consequentScope->GetParent();
 
     if (!ifStatement->HasAlternateStatement())
-        return;
+        return result;
 
     auto alternateScope = std::make_shared<Scope>(currentScope);
     currentScope = alternateScope;
-    AnalyzeStatement(ifStatement->GetAlternateStatement(), function);
+    result = result && AnalyzeStatement(ifStatement->GetAlternateStatement(), function);
 
     currentScope = alternateScope->GetParent();
+
+    return result;
 }
 
-void SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
+bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
 {
     auto forStatement = dynamic_cast<const ForStatement *>(statement.get());
 
-    AnalyzeExpression(forStatement->GetInitExpression()); // TODO: This needs to be an AssignmentExpression.
-    AnalyzeExpression(forStatement->GetCondition());
-    AnalyzeExpression(forStatement->GetUpdateExpression()); // TODO: This needs to be an AssignmentExpression.
+    bool result = true;
+    result = result && AnalyzeExpression(forStatement->GetInitExpression()); // TODO: This needs to be an AssignmentExpression.
+    result = result && AnalyzeExpression(forStatement->GetCondition());
+    result = result && AnalyzeExpression(forStatement->GetUpdateExpression()); // TODO: This needs to be an AssignmentExpression.
 
     auto bodyScope = std::make_shared<Scope>(currentScope);
     currentScope = bodyScope;
-    AnalyzeStatement(forStatement->GetBody(), function);
+    result = result && AnalyzeStatement(forStatement->GetBody(), function);
 
     currentScope = bodyScope->GetParent();
+    return result;
 }
 
-void SemanticAnalyzer::AnalyzeExpressionStatement(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeExpressionStatement(const std::unique_ptr<const Statement> &statement)
 {
     auto expressionStatement = dynamic_cast<const ExpressionStatement *>(statement.get());
-    AnalyzeExpression(expressionStatement->GetExpression());
+    return AnalyzeExpression(expressionStatement->GetExpression());
 }
 
-void SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
+bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
 {
     auto returnStatement = dynamic_cast<const ReturnStatement *>(statement.get());
 
     if (!returnStatement->HasValue() && function->GetReturnType() == Types::Void)
-        return;
+        return true;
 
     if (!returnStatement->HasValue() && function->GetReturnType() != Types::Void)
     {
         std::cerr << "[SemanticAnalyzer] ERROR: Non-void function \""
                   << function->GetName() << "\" must return a value"
                   << std::endl;
-        return;
+        return false;
     }
 
     if (returnStatement->HasValue() && function->GetReturnType() == Types::Void)
@@ -160,20 +162,21 @@ void SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<const Statem
         std::cerr << "[SemanticAnalyzer] ERROR: Void function \""
                   << function->GetName() << "\" can't return a value"
                   << std::endl;
-        return;
+        return false;
     }
 
     const auto returnType = ResolveExpressionType(returnStatement->GetValue());
     if (returnType == function->GetReturnType())
-        return;
+        return true;
 
     std::cerr << "[SemanticAnalyzer] ERROR: Invalid return type, expected \""
               << function->GetReturnType() << "\" but got \""
               << returnType << "\""
               << std::endl;
+    return false;
 }
 
-void SemanticAnalyzer::AnalyzeVarDeclarationStatement(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeVarDeclarationStatement(const std::unique_ptr<const Statement> &statement)
 {
     auto declarationStatement = dynamic_cast<const VarDeclarationStatement *>(statement.get());
 
@@ -183,7 +186,7 @@ void SemanticAnalyzer::AnalyzeVarDeclarationStatement(const std::unique_ptr<cons
                   << declarationStatement->GetVarName() << "\" can't have type \""
                   << declarationStatement->GetVarType() << "\""
                   << std::endl;
-        return;
+        return false;
     }
 
     if (currentScope->SymbolExists(declarationStatement->GetVarName(), SymbolKind::Variable))
@@ -191,51 +194,52 @@ void SemanticAnalyzer::AnalyzeVarDeclarationStatement(const std::unique_ptr<cons
         std::cerr << "[SemanticAnalyzer] ERROR: Redefinition of variable \""
                   << declarationStatement->GetVarName() << "\""
                   << std::endl;
-        return;
-    }
-
-    if (declarationStatement->HasInitialValue())
-    {
-        const auto initialValueType = ResolveExpressionType(declarationStatement->GetInitialValue());
-        if (initialValueType != declarationStatement->GetVarType())
-            std::cerr << "[SemanticAnalyzer] ERROR: Invalid initial value of \""
-                      << declarationStatement->GetVarName() << "\", expected \""
-                      << declarationStatement->GetVarType() << "\" but got \""
-                      << initialValueType << "\""
-                      << std::endl;
+        return false;
     }
 
     std::unique_ptr<const Symbol> symbol = std::make_unique<VariableSymbol>(
         declarationStatement->GetVarName(),
         declarationStatement->GetVarType());
     currentScope->DeclareSymbol(symbol);
+
+    if (declarationStatement->HasInitialValue())
+    {
+        const auto initialValueType = ResolveExpressionType(declarationStatement->GetInitialValue());
+        if (initialValueType == declarationStatement->GetVarType())
+            return true;
+
+        std::cerr << "[SemanticAnalyzer] ERROR: Invalid initial value of \""
+                  << declarationStatement->GetVarName() << "\", expected \""
+                  << declarationStatement->GetVarType() << "\" but got \""
+                  << initialValueType << "\""
+                  << std::endl;
+        return false;
+    }
+
+    return true;
 }
 
-void SemanticAnalyzer::AnalyzeExpression(const std::unique_ptr<const Expression> &expression)
+bool SemanticAnalyzer::AnalyzeExpression(const std::unique_ptr<const Expression> &expression)
 {
     switch (expression->GetType())
     {
     case AstNodeType::IdExpression:
-        AnalyzeIdExpression(expression);
-        break;
+        return AnalyzeIdExpression(expression);
     case AstNodeType::NumLiteralExpression:
-        break;
+        return true;
     case AstNodeType::BinaryExpression:
-        AnalyzeBinaryExpression(expression);
-        break;
+        return AnalyzeBinaryExpression(expression);
     case AstNodeType::FunctionCallExpression:
-        AnalyzeFunctionCallExpression(expression);
-        break;
+        return AnalyzeFunctionCallExpression(expression);
     case AstNodeType::AssignmentExpression:
-        AnalyzeAssignmentExpression(expression);
-        break;
+        return AnalyzeAssignmentExpression(expression);
     default:
         std::cerr << "[SemanticAnalyzer] ERROR: Semantic analysis not implemented for given expression" << std::endl;
-        break;
+        return false;
     }
 }
 
-void SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<const Expression> &expression)
+bool SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<const Expression> &expression)
 {
     const IdExpression *e = dynamic_cast<const IdExpression *>(expression.get());
     if (!currentScope->SymbolExists(e->GetValue(), SymbolKind::Variable))
@@ -244,11 +248,13 @@ void SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<const Expressio
             << "[SemanticAnalyzer] ERROR: Variable \"" << e->GetValue()
             << "\" doesn't exist"
             << std::endl;
-        return;
+        return false;
     }
+
+    return true;
 }
 
-void SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const Expression> &expression)
+bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const Expression> &expression)
 {
     const FunctionCallExpression *call = dynamic_cast<const FunctionCallExpression *>(expression.get());
     if (!currentScope->SymbolExists(call->GetFunction(), SymbolKind::Function))
@@ -257,7 +263,7 @@ void SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const
             << "[SemanticAnalyzer] ERROR: Function \"" << call->GetFunction()
             << "\" doesn't exist"
             << std::endl;
-        return;
+        return false;
     }
 
     auto &s = currentScope->GetSymbol(call->GetFunction(), SymbolKind::Function);
@@ -268,35 +274,40 @@ void SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const
             << "[SemanticAnalyzer] ERROR: Invalid number of arguments, expected "
             << function->GetParameterCount() << " but got " << call->GetArgumentCount()
             << std::endl;
-        return;
+        return false;
     }
 
     auto &parameters = function->GetParameters();
     auto &arguments = call->GetArguments();
 
-    auto paramIterator = parameters.begin();
-    auto argIterator = arguments.begin();
+    auto parameterIterator = parameters.begin();
+    auto argumentIterator = arguments.begin();
     size_t index = 0;
-    for (; paramIterator != parameters.end() && argIterator != arguments.end();
-         ++paramIterator, ++argIterator, ++index)
+    for (; parameterIterator != parameters.end() && argumentIterator != arguments.end(); ++parameterIterator, ++argumentIterator, ++index)
     {
-        const auto parameterType = *paramIterator;
-        const auto argumentType = ResolveExpressionType(*argIterator);
+        const auto parameterType = *parameterIterator;
+        const auto argumentType = ResolveExpressionType(*argumentIterator);
 
-        if (parameterType != argumentType)
-            std::cerr
-                << "[SemanticAnalyzer] ERROR: Positional argument at position " << index
-                << " is of wrong type, expected \"" << parameterType << " \" but got \"" << argumentType << "\""
-                << std::endl;
+        if (parameterType == argumentType)
+            continue;
+
+        std::cerr
+            << "[SemanticAnalyzer] ERROR: Positional argument at position " << index
+            << " is of wrong type, expected \"" << parameterType << "\" but got \"" << argumentType << "\""
+            << std::endl;
+
+        return false;
     }
+
+    return true;
 }
 
-void SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const Expression> &expression)
+bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const Expression> &expression)
 {
     if (expression->GetType() != AstNodeType::AssignmentExpression)
     {
         std::cerr << "[SemanticAnalyzer] ERROR: Invalid expression type, expected AssignmentExpression" << std::endl;
-        return;
+        return false;
     }
 
     auto assignment = dynamic_cast<const AssignmentExpression *>(expression.get());
@@ -306,28 +317,29 @@ void SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const E
             << "[SemanticAnalyzer] ERROR: Variable \""
             << assignment->GetVarValue() << "\" doesn't exist"
             << std::endl;
-        return;
+        return false;
     }
 
     auto &s = currentScope->GetSymbol(assignment->GetVarName(), SymbolKind::Variable);
-    AnalyzeExpression(assignment->GetVarValue());
+    if (!AnalyzeExpression(assignment->GetVarValue()))
+        return false;
 
     auto valueType = ResolveExpressionType(assignment->GetVarValue());
-    if (!s->IsOfType(valueType))
-    {
-        std::cerr
-            << "[SemanticAnalyzer] ERROR: Can't assign value of type \""
-            << valueType << "\" to variable of type \""
-            << s->GetType() << "\""
-            << std::endl;
-    }
+    if (s->IsOfType(valueType))
+        return true;
+
+    std::cerr
+        << "[SemanticAnalyzer] ERROR: Can't assign value of type \""
+        << valueType << "\" to variable of type \""
+        << s->GetType() << "\""
+        << std::endl;
+    return false;
 }
 
-void SemanticAnalyzer::AnalyzeBinaryExpression(const std::unique_ptr<const Expression> &expression)
+bool SemanticAnalyzer::AnalyzeBinaryExpression(const std::unique_ptr<const Expression> &expression)
 {
     const BinaryExpression *e = dynamic_cast<const BinaryExpression *>(expression.get());
-    AnalyzeExpression(e->GetLeft());
-    AnalyzeExpression(e->GetRight());
+    return AnalyzeExpression(e->GetLeft()) && AnalyzeExpression(e->GetRight());
 }
 
 std::string SemanticAnalyzer::ResolveExpressionType(const std::unique_ptr<const Expression> &expression)
@@ -376,13 +388,13 @@ std::string SemanticAnalyzer::GetFunctionCallExpressionType(const std::unique_pt
 
 std::string SemanticAnalyzer::ResolveBinaryExpressionType(const std::unique_ptr<const Expression> &expression)
 {
-    auto e = dynamic_cast<const BinaryExpression *>(expression.get());
+    auto binaryExpression = dynamic_cast<const BinaryExpression *>(expression.get());
 
-    auto leftType = ResolveExpressionType(e->GetLeft());
+    auto leftType = ResolveExpressionType(binaryExpression->GetLeft());
     if (leftType == Types::Unknown)
         return Types::Unknown;
 
-    auto rightType = ResolveExpressionType(e->GetRight());
+    auto rightType = ResolveExpressionType(binaryExpression->GetRight());
     if (rightType == Types::Unknown)
         return Types::Unknown;
 
