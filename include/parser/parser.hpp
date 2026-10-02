@@ -8,11 +8,12 @@
 #include "ast/program.hpp"
 
 #include "ast/statements/statement.hpp"
-#include "ast/statements/var_declaration_statement.hpp"
+#include "ast/statements/variable_declaration.hpp"
 #include "ast/statements/return_statement.hpp"
 #include "ast/statements/if_statement.hpp"
 #include "ast/statements/for_statement.hpp"
 #include "ast/statements/expression_statement.hpp"
+#include "ast/statements/functions/function_declaration.hpp"
 
 #include "ast/expressions/expression.hpp"
 #include "ast/expressions/assignment_expression.hpp"
@@ -28,21 +29,18 @@ private:
     bool NextMatches(TokenType type) const;
     bool NextMatchesAny(const std::initializer_list<TokenType> &types) const;
 
-    std::unique_ptr<const Function> ParseFunction();
+    std::unique_ptr<const FunctionDeclaration> ParseFunctionDeclaration();
     std::unique_ptr<const FunctionParameter> ParseFunctionParameter();
 
     std::unique_ptr<const ComplexStatement> ParseComplexStatement();
     std::unique_ptr<const Statement> ParseStatement();
-    std::unique_ptr<const Statement> ParseVarDeclarationOrAssignment();
-    std::unique_ptr<const VarDeclarationStatement> ParseVarDeclarationStatement();
-    std::unique_ptr<const ExpressionStatement> ParseVarAssignmentStatement();
+    std::unique_ptr<const VariableDeclaration> ParseVariableDeclaration();
     std::unique_ptr<const IfStatement> ParseIfStatement();
     std::unique_ptr<const ReturnStatement> ParseReturnStatement();
     std::unique_ptr<const ForStatement> ParseForStatement();
 
     std::unique_ptr<const Expression> ParseExpression();
     std::unique_ptr<const Expression> ParsePrimaryExpression();
-    std::unique_ptr<const AssignmentExpression> ParseVarAssignmentExpression();
 
     const std::unique_ptr<const Token> &Consume(TokenType type);
     const std::unique_ptr<const Token> &ConsumeAny(std::initializer_list<TokenType> types);

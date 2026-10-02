@@ -4,9 +4,9 @@
 #include "ast/ast.hpp"
 #include "ast/statements/statement.hpp"
 #include "ast/statements/complex_statement.hpp"
-#include "ast/function/function_parameter.hpp"
+#include "ast/statements/functions/function_parameter.hpp"
 
-class Function : public AstNode
+class FunctionDeclaration : public Statement
 {
 private:
     std::string name, returnType;
@@ -14,7 +14,7 @@ private:
     std::unique_ptr<const ComplexStatement> body;
 
 public:
-    Function();
+    FunctionDeclaration();
 
     const std::string &GetName() const;
     const std::string &GetReturnType() const;

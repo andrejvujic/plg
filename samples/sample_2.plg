@@ -1,19 +1,11 @@
 function main(int a, int b) -> int {
-    uint d = 0u;
-    if (a + b) {
-        if (a == 5)
-            int c = 1;
-        else
-            int c = 2;
-    } else if (a > b) {
-        a = 1u * 122u + d;
+    function main2() -> int {
+        return 0;
     }
 
-    for (a = 5; a < 10; a = a + 1) {
-        a = f(a, b);
-    }
+    int c = 5;
+    1 + 2 + 3;
+    return 2 + main2();
 }
 
-function f() -> int {
-
-}
+1 + 2 + 3;

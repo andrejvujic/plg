@@ -4,30 +4,30 @@ AssignmentExpression::AssignmentExpression() : Expression(AstNodeType::Assignmen
 {
 }
 
-const std::string &AssignmentExpression::GetVarName() const
+const std::unique_ptr<const Expression> &AssignmentExpression::GetAssignee() const
 {
-    return varName;
+    return assignee;
 }
 
-const std::unique_ptr<const Expression> &AssignmentExpression::GetVarValue() const
+const std::unique_ptr<const Expression> &AssignmentExpression::GetValue() const
 {
-    return varValue;
+    return value;
 }
 
-void AssignmentExpression::SetVarName(std::string varName)
+void AssignmentExpression::SetAssignee(std::unique_ptr<const Expression> &assignee)
 {
-    this->varName = varName;
+    this->assignee = std::move(assignee);
 }
 
-void AssignmentExpression::SetVarValue(std::unique_ptr<const Expression> &varValue)
+void AssignmentExpression::SetValue(std::unique_ptr<const Expression> &value)
 {
-    this->varValue = std::move(varValue);
+    this->value = std::move(value);
 }
 
 void AssignmentExpression::Print(AstPrinter &printer) const
 {
     printer.BeginNode("AssignmentExpression");
-    printer.Field("Var. Name", varName);
-    printer.Field("Var. Value", varValue.get());
+    printer.Field("Assignee", assignee.get());
+    printer.Field("Value", value.get());
     printer.EndNode();
 }

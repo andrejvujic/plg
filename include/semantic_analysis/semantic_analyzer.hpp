@@ -2,24 +2,30 @@
 #define SEMANTIC_ANALYZER_HPP_INCLUDED
 
 #include "semantic_analysis/scope.hpp"
+#include "semantic_analysis/symbols/function_symbol.hpp"
 
 #include "ast/program.hpp"
-#include "ast/function/function.hpp"
+#include "ast/statements/functions/function_declaration.hpp"
+
+#include <stack>
 
 class SemanticAnalyzer
 {
 private:
     std::shared_ptr<Scope> currentScope;
+    std::stack<std::string> functionStack;
 
-    void AnalyzeFunction(const std::unique_ptr<const Function> &function);
+    bool AnalyzeStatement(const std::unique_ptr<const Statement> &statement);
 
-    bool AnalyzeStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function);
+    std::unique_ptr<const FunctionSymbol> CreateFunctionSymbol(const FunctionDeclaration *function);
+    bool AnalyzeFunctionDeclaration(const std::unique_ptr<const Statement> &statement);
+
+    bool AnalyzeVariableDeclaration(const std::unique_ptr<const Statement> &statement);
     bool AnalyzeExpressionStatement(const std::unique_ptr<const Statement> &statement);
-    bool AnalyzeIfStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function);
-    bool AnalyzeReturnStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function);
-    bool AnalyzeForStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function);
-    bool AnalyzeComplexStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function);
-    bool AnalyzeVarDeclarationStatement(const std::unique_ptr<const Statement> &statement);
+    bool AnalyzeIfStatement(const std::unique_ptr<const Statement> &statement);
+    bool AnalyzeReturnStatement(const std::unique_ptr<const Statement> &statement);
+    bool AnalyzeForStatement(const std::unique_ptr<const Statement> &statement);
+    bool AnalyzeComplexStatement(const std::unique_ptr<const Statement> &statement);
 
     bool AnalyzeExpression(const std::unique_ptr<const Expression> &expression);
     bool AnalyzeIdExpression(const std::unique_ptr<const Expression> &expression);

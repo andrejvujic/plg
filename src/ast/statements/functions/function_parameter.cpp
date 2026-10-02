@@ -1,4 +1,4 @@
-#include "ast/function/function_parameter.hpp"
+#include "ast/statements/functions/function_parameter.hpp"
 
 FunctionParameter::FunctionParameter() : AstNode(AstNodeType::FunctionParameter)
 {

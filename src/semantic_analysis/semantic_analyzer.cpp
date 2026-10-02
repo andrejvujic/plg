@@ -6,7 +6,7 @@
 #include "ast/statements/if_statement.hpp"
 #include "ast/statements/return_statement.hpp"
 #include "ast/statements/for_statement.hpp"
-#include "ast/statements/var_declaration_statement.hpp"
+#include "ast/statements/variable_declaration.hpp"
 #include "ast/statements/expression_statement.hpp"
 
 #include "ast/expressions/id_expression.hpp"
@@ -23,27 +23,27 @@ SemanticAnalyzer::SemanticAnalyzer() : currentScope(std::make_shared<Scope>())
 
 void SemanticAnalyzer::AnalyzeProgram(const std::unique_ptr<Program> &program)
 {
-    for (auto &function : program->GetFunctions())
-    {
-        FunctionSymbol f(function->GetName(), function->GetReturnType());
-        for (auto &parameter : function->GetParameters())
-            f.AddParameter(parameter->GetVarType());
-
-        std::unique_ptr<const Symbol> symbol = std::make_unique<FunctionSymbol>(f);
-        currentScope->DeclareSymbol(symbol);
-    }
-
-    for (auto &function : program->GetFunctions())
-    {
-        std::shared_ptr<Scope> functionScope = std::make_shared<Scope>(currentScope);
-        currentScope = functionScope;
-        AnalyzeFunction(function);
-    }
+    for (auto &statement : program->GetStatements())
+        AnalyzeStatement(statement);
 }
 
-void SemanticAnalyzer::AnalyzeFunction(const std::unique_ptr<const Function> &function)
+std::unique_ptr<const FunctionSymbol> SemanticAnalyzer::CreateFunctionSymbol(const FunctionDeclaration *function)
 {
+    FunctionSymbol functionSymbol(function->GetName(), function->GetReturnType());
     for (auto &parameter : function->GetParameters())
+        functionSymbol.AddParameter(parameter->GetVarType());
+    return std::make_unique<FunctionSymbol>(functionSymbol);
+}
+
+bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<const Statement> &statement)
+{
+    auto functionDeclaration = dynamic_cast<const FunctionDeclaration *>(statement.get());
+    std::unique_ptr<const Symbol> functionSymbol = CreateFunctionSymbol(functionDeclaration);
+    currentScope->DeclareSymbol(functionSymbol);
+
+    auto functionScope = std::make_shared<Scope>(currentScope);
+    currentScope = functionScope;
+    for (auto &parameter : functionDeclaration->GetParameters())
     {
         if (!currentScope->SymbolExists(parameter->GetVarName(), SymbolKind::Variable))
         {
@@ -53,32 +53,47 @@ void SemanticAnalyzer::AnalyzeFunction(const std::unique_ptr<const Function> &fu
             currentScope->DeclareSymbol(symbol);
         }
         else
-            PrintErrorPrefix(std::cerr, parameter.get()) << "Redefinition of variable \"" << parameter->GetVarName() << "\"" << std::endl;
+            PrintErrorPrefix(std::cerr, parameter.get())
+                << "Redefinition of variable \"" << parameter->GetVarName() << "\""
+                << std::endl;
     }
 
-    auto &body = function->GetBody();
+    auto result = true;
+    auto &body = functionDeclaration->GetBody();
+
+    functionStack.push(functionDeclaration->GetName());
     for (auto &statement : body->GetStatements())
-        AnalyzeStatement(statement, function);
+    {
+        auto nextResult = AnalyzeStatement(statement);
+        result = result && nextResult;
+    }
+    functionStack.pop();
+
+    currentScope = currentScope->GetParent();
+
+    return result;
+    // TODO: Check if a value is returned from non-void functions
 }
 
-bool SemanticAnalyzer::AnalyzeStatement(
-    const std::unique_ptr<const Statement> &statement,
-    const std::unique_ptr<const Function> &function)
+bool SemanticAnalyzer::AnalyzeStatement(const std::unique_ptr<const Statement> &statement)
 {
     switch (statement->GetType())
     {
+    case AstNodeType::VariableDeclaration:
+        return AnalyzeVariableDeclaration(statement);
+    case AstNodeType::FunctionDeclaration:
+        return AnalyzeFunctionDeclaration(statement);
     case AstNodeType::IfStatement:
-        return AnalyzeIfStatement(statement, function);
+        return AnalyzeIfStatement(statement);
     case AstNodeType::ForStatement:
-        return AnalyzeForStatement(statement, function);
+        return AnalyzeForStatement(statement);
     case AstNodeType::ReturnStatement:
-        return AnalyzeReturnStatement(statement, function);
+        return AnalyzeReturnStatement(statement);
     case AstNodeType::ComplexStatement:
-        return AnalyzeComplexStatement(statement, function);
+        return AnalyzeComplexStatement(statement);
     case AstNodeType::ExpressionStatement:
         return AnalyzeExpressionStatement(statement);
-    case AstNodeType::VarDeclartaionStatement:
-        return AnalyzeVarDeclarationStatement(statement);
+
     default:
         PrintErrorPrefix(std::cerr, statement.get()) << "Semantic analysis not implemented for given statement type" << std::endl;
         return false;
@@ -86,16 +101,19 @@ bool SemanticAnalyzer::AnalyzeStatement(
     }
 }
 
-bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
+bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<const Statement> &statement)
 {
     bool result = true;
     auto complexStatement = dynamic_cast<const ComplexStatement *>(statement.get());
     for (auto &childStatement : complexStatement->GetStatements())
-        result = result && AnalyzeStatement(childStatement, function);
+    {
+        auto nextResult = AnalyzeStatement(childStatement);
+        result = result && nextResult;
+    }
     return result;
 }
 
-bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
+bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement> &statement)
 {
     bool result = true;
     auto ifStatement = dynamic_cast<const IfStatement *>(statement.get());
@@ -103,7 +121,7 @@ bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement>
 
     auto consequentScope = std::make_shared<Scope>(currentScope);
     currentScope = consequentScope;
-    result = result && AnalyzeStatement(ifStatement->GetConsequentStatement(), function);
+    result = result && AnalyzeStatement(ifStatement->GetConsequentStatement());
 
     currentScope = consequentScope->GetParent();
 
@@ -112,25 +130,25 @@ bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement>
 
     auto alternateScope = std::make_shared<Scope>(currentScope);
     currentScope = alternateScope;
-    result = result && AnalyzeStatement(ifStatement->GetAlternateStatement(), function);
+    result = result && AnalyzeStatement(ifStatement->GetAlternateStatement());
 
     currentScope = alternateScope->GetParent();
 
     return result;
 }
 
-bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
+bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<const Statement> &statement)
 {
     auto forStatement = dynamic_cast<const ForStatement *>(statement.get());
 
-    bool result = true;
+    auto result = true;
     result = result && AnalyzeExpression(forStatement->GetInitExpression()); // TODO: This needs to be an AssignmentExpression.
     result = result && AnalyzeExpression(forStatement->GetCondition());
     result = result && AnalyzeExpression(forStatement->GetUpdateExpression()); // TODO: This needs to be an AssignmentExpression.
 
     auto bodyScope = std::make_shared<Scope>(currentScope);
     currentScope = bodyScope;
-    result = result && AnalyzeStatement(forStatement->GetBody(), function);
+    result = result && AnalyzeStatement(forStatement->GetBody());
 
     currentScope = bodyScope->GetParent();
     return result;
@@ -142,77 +160,93 @@ bool SemanticAnalyzer::AnalyzeExpressionStatement(const std::unique_ptr<const St
     return AnalyzeExpression(expressionStatement->GetExpression());
 }
 
-bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<const Statement> &statement, const std::unique_ptr<const Function> &function)
+bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<const Statement> &statement)
 {
     auto returnStatement = dynamic_cast<const ReturnStatement *>(statement.get());
-
-    if (!returnStatement->HasValue() && function->GetReturnType() == Types::Void)
-        return true;
-
-    if (!returnStatement->HasValue() && function->GetReturnType() != Types::Void)
+    if (functionStack.empty() || !currentScope->SymbolExists(functionStack.top(), SymbolKind::Function))
     {
-        PrintErrorPrefix(std::cerr, returnStatement) << "Non-void function \""
-                                                     << function->GetName() << "\" must return a value"
-                                                     << std::endl;
+        PrintErrorPrefix(std::cerr, returnStatement)
+            << "Unexpected return statement"
+            << std::endl;
         return false;
     }
 
-    if (returnStatement->HasValue() && function->GetReturnType() == Types::Void)
+    auto &functionSymbol = currentScope->GetSymbol(functionStack.top(), SymbolKind::Function);
+
+    if (!returnStatement->HasValue())
     {
-        PrintErrorPrefix(std::cerr, returnStatement) << "Void function \""
-                                                     << function->GetName() << "\" can't return a value"
-                                                     << std::endl;
+        if (functionSymbol->GetType() == Types::Void)
+            return true;
+
+        PrintErrorPrefix(std::cerr, returnStatement)
+            << "Non-void function \""
+            << functionSymbol->GetName() << "\" must return a value"
+            << std::endl;
+        return false;
+    }
+
+    if (functionSymbol->GetType() == Types::Void)
+    {
+        PrintErrorPrefix(std::cerr, returnStatement)
+            << "Void function \""
+            << functionSymbol->GetName() << "\" can't return a value"
+            << std::endl;
         return false;
     }
 
     const auto returnType = ResolveExpressionType(returnStatement->GetValue());
-    if (returnType == function->GetReturnType())
+    if (returnType == functionSymbol->GetType())
         return true;
 
-    PrintErrorPrefix(std::cerr, returnStatement) << "Invalid return type, expected \""
-                                                 << function->GetReturnType() << "\" but got \""
-                                                 << returnType << "\""
-                                                 << std::endl;
+    PrintErrorPrefix(std::cerr, returnStatement)
+        << "Invalid return type, expected \""
+        << functionSymbol->GetType() << "\" but got \""
+        << returnType << "\""
+        << std::endl;
+
     return false;
 }
 
-bool SemanticAnalyzer::AnalyzeVarDeclarationStatement(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<const Statement> &statement)
 {
-    auto declarationStatement = dynamic_cast<const VarDeclarationStatement *>(statement.get());
+    auto variableDeclaration = dynamic_cast<const VariableDeclaration *>(statement.get());
 
-    if (declarationStatement->GetVarType() == Types::Void)
+    if (variableDeclaration->GetVarType() == Types::Void)
     {
-        PrintErrorPrefix(std::cerr, declarationStatement) << "Variable \""
-                                                          << declarationStatement->GetVarName() << "\" can't have type \""
-                                                          << declarationStatement->GetVarType() << "\""
-                                                          << std::endl;
+        PrintErrorPrefix(std::cerr, variableDeclaration)
+            << "Variable \""
+            << variableDeclaration->GetVarName() << "\" can't have type \""
+            << variableDeclaration->GetVarType() << "\""
+            << std::endl;
         return false;
     }
 
-    if (currentScope->SymbolExists(declarationStatement->GetVarName(), SymbolKind::Variable))
+    if (currentScope->SymbolExists(variableDeclaration->GetVarName(), SymbolKind::Variable))
     {
-        PrintErrorPrefix(std::cerr, declarationStatement) << "Redefinition of variable \""
-                                                          << declarationStatement->GetVarName() << "\""
-                                                          << std::endl;
+        PrintErrorPrefix(std::cerr, variableDeclaration)
+            << "Redefinition of variable \""
+            << variableDeclaration->GetVarName() << "\""
+            << std::endl;
         return false;
     }
 
     std::unique_ptr<const Symbol> symbol = std::make_unique<VariableSymbol>(
-        declarationStatement->GetVarName(),
-        declarationStatement->GetVarType());
+        variableDeclaration->GetVarName(),
+        variableDeclaration->GetVarType());
     currentScope->DeclareSymbol(symbol);
 
-    if (declarationStatement->HasInitialValue())
+    if (variableDeclaration->HasInitialValue())
     {
-        const auto initialValueType = ResolveExpressionType(declarationStatement->GetInitialValue());
-        if (initialValueType == declarationStatement->GetVarType())
+        const auto initialValueType = ResolveExpressionType(variableDeclaration->GetInitialValue());
+        if (initialValueType == variableDeclaration->GetVarType())
             return true;
 
-        PrintErrorPrefix(std::cerr, declarationStatement) << "Invalid initial value of \""
-                                                          << declarationStatement->GetVarName() << "\", expected \""
-                                                          << declarationStatement->GetVarType() << "\" but got \""
-                                                          << initialValueType << "\""
-                                                          << std::endl;
+        PrintErrorPrefix(std::cerr, variableDeclaration)
+            << "Invalid initial value of \""
+            << variableDeclaration->GetVarName() << "\", expected \""
+            << variableDeclaration->GetVarType() << "\" but got \""
+            << initialValueType << "\""
+            << std::endl;
         return false;
     }
 
@@ -310,27 +344,36 @@ bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const E
         return false;
     }
 
-    auto assignment = dynamic_cast<const AssignmentExpression *>(expression.get());
-    if (!currentScope->SymbolExists(assignment->GetVarName(), SymbolKind::Variable))
+    auto assignmentExpression = dynamic_cast<const AssignmentExpression *>(expression.get());
+    auto &assigneeExpression = assignmentExpression->GetAssignee();
+    if (assigneeExpression->GetType() != AstNodeType::IdExpression)
     {
-        PrintErrorPrefix(std::cerr, assignment) << "Variable \""
-                                                << assignment->GetVarValue() << "\" doesn't exist"
-                                                << std::endl;
+        PrintErrorPrefix(std::cerr, assignmentExpression) << "Left hand side isn't assignable" << std::endl;
         return false;
     }
 
-    auto &s = currentScope->GetSymbol(assignment->GetVarName(), SymbolKind::Variable);
-    if (!AnalyzeExpression(assignment->GetVarValue()))
+    auto assigneeIdExpression = dynamic_cast<const IdExpression *>(assigneeExpression.get());
+    if (!currentScope->SymbolExists(assigneeIdExpression->GetValue(), SymbolKind::Variable))
+    {
+        PrintErrorPrefix(std::cerr, assignmentExpression)
+            << "Variable \""
+            << assigneeIdExpression->GetValue() << "\" doesn't exist"
+            << std::endl;
+        return false;
+    }
+
+    auto &symbol = currentScope->GetSymbol(assigneeIdExpression->GetValue(), SymbolKind::Variable);
+    if (!AnalyzeExpression(assignmentExpression->GetValue()))
         return false;
 
-    auto valueType = ResolveExpressionType(assignment->GetVarValue());
-    if (s->IsOfType(valueType))
+    auto valueType = ResolveExpressionType(assignmentExpression->GetValue());
+    if (symbol->IsOfType(valueType))
         return true;
 
     PrintErrorPrefix(std::cerr, expression.get())
         << "Can't assign value of type \""
-        << valueType << "\" to variable \"" << assignment->GetVarName() << "\" of type \""
-        << s->GetType() << "\""
+        << valueType << "\" to variable \"" << symbol->GetName() << "\" of type \""
+        << symbol->GetType() << "\""
         << std::endl;
     return false;
 }

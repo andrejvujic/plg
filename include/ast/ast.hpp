@@ -13,12 +13,12 @@
 enum class AstNodeType
 {
     Program,
-    Function,
+    FunctionDeclaration,
     FunctionParameter,
     ComplexStatement,
     IfStatement,
     ReturnStatement,
-    VarDeclartaionStatement,
+    VariableDeclaration,
     AssignmentExpression,
     ForStatement,
     ExpressionStatement,

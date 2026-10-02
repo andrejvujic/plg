@@ -3,14 +3,14 @@
 
 #include "ast/statements/statement.hpp"
 
-class VarDeclarationStatement : public Statement
+class VariableDeclaration : public Statement
 {
 private:
     std::string varName, varType;
     std::unique_ptr<const Expression> initialValue;
 
 public:
-    VarDeclarationStatement();
+    VariableDeclaration();
 
     const std::string &GetVarName() const;
     const std::string &GetVarType() const;

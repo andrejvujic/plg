@@ -1,5 +1,5 @@
 CXX      ?= c++
-CXXFLAGS ?= -std=c++17 -Wall -Wextra -pedantic -Iinclude
+CXXFLAGS ?= -std=c++17 -Wall -Wextra -pedantic -Iinclude -g
 LDFLAGS  ?=
 LDLIBS   ?=
 
