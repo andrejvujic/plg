@@ -54,6 +54,7 @@ static const std::map<std::string_view, TokenType> TOKENS{
     {"+", TokenType::ARITHMETIC_OPERATOR},
     {"-", TokenType::ARITHMETIC_OPERATOR},
     {"*", TokenType::ARITHMETIC_OPERATOR},
+    {"/", TokenType::ARITHMETIC_OPERATOR},
     {"!=", TokenType::RELATIONAL_OPERATOR},
     {">", TokenType::RELATIONAL_OPERATOR},
     {"<", TokenType::RELATIONAL_OPERATOR},

@@ -44,6 +44,15 @@ std::unique_ptr<RuntimeValue> BinaryExpression::Execute(TreeWalkInterpreter &int
     if (op == BinaryExpression::OP_PLUS)
         return RuntimeOperations::Add(leftValue, rightValue);
 
+    if (op == BinaryExpression::OP_MINUS)
+        return RuntimeOperations::Sub(leftValue, rightValue);
+
+    if (op == BinaryExpression::OP_MUL)
+        return RuntimeOperations::Mul(leftValue, rightValue);
+
+    if (op == BinaryExpression::OP_DIV)
+        return RuntimeOperations::Div(leftValue, rightValue);
+
     std::cerr << "[BinaryExpression] ERROR: Execution unsupported for operation \"" << op << "\"" << std::endl;
     std::exit(EXIT_FAILURE);
 }
@@ -56,8 +65,3 @@ void BinaryExpression::Print(AstPrinter &printer) const
     printer.Field("Right", right.get());
     printer.EndNode();
 }
-
-std::string_view BinaryExpression::OP_PLUS = "+";
-std::string_view BinaryExpression::OP_MINUS = "-";
-std::string_view BinaryExpression::OP_MUL = "*";
-std::string_view BinaryExpression::OP_DIV = "/";

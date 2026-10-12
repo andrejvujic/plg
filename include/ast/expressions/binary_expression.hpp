@@ -24,6 +24,10 @@ public:
 
     void Print(AstPrinter &printer) const override;
 
-    static std::string_view OP_PLUS, OP_MINUS, OP_MUL, OP_DIV;
+    // Arithmetic operators:
+    static std::string_view OP_PLUS = "+",
+                            OP_MINUS = "-",
+                            OP_MUL = "*",
+                            OP_DIV = "/";
 };
 #endif
