@@ -1,4 +1,7 @@
 #include "ast/expressions/num_literal_expression.hpp"
+#include "runtime/int_value.hpp"
+#include "runtime/unsigned_int_value.hpp"
+#include "shared/types.hpp"
 
 NumLiteralExpression::NumLiteralExpression() : Expression(AstNodeType::NumLiteralExpression) {}
 
@@ -28,4 +31,23 @@ void NumLiteralExpression::Print(AstPrinter &printer) const
     printer.Field("Raw Value", rawValue);
     printer.Field("Literal Type", literalType);
     printer.EndNode();
+}
+
+std::unique_ptr<RuntimeValue> NumLiteralExpression::Execute(TreeWalkInterpreter &interpreter) const
+{
+    if (literalType == Types::Int)
+    {
+        auto value = std::stoi(rawValue);
+        return std::make_unique<IntValue>(value);
+    }
+
+    if (literalType == Types::UsignedInt)
+    {
+        // This might throw?
+        auto value = static_cast<unsigned int>(std::stoul(rawValue));
+        return std::make_unique<UnsignedIntValue>(value);
+    }
+
+    std::cerr << "[NumLiteralExpression] ERROR: Couldn't create RuntimeValue for literal type " << literalType << std::endl;
+    std::exit(EXIT_FAILURE);
 }

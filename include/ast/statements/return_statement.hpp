@@ -15,6 +15,8 @@ public:
     const std::unique_ptr<const Expression> &GetValue() const;
     void SetValue(std::unique_ptr<const Expression> &value);
 
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 };
 

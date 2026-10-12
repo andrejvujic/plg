@@ -25,6 +25,8 @@ public:
     void SetCondition(std::unique_ptr<const Expression> &condition);
     const std::unique_ptr<const Expression> &GetCondition() const;
 
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 };
 

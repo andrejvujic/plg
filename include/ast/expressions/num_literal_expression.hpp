@@ -17,6 +17,8 @@ public:
     const std::string &GetRawValue() const;
     void SetRawValue(std::string rawValue);
 
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 };
 

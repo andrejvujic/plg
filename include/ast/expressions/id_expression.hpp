@@ -14,6 +14,8 @@ public:
     const std::string &GetValue() const;
     void SetValue(std::string value);
 
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 };
 

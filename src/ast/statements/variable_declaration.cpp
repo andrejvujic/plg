@@ -1,5 +1,8 @@
 #include "ast/statements/variable_declaration.hpp"
 
+#include "semantic_analysis/symbols/variable_symbol.hpp"
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
+
 VariableDeclaration::VariableDeclaration() : Statement(AstNodeType::VariableDeclaration)
 {
 }
@@ -46,4 +49,16 @@ void VariableDeclaration::Print(AstPrinter &printer) const
     printer.Field("Var. Type", varType);
     printer.Field("Initial Value", initialValue.get());
     printer.EndNode();
+}
+
+std::unique_ptr<RuntimeValue> VariableDeclaration::Execute(TreeWalkInterpreter &interpreter) const
+{
+    auto varValue = initialValue->Execute(interpreter);
+    auto scope = interpreter.GetCurrentScope();
+    std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
+        varName,
+        varType,
+        varValue);
+    scope->DeclareSymbol(symbol);
+    return varValue;
 }

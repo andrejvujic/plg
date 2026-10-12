@@ -22,3 +22,8 @@ void ComplexStatement::Print(AstPrinter &printer) const
             statement->Print(printer);
     printer.EndNode();
 }
+
+std::unique_ptr<RuntimeValue> ComplexStatement::Execute(TreeWalkInterpreter &interpreter) const
+{
+    return nullptr;
+}

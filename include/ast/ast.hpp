@@ -9,6 +9,9 @@
 
 #include "ast_printer.hpp"
 #include "shared/location.hpp"
+#include "runtime/runtime_value.hpp"
+
+class TreeWalkInterpreter;
 
 enum class AstNodeType
 {
@@ -37,12 +40,15 @@ private:
 
 public:
     AstNode(AstNodeType type);
+    virtual ~AstNode() = default;
+
     AstNodeType GetType() const;
 
     Location GetLocation() const;
     void SetLocation(Location location);
 
-    virtual void Print(AstPrinter &printer) const;
-    virtual ~AstNode() = default;
+    virtual std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const = 0;
+
+    virtual void Print(AstPrinter &printer) const = 0;
 };
 #endif

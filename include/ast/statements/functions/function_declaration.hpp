@@ -28,6 +28,8 @@ public:
     const std::vector<std::unique_ptr<const FunctionParameter>> &GetParameters() const;
     size_t GetParameterCount() const;
 
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 };
 

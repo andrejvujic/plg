@@ -1,4 +1,5 @@
 #include "ast/ast.hpp"
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
 
 AstNode::AstNode(AstNodeType t) : type(t), location(Location{.column = 0, .line = 0})
 {
@@ -17,11 +18,4 @@ Location AstNode::GetLocation() const
 void AstNode::SetLocation(Location location)
 {
     this->location = location;
-}
-
-void AstNode::Print(AstPrinter &printer) const
-{
-    printer.BeginNode("AstNode");
-    printer.Field("Type", std::to_string(static_cast<int>(type)));
-    printer.EndNode();
 }

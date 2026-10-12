@@ -17,7 +17,7 @@ private:
 
     bool AnalyzeStatement(const std::unique_ptr<const Statement> &statement);
 
-    std::unique_ptr<const FunctionSymbol> CreateFunctionSymbol(const FunctionDeclaration *function);
+    std::unique_ptr<FunctionSymbol> CreateFunctionSymbol(const FunctionDeclaration *function);
     bool AnalyzeFunctionDeclaration(const std::unique_ptr<const Statement> &statement);
 
     bool AnalyzeVariableDeclaration(const std::unique_ptr<const Statement> &statement);

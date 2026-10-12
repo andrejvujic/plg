@@ -45,3 +45,8 @@ void FunctionCallExpression::Print(AstPrinter &printer) const
 
     printer.EndNode();
 }
+
+std::unique_ptr<RuntimeValue> FunctionCallExpression::Execute(TreeWalkInterpreter &interpreter) const
+{
+    return nullptr;
+}

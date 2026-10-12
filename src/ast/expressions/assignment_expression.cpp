@@ -31,3 +31,8 @@ void AssignmentExpression::Print(AstPrinter &printer) const
     printer.Field("Value", value.get());
     printer.EndNode();
 }
+
+std::unique_ptr<RuntimeValue> AssignmentExpression::Execute(TreeWalkInterpreter &interpreter) const
+{
+    return nullptr;
+}

@@ -31,3 +31,8 @@ void FunctionParameter::Print(AstPrinter &printer) const
     printer.Field("Var. Name", varName);
     printer.EndNode();
 }
+
+std::unique_ptr<RuntimeValue> FunctionParameter::Execute(TreeWalkInterpreter &interpreter) const
+{
+    return nullptr;
+}

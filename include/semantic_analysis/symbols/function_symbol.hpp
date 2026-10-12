@@ -16,5 +16,7 @@ public:
     void AddParameter(std::string type);
     const std::vector<std::string> &GetParameters() const;
     size_t GetParameterCount() const;
+
+    void Print(std::ostream &out) const override;
 };
 #endif

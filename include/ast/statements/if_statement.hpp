@@ -20,6 +20,9 @@ public:
     void SetConsequentStatement(std::unique_ptr<const Statement> &statement);
     void SetAlternateStatement(std::unique_ptr<const Statement> &statement);
     void SetCondition(std::unique_ptr<const Expression> &condition);
+
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 };
 

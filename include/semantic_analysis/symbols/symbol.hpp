@@ -3,6 +3,7 @@
 
 #include <string>
 #include <string_view>
+#include <iostream>
 
 enum class SymbolKind
 {
@@ -25,6 +26,8 @@ public:
 
     bool IsOfKind(SymbolKind kind) const;
     bool IsOfType(std::string_view type) const;
+
+    virtual void Print(std::ostream &out) const = 0;
 
     virtual ~Symbol() = default;
 };

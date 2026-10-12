@@ -10,6 +10,8 @@
 
 #include "semantic_analysis/semantic_analyzer.hpp"
 
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
+
 std::string ReadEntireFile(const std::string &path)
 {
     std::ifstream file(path);
@@ -29,7 +31,7 @@ std::string ReadEntireFile(const std::string &path)
 
 int main()
 {
-    const std::string path = "samples/sample_2.plg";
+    const std::string path = "samples/sample_3.plg";
 
     std::cout << "Tokenizing -> " << path << std::endl;
 
@@ -49,6 +51,9 @@ int main()
 
     SemanticAnalyzer s;
     s.AnalyzeProgram(ast);
+
+    TreeWalkInterpreter interpreter(ast);
+    interpreter.Run();
 
     return EXIT_SUCCESS;
 }

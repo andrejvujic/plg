@@ -47,3 +47,8 @@ void IfStatement::Print(AstPrinter &printer) const
     printer.Field("Alternate", alternate.get());
     printer.EndNode();
 }
+
+std::unique_ptr<RuntimeValue> IfStatement::Execute(TreeWalkInterpreter &interpreter) const
+{
+    return nullptr;
+}

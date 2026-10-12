@@ -20,3 +20,8 @@ void ExpressionStatement::Print(AstPrinter &printer) const
     printer.Field("Expression", expression.get());
     printer.EndNode();
 }
+
+std::unique_ptr<RuntimeValue> ExpressionStatement::Execute(TreeWalkInterpreter &interpreter) const
+{
+    return nullptr;
+}

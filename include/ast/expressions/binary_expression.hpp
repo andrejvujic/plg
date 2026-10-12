@@ -20,6 +20,8 @@ public:
     const std::unique_ptr<const Expression> &GetRight() const;
     const std::string &GetOperator() const;
 
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 
     static std::string_view OP_PLUS, OP_MINUS, OP_MUL, OP_DIV;

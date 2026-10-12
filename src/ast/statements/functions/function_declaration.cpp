@@ -67,3 +67,8 @@ void FunctionDeclaration::Print(AstPrinter &printer) const
 
     printer.EndNode();
 }
+
+std::unique_ptr<RuntimeValue> FunctionDeclaration::Execute(TreeWalkInterpreter &interpreter) const
+{
+    return nullptr;
+}

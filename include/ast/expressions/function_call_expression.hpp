@@ -22,6 +22,8 @@ public:
 
     void AddArgument(std::unique_ptr<const Expression> &argument);
 
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 };
 

@@ -21,6 +21,8 @@ public:
     void SetVarType(std::string varType);
     void SetInitialVarValue(std::unique_ptr<const Expression> &initialValue);
 
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 };
 #endif

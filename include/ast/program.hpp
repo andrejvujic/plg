@@ -16,6 +16,9 @@ public:
 
     void AddStatement(std::unique_ptr<const Statement> &statement);
     const std::vector<std::unique_ptr<const Statement>> &GetStatements() const;
+
+    virtual std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 };
 

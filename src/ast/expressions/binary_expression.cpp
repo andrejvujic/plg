@@ -1,4 +1,6 @@
 #include "ast/expressions/binary_expression.hpp"
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
+#include "runtime/runtime_operations.hpp"
 
 BinaryExpression::BinaryExpression() : Expression(AstNodeType::BinaryExpression)
 {
@@ -32,6 +34,18 @@ const std::unique_ptr<const Expression> &BinaryExpression::GetRight() const
 const std::string &BinaryExpression::GetOperator() const
 {
     return op;
+}
+
+std::unique_ptr<RuntimeValue> BinaryExpression::Execute(TreeWalkInterpreter &interpreter) const
+{
+    auto leftValue = left->Execute(interpreter);
+    auto rightValue = right->Execute(interpreter);
+
+    if (op == BinaryExpression::OP_PLUS)
+        return RuntimeOperations::Add(leftValue, rightValue);
+
+    std::cerr << "[BinaryExpression] ERROR: Execution unsupported for operation \"" << op << "\"" << std::endl;
+    std::exit(EXIT_FAILURE);
 }
 
 void BinaryExpression::Print(AstPrinter &printer) const

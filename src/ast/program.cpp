@@ -1,4 +1,5 @@
 #include "ast/program.hpp"
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
 
 Program::Program() : AstNode(AstNodeType::Program)
 {
@@ -12,6 +13,13 @@ void Program::AddStatement(std::unique_ptr<const Statement> &statement)
 const std::vector<std::unique_ptr<const Statement>> &Program::GetStatements() const
 {
     return statements;
+}
+
+std::unique_ptr<RuntimeValue> Program::Execute(TreeWalkInterpreter &interpreter) const
+{
+    for (const auto &statement : statements)
+        statement->Execute(interpreter);
+    return nullptr;
 }
 
 void Program::Print(AstPrinter &printer) const

@@ -53,3 +53,8 @@ void ForStatement::Print(AstPrinter &printer) const
     printer.Field("Body", body.get());
     printer.EndNode();
 }
+
+std::unique_ptr<RuntimeValue> ForStatement::Execute(TreeWalkInterpreter &interpreter) const
+{
+    return nullptr;
+}

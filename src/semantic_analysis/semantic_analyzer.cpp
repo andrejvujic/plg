@@ -27,7 +27,7 @@ void SemanticAnalyzer::AnalyzeProgram(const std::unique_ptr<Program> &program)
         AnalyzeStatement(statement);
 }
 
-std::unique_ptr<const FunctionSymbol> SemanticAnalyzer::CreateFunctionSymbol(const FunctionDeclaration *function)
+std::unique_ptr<FunctionSymbol> SemanticAnalyzer::CreateFunctionSymbol(const FunctionDeclaration *function)
 {
     FunctionSymbol functionSymbol(function->GetName(), function->GetReturnType());
     for (auto &parameter : function->GetParameters())
@@ -38,7 +38,7 @@ std::unique_ptr<const FunctionSymbol> SemanticAnalyzer::CreateFunctionSymbol(con
 bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<const Statement> &statement)
 {
     auto functionDeclaration = dynamic_cast<const FunctionDeclaration *>(statement.get());
-    std::unique_ptr<const Symbol> functionSymbol = CreateFunctionSymbol(functionDeclaration);
+    std::unique_ptr<Symbol> functionSymbol = CreateFunctionSymbol(functionDeclaration);
     currentScope->DeclareSymbol(functionSymbol);
 
     auto functionScope = std::make_shared<Scope>(currentScope);
@@ -47,7 +47,7 @@ bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<const St
     {
         if (!currentScope->SymbolExists(parameter->GetVarName(), SymbolKind::Variable))
         {
-            std::unique_ptr<const Symbol> symbol = std::make_unique<VariableSymbol>(
+            std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
                 parameter->GetVarName(),
                 parameter->GetVarType());
             currentScope->DeclareSymbol(symbol);
@@ -229,7 +229,7 @@ bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<const St
         return false;
     }
 
-    std::unique_ptr<const Symbol> symbol = std::make_unique<VariableSymbol>(
+    std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
         variableDeclaration->GetVarName(),
         variableDeclaration->GetVarType());
     currentScope->DeclareSymbol(symbol);

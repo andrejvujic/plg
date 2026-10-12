@@ -18,6 +18,8 @@ public:
     void SetVarName(std::string varName);
     void SetVarType(std::string varType);
 
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
+
     void Print(AstPrinter &printer) const override;
 };
 

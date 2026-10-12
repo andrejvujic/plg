@@ -18,3 +18,7 @@ size_t FunctionSymbol::GetParameterCount() const
 {
     return parameters.size();
 }
+
+void FunctionSymbol::Print(std::ostream &out) const
+{
+}
