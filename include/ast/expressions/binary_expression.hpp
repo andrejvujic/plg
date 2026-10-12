@@ -19,15 +19,25 @@ public:
     const std::unique_ptr<const Expression> &GetLeft() const;
     const std::unique_ptr<const Expression> &GetRight() const;
     const std::string &GetOperator() const;
+    bool HasArithmeticOperator() const;
+    bool HasAnyOfOperators(std::initializer_list<std::string_view> operators) const;
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 
     void Print(AstPrinter &printer) const override;
 
     // Arithmetic operators:
-    static std::string_view OP_PLUS = "+",
-                            OP_MINUS = "-",
-                            OP_MUL = "*",
-                            OP_DIV = "/";
+    constexpr static std::string_view OP_PLUS = "+";
+    constexpr static std::string_view OP_MINUS = "-";
+    constexpr static std::string_view OP_MUL = "*";
+    constexpr static std::string_view OP_DIV = "/";
+
+    // Relational operators:
+    constexpr static const std::string_view OP_EQ = "==";
+    constexpr static const std::string_view OP_NEQ = "!=";
+    constexpr static const std::string_view OP_LT = "<";
+    constexpr static const std::string_view OP_LTE = "<=";
+    constexpr static const std::string_view OP_GT = ">";
+    constexpr static const std::string_view OP_GTE = ">=";
 };
 #endif

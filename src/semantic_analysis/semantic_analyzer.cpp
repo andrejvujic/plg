@@ -23,8 +23,12 @@ SemanticAnalyzer::SemanticAnalyzer() : currentScope(std::make_shared<Scope>())
 
 void SemanticAnalyzer::AnalyzeProgram(const std::unique_ptr<Program> &program)
 {
+    auto result = true;
     for (auto &statement : program->GetStatements())
-        AnalyzeStatement(statement);
+        result = AnalyzeStatement(statement) && result;
+
+    if (!result)
+        std::exit(EXIT_FAILURE);
 }
 
 std::unique_ptr<FunctionSymbol> SemanticAnalyzer::CreateFunctionSymbol(const FunctionDeclaration *function)
@@ -93,7 +97,6 @@ bool SemanticAnalyzer::AnalyzeStatement(const std::unique_ptr<const Statement> &
         return AnalyzeComplexStatement(statement);
     case AstNodeType::ExpressionStatement:
         return AnalyzeExpressionStatement(statement);
-
     default:
         PrintErrorPrefix(std::cerr, statement.get()) << "Semantic analysis not implemented for given statement type" << std::endl;
         return false;
@@ -116,7 +119,16 @@ bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<const State
 bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement> &statement)
 {
     auto ifStatement = dynamic_cast<const IfStatement *>(statement.get());
+
     auto result = AnalyzeExpression(ifStatement->GetCondition());
+    auto conditionType = ResolveExpressionType(ifStatement->GetCondition());
+    if (conditionType != Types::Bool)
+    {
+        result = false;
+        PrintErrorPrefix(std::cerr, ifStatement)
+            << "Invalid type in condition, expected \"bool\" but got \"" << conditionType << "\""
+            << std::endl;
+    }
 
     auto consequentScope = std::make_shared<Scope>(currentScope);
     currentScope = consequentScope;
@@ -140,9 +152,18 @@ bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<const Statement
 {
     auto forStatement = dynamic_cast<const ForStatement *>(statement.get());
 
-    auto result = true;
-    result = AnalyzeExpression(forStatement->GetInitExpression()) && result; // TODO: This needs to be an AssignmentExpression.
+    auto result = AnalyzeExpression(forStatement->GetInitExpression()); // TODO: This needs to be an AssignmentExpression.
+
     result = AnalyzeExpression(forStatement->GetCondition()) && result;
+    auto conditionType = ResolveExpressionType(forStatement->GetCondition());
+    if (conditionType != Types::Bool)
+    {
+        result = false;
+        PrintErrorPrefix(std::cerr, forStatement)
+            << "Invalid type in condition, expected \"bool\" but got \"" << conditionType << "\""
+            << std::endl;
+    }
+
     result = AnalyzeExpression(forStatement->GetUpdateExpression()) && result; // TODO: This needs to be an AssignmentExpression.
 
     auto bodyScope = std::make_shared<Scope>(currentScope);
@@ -236,9 +257,10 @@ bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<const St
 
     if (variableDeclaration->HasInitialValue())
     {
-        const auto initialValueType = ResolveExpressionType(variableDeclaration->GetInitialValue());
+        auto result = AnalyzeExpression(variableDeclaration->GetInitialValue());
+        auto initialValueType = ResolveExpressionType(variableDeclaration->GetInitialValue());
         if (initialValueType == variableDeclaration->GetVarType())
-            return true;
+            return result;
 
         PrintErrorPrefix(std::cerr, variableDeclaration)
             << "Invalid initial value of \""
@@ -246,6 +268,7 @@ bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<const St
             << variableDeclaration->GetVarType() << "\" but got \""
             << initialValueType << "\""
             << std::endl;
+
         return false;
     }
 
@@ -259,6 +282,7 @@ bool SemanticAnalyzer::AnalyzeExpression(const std::unique_ptr<const Expression>
     case AstNodeType::IdExpression:
         return AnalyzeIdExpression(expression);
     case AstNodeType::NumLiteralExpression:
+    case AstNodeType::BoolLiteralExpression:
         return true;
     case AstNodeType::BinaryExpression:
         return AnalyzeBinaryExpression(expression);
@@ -392,11 +416,27 @@ bool SemanticAnalyzer::AnalyzeBinaryExpression(const std::unique_ptr<const Expre
     }
 
     if (leftType != rightType)
+    {
         PrintErrorPrefix(std::cerr, expression.get())
             << "Invalid operands, can't apply \""
             << e->GetOperator() << "\" to operands of types \""
             << leftType << "\" and \"" << rightType << "\""
             << std::endl;
+        return false;
+    }
+
+    if (e->HasArithmeticOperator() || !e->HasAnyOfOperators({BinaryExpression::OP_EQ, BinaryExpression::OP_NEQ}))
+    {
+        if (leftType == Types::Int || leftType == Types::UsignedInt)
+            return true;
+
+        PrintErrorPrefix(std::cerr, expression.get())
+            << "Invalid operands, can't apply \""
+            << e->GetOperator() << "\" to operands of type \""
+            << leftType << "\""
+            << std::endl;
+        return false;
+    }
 
     return true;
 }
@@ -409,6 +449,8 @@ std::string SemanticAnalyzer::ResolveExpressionType(const std::unique_ptr<const 
         return GetIdExpressionType(expression);
     case AstNodeType::NumLiteralExpression:
         return GetNumLiteralExpressionType(expression);
+    case AstNodeType::BoolLiteralExpression:
+        return Types::Bool;
     case AstNodeType::BinaryExpression:
         return ResolveBinaryExpressionType(expression);
     case AstNodeType::FunctionCallExpression:
@@ -454,10 +496,13 @@ std::string SemanticAnalyzer::ResolveBinaryExpressionType(const std::unique_ptr<
         return Types::Unknown;
 
     auto rightType = ResolveExpressionType(binaryExpression->GetRight());
-    if (rightType == Types::Unknown)
+    if (rightType == Types::Unknown || rightType != leftType)
         return Types::Unknown;
 
-    return leftType == rightType ? rightType : Types::Unknown;
+    if (binaryExpression->HasArithmeticOperator())
+        return leftType;
+
+    return Types::Bool;
 }
 
 std::ostream &SemanticAnalyzer::PrintErrorPrefix(std::ostream &out, const AstNode *node) const

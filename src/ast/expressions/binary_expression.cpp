@@ -36,6 +36,23 @@ const std::string &BinaryExpression::GetOperator() const
     return op;
 }
 
+bool BinaryExpression::HasArithmeticOperator() const
+{
+    return HasAnyOfOperators({BinaryExpression::OP_PLUS,
+                              BinaryExpression::OP_MINUS,
+                              BinaryExpression::OP_MUL,
+                              BinaryExpression::OP_DIV});
+}
+
+bool BinaryExpression::HasAnyOfOperators(std::initializer_list<std::string_view> operators) const
+{
+    return std::any_of(
+        operators.begin(),
+        operators.end(),
+        [this](std::string_view op)
+        { return op == this->op; });
+}
+
 std::unique_ptr<RuntimeValue> BinaryExpression::Execute(TreeWalkInterpreter &interpreter) const
 {
     auto leftValue = left->Execute(interpreter);
@@ -52,6 +69,24 @@ std::unique_ptr<RuntimeValue> BinaryExpression::Execute(TreeWalkInterpreter &int
 
     if (op == BinaryExpression::OP_DIV)
         return RuntimeOperations::Div(leftValue, rightValue);
+
+    if (op == BinaryExpression::OP_EQ)
+        return RuntimeOperations::Eq(leftValue, rightValue);
+
+    if (op == BinaryExpression::OP_NEQ)
+        return RuntimeOperations::NotEq(leftValue, rightValue);
+
+    if (op == BinaryExpression::OP_LT)
+        return RuntimeOperations::LessThan(leftValue, rightValue);
+
+    if (op == BinaryExpression::OP_LTE)
+        return RuntimeOperations::LessThenOrEq(leftValue, rightValue);
+
+    if (op == BinaryExpression::OP_GT)
+        return RuntimeOperations::GreaterThan(leftValue, rightValue);
+
+    if (op == BinaryExpression::OP_GTE)
+        return RuntimeOperations::GreaterThenOrEq(leftValue, rightValue);
 
     std::cerr << "[BinaryExpression] ERROR: Execution unsupported for operation \"" << op << "\"" << std::endl;
     std::exit(EXIT_FAILURE);

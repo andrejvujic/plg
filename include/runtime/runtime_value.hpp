@@ -7,7 +7,8 @@ enum class RuntimeValueType
 {
     Null,
     Int,
-    UnsignedInt
+    UnsignedInt,
+    Bool
 };
 
 class RuntimeValue

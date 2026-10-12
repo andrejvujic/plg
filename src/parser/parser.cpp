@@ -6,6 +6,7 @@
 #include "ast/program.hpp"
 #include "ast/statements/functions/function_declaration.hpp"
 #include "ast/expressions/num_literal_expression.hpp"
+#include "ast/expressions/bool_literal_expression.hpp"
 #include "ast/expressions/id_expression.hpp"
 #include "ast/expressions/binary_expression.hpp"
 #include "ast/expressions/assignment_expression.hpp"
@@ -39,11 +40,7 @@ bool Parser::HasMoreTokens() const
 bool Parser::NextMatches(TokenType type) const
 {
     if (!HasMoreTokens())
-    {
-        std::cerr << "[Parser] ERROR: Unexpected EOF" << std::endl;
-        PrintExpectedType(type);
-        exit(EXIT_FAILURE);
-    }
+        return false;
 
     const std::unique_ptr<const Token> &token = tokens.at(index);
     return token->Matches(type);
@@ -52,11 +49,7 @@ bool Parser::NextMatches(TokenType type) const
 bool Parser::NextMatchesAny(const std::initializer_list<TokenType> &types) const
 {
     if (!HasMoreTokens())
-    {
-        std::cerr << "[Parser] ERROR: Unexpected EOF" << std::endl;
-        PrintExpectedAnyOfTypes(types);
-        exit(EXIT_FAILURE);
-    }
+        return false;
 
     const std::unique_ptr<const Token> &token = tokens.at(index);
     return token->MatchesAny(types);
@@ -385,6 +378,15 @@ std::unique_ptr<const Expression> Parser::ParseExpression()
 
 std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
 {
+    if (NextMatchesAny({TokenType::KEYWORD_TRUE, TokenType::KEYWORD_FALSE}))
+    {
+        auto &valueToken = ConsumeAny({TokenType::KEYWORD_TRUE, TokenType::KEYWORD_FALSE});
+        auto expression = std::make_unique<BoolLiteralExpression>();
+        expression->SetLocation(valueToken->GetLocation());
+        expression->SetRawValue(valueToken->GetLexeme());
+        return expression;
+    }
+
     if (NextMatches(TokenType::ID))
     {
         auto &idToken = Consume(TokenType::ID);

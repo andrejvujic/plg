@@ -26,6 +26,7 @@ enum class AstNodeType
     ForStatement,
     ExpressionStatement,
     NumLiteralExpression,
+    BoolLiteralExpression,
     IdExpression,
     BinaryExpression,
     FunctionCallExpression,

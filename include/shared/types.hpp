@@ -9,6 +9,7 @@ public:
     static std::string Void;
     static std::string Int;
     static std::string UsignedInt;
+    static std::string Bool;
     static std::string Unknown;
 };
 
