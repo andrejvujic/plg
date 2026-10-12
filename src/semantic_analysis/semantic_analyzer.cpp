@@ -103,7 +103,7 @@ bool SemanticAnalyzer::AnalyzeStatement(const std::unique_ptr<const Statement> &
 
 bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<const Statement> &statement)
 {
-    bool result = true;
+    auto result = true;
     auto complexStatement = dynamic_cast<const ComplexStatement *>(statement.get());
     for (auto &childStatement : complexStatement->GetStatements())
     {
@@ -115,13 +115,12 @@ bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<const State
 
 bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement> &statement)
 {
-    bool result = true;
     auto ifStatement = dynamic_cast<const IfStatement *>(statement.get());
-    result = result && AnalyzeExpression(ifStatement->GetCondition());
+    auto result = AnalyzeExpression(ifStatement->GetCondition());
 
     auto consequentScope = std::make_shared<Scope>(currentScope);
     currentScope = consequentScope;
-    result = result && AnalyzeStatement(ifStatement->GetConsequentStatement());
+    result = AnalyzeStatement(ifStatement->GetConsequentStatement()) && result;
 
     currentScope = consequentScope->GetParent();
 
@@ -130,7 +129,7 @@ bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement>
 
     auto alternateScope = std::make_shared<Scope>(currentScope);
     currentScope = alternateScope;
-    result = result && AnalyzeStatement(ifStatement->GetAlternateStatement());
+    result = AnalyzeStatement(ifStatement->GetAlternateStatement()) && result;
 
     currentScope = alternateScope->GetParent();
 
@@ -142,13 +141,13 @@ bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<const Statement
     auto forStatement = dynamic_cast<const ForStatement *>(statement.get());
 
     auto result = true;
-    result = result && AnalyzeExpression(forStatement->GetInitExpression()); // TODO: This needs to be an AssignmentExpression.
-    result = result && AnalyzeExpression(forStatement->GetCondition());
-    result = result && AnalyzeExpression(forStatement->GetUpdateExpression()); // TODO: This needs to be an AssignmentExpression.
+    result = AnalyzeExpression(forStatement->GetInitExpression()) && result; // TODO: This needs to be an AssignmentExpression.
+    result = AnalyzeExpression(forStatement->GetCondition()) && result;
+    result = AnalyzeExpression(forStatement->GetUpdateExpression()) && result; // TODO: This needs to be an AssignmentExpression.
 
     auto bodyScope = std::make_shared<Scope>(currentScope);
     currentScope = bodyScope;
-    result = result && AnalyzeStatement(forStatement->GetBody());
+    result = AnalyzeStatement(forStatement->GetBody()) && result;
 
     currentScope = bodyScope->GetParent();
     return result;
