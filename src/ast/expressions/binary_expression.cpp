@@ -88,7 +88,7 @@ std::unique_ptr<RuntimeValue> BinaryExpression::Execute(TreeWalkInterpreter &int
     if (op == BinaryExpression::OP_GTE)
         return RuntimeOperations::GreaterThenOrEq(leftValue, rightValue);
 
-    std::cerr << "[BinaryExpression] ERROR: Execution unsupported for operation \"" << op << "\"" << std::endl;
+    std::cerr << "[BinaryExpression] ERROR: Execution not implemented for operation \"" << op << "\"" << std::endl;
     std::exit(EXIT_FAILURE);
 }
 

@@ -23,7 +23,6 @@ public:
     RuntimeValueType GetType() const;
 
     virtual std::unique_ptr<RuntimeValue> Clone() const = 0;
-
     virtual std::ostream &Print(std::ostream &out) const = 0;
 };
 

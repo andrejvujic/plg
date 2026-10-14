@@ -1,5 +1,9 @@
 #include "ast/statements/if_statement.hpp"
 
+#include "runtime/runtime_value.hpp"
+#include "runtime/bool_value.hpp"
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
+
 IfStatement::IfStatement() : Statement(AstNodeType::IfStatement)
 {
 }
@@ -50,5 +54,13 @@ void IfStatement::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> IfStatement::Execute(TreeWalkInterpreter &interpreter) const
 {
-    return nullptr;
+    auto c = condition->Execute(interpreter);
+    if (c->GetType() != RuntimeValueType::Bool)
+        std::exit(EXIT_FAILURE);
+
+    auto cc = dynamic_cast<BoolValue *>(c.get());
+    if (cc->GetValue())
+        return consequent->Execute(interpreter);
+
+    return alternate ? alternate->Execute(interpreter) : nullptr;
 }

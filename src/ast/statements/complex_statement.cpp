@@ -1,5 +1,7 @@
 #include "ast/statements/complex_statement.hpp"
 
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
+
 ComplexStatement::ComplexStatement() : Statement(AstNodeType::ComplexStatement)
 {
 }
@@ -17,7 +19,7 @@ const std::vector<std::unique_ptr<const Statement>> &ComplexStatement::GetStatem
 void ComplexStatement::Print(AstPrinter &printer) const
 {
     printer.BeginNode("ComplexStatement");
-    for (const auto &statement : body)
+    for (auto &statement : body)
         if (statement)
             statement->Print(printer);
     printer.EndNode();
@@ -25,5 +27,11 @@ void ComplexStatement::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> ComplexStatement::Execute(TreeWalkInterpreter &interpreter) const
 {
+    interpreter.CreateScope();
+    for (auto &statement : body)
+        if (statement)
+            statement->Execute(interpreter);
+    interpreter.DestroyScope();
+
     return nullptr;
 }

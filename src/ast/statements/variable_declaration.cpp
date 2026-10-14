@@ -53,12 +53,15 @@ void VariableDeclaration::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> VariableDeclaration::Execute(TreeWalkInterpreter &interpreter) const
 {
-    auto varValue = initialValue->Execute(interpreter);
+    auto varValue = initialValue ? initialValue->Execute(interpreter) : std::make_unique<NullValue>();
+    auto varValueClone = varValue->Clone();
+
     auto scope = interpreter.GetCurrentScope();
-    std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
+    std::unique_ptr<Symbol> varSymbol = std::make_unique<VariableSymbol>(
         varName,
         varType,
         varValue);
-    scope->DeclareSymbol(symbol);
-    return varValue;
+    scope->DeclareSymbol(varSymbol);
+
+    return varValueClone;
 }

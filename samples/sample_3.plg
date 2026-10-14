@@ -1,3 +1,9 @@
-bool a = false;
-bool b = false;
-bool c = a == b;
+int a = 10;
+int b = 8;
+bool c;
+
+if (a == b) {
+    c = true;
+} else if (a >= b) {
+    c = false;
+}

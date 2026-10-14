@@ -1,5 +1,7 @@
 #include "ast/statements/expression_statement.hpp"
 
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
+
 ExpressionStatement::ExpressionStatement() : Statement(AstNodeType::ExpressionStatement)
 {
 }
@@ -23,5 +25,5 @@ void ExpressionStatement::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> ExpressionStatement::Execute(TreeWalkInterpreter &interpreter) const
 {
-    return nullptr;
+    return expression->Execute(interpreter);
 }
