@@ -1,6 +1,6 @@
 #include "semantic_analysis/semantic_analyzer.hpp"
-#include "semantic_analysis/symbols/function_symbol.hpp"
-#include "semantic_analysis/symbols/variable_symbol.hpp"
+#include "symbols/function_symbol.hpp"
+#include "symbols/variable_symbol.hpp"
 #include "shared/types.hpp"
 
 #include "ast/statements/if_statement.hpp"

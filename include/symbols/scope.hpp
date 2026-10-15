@@ -7,7 +7,7 @@
 #include <iostream>
 #include <utility>
 
-#include "semantic_analysis/symbols/symbol.hpp"
+#include "symbols/symbol.hpp"
 
 class Scope
 {

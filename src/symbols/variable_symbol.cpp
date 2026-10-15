@@ -1,4 +1,4 @@
-#include "semantic_analysis/symbols/variable_symbol.hpp"
+#include "symbols/variable_symbol.hpp"
 
 std::unique_ptr<RuntimeValue> &VariableSymbol::GetValue()
 {

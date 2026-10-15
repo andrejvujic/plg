@@ -2,7 +2,7 @@
 #define FUNCTION_SYMBOL_HPP_INCLUDED
 
 #include "ast/statements/functions/function_declaration.hpp"
-#include "semantic_analysis/symbols/symbol.hpp"
+#include "symbols/symbol.hpp"
 #include <vector>
 #include <string>
 

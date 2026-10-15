@@ -2,7 +2,7 @@
 #define TREE_WALK_INTERPRETER_HPP_INCLUDED
 
 #include "ast/program.hpp"
-#include "semantic_analysis/scope.hpp"
+#include "symbols/scope.hpp"
 
 class TreeWalkInterpreter
 {

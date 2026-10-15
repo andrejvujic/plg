@@ -1,6 +1,6 @@
 #include "ast/statements/variable_declaration.hpp"
 
-#include "semantic_analysis/symbols/variable_symbol.hpp"
+#include "symbols/variable_symbol.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
 const std::string &VariableDeclaration::GetVarName() const

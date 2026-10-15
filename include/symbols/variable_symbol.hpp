@@ -1,7 +1,7 @@
 #ifndef VARIABLE_SYMBOL_HPP_INCLUDED
 #define VARIABLE_SYMBOL_HPP_INCLUDED
 
-#include "symbol.hpp"
+#include "symbols/symbol.hpp"
 
 #include "runtime/runtime_value.hpp"
 #include "runtime/null_value.hpp"

@@ -2,7 +2,7 @@
 
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 #include "runtime/bool_value.hpp"
-#include "semantic_analysis/scoped_new_scope.hpp"
+#include "runtime/scoped_new_scope.hpp"
 
 const std::unique_ptr<Statement> &ForStatement::GetBody() const
 {

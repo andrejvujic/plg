@@ -1,4 +1,4 @@
-#include "semantic_analysis/scope.hpp"
+#include "symbols/scope.hpp"
 #include <iostream>
 
 std::shared_ptr<Scope> Scope::GetParent() const

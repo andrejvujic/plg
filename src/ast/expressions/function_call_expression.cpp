@@ -1,9 +1,9 @@
 #include "ast/expressions/function_call_expression.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 #include "runtime/return_signal.hpp"
-#include "semantic_analysis/symbols/function_symbol.hpp"
-#include "semantic_analysis/symbols/variable_symbol.hpp"
-#include "semantic_analysis/scoped_new_scope.hpp"
+#include "symbols/function_symbol.hpp"
+#include "symbols/variable_symbol.hpp"
+#include "runtime/scoped_new_scope.hpp"
 
 void FunctionCallExpression::AddArgument(std::unique_ptr<Expression> argument)
 {

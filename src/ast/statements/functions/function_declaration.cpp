@@ -1,6 +1,6 @@
 #include "ast/statements/functions/function_declaration.hpp"
 
-#include "semantic_analysis/symbols/function_symbol.hpp"
+#include "symbols/function_symbol.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
 const std::string &FunctionDeclaration::GetName() const

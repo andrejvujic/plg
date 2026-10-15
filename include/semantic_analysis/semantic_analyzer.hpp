@@ -1,8 +1,8 @@
 #ifndef SEMANTIC_ANALYZER_HPP_INCLUDED
 #define SEMANTIC_ANALYZER_HPP_INCLUDED
 
-#include "semantic_analysis/scope.hpp"
-#include "semantic_analysis/symbols/function_symbol.hpp"
+#include "symbols/scope.hpp"
+#include "symbols/function_symbol.hpp"
 
 #include "ast/program.hpp"
 #include "ast/statements/functions/function_declaration.hpp"

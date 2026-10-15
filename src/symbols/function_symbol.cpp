@@ -1,4 +1,4 @@
-#include "semantic_analysis/symbols/function_symbol.hpp"
+#include "symbols/function_symbol.hpp"
 
 FunctionSymbol::FunctionSymbol(std::string_view name,
                                std::string_view type,
