@@ -2,6 +2,7 @@
 #define BINARY_EXPRESSION_HPP_INCLUDED
 
 #include "ast/expressions/expression.hpp"
+#include <map>
 
 class BinaryExpression : public Expression
 {
@@ -20,17 +21,17 @@ public:
     const std::unique_ptr<const Expression> &GetRight() const;
     const std::string &GetOperator() const;
     bool HasArithmeticOperator() const;
-    bool HasAnyOfOperators(std::initializer_list<std::string_view> operators) const;
+    bool HasAnyOfOperators(std::initializer_list<std::string_view> ops) const;
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 
     void Print(AstPrinter &printer) const override;
 
     // Arithmetic operators:
-    constexpr static std::string_view OP_PLUS = "+";
-    constexpr static std::string_view OP_MINUS = "-";
-    constexpr static std::string_view OP_MUL = "*";
-    constexpr static std::string_view OP_DIV = "/";
+    constexpr static const std::string_view OP_PLUS = "+";
+    constexpr static const std::string_view OP_MINUS = "-";
+    constexpr static const std::string_view OP_MUL = "*";
+    constexpr static const std::string_view OP_DIV = "/";
 
     // Relational operators:
     constexpr static const std::string_view OP_EQ = "==";

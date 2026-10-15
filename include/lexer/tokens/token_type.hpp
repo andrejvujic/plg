@@ -28,7 +28,7 @@ enum TokenType
     ARITHMETIC_OPERATOR = 1 << 18,
     RELATIONAL_OPERATOR = 1 << 19,
     LOGICAL_OPERATOR = 1 << 20,
-    ARROW = 1 << 20,
+    ARROW = 1 << 21,
 };
 
 std::ostream &operator<<(std::ostream &out, const TokenType &value);

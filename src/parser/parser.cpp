@@ -342,7 +342,12 @@ std::unique_ptr<const ForStatement> Parser::ParseForStatement()
 
 std::unique_ptr<const Expression> Parser::ParseExpression()
 {
-    std::unique_ptr<const Expression> left = ParsePrimaryExpression();
+    std::unique_ptr<const Expression> left;
+
+    if (NextMatches(TokenType::O_PAREN))
+        left = ParseGroupedExpression();
+    else
+        left = ParsePrimaryExpression();
 
     if (NextMatches(TokenType::ASSIGNMENT))
     {
@@ -356,12 +361,16 @@ std::unique_ptr<const Expression> Parser::ParseExpression()
     }
 
     std::unique_ptr<const Expression> right;
-
-    while (NextMatchesAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR, TokenType::LOGICAL_OPERATOR}))
+    auto opTokens = {TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR, TokenType::LOGICAL_OPERATOR};
+    while (NextMatchesAny(opTokens) || NextMatches(TokenType::C_PAREN))
     {
-        const auto &opToken = ConsumeAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR, TokenType::LOGICAL_OPERATOR});
-        if (opToken->LexemeEqualsAny({BinaryExpression::OP_MUL,
-                                      BinaryExpression::OP_DIV}))
+        if (NextMatches(TokenType::C_PAREN))
+            return left;
+
+        const auto &opToken = ConsumeAny(opTokens);
+        if (NextMatches(TokenType::O_PAREN))
+            right = ParseGroupedExpression();
+        else if (opToken->GetLexeme() == BinaryExpression::OP_MUL || opToken->GetLexeme() == BinaryExpression::OP_DIV)
             right = ParsePrimaryExpression();
         else
             right = ParseExpression();
@@ -375,6 +384,14 @@ std::unique_ptr<const Expression> Parser::ParseExpression()
     }
 
     return left;
+}
+
+std::unique_ptr<const Expression> Parser::ParseGroupedExpression()
+{
+    Consume(TokenType::O_PAREN);
+    auto expression = ParseExpression();
+    Consume(TokenType::C_PAREN);
+    return expression;
 }
 
 std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()

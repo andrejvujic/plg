@@ -40,6 +40,7 @@ private:
     std::unique_ptr<const ForStatement> ParseForStatement();
 
     std::unique_ptr<const Expression> ParseExpression();
+    std::unique_ptr<const Expression> ParseGroupedExpression();
     std::unique_ptr<const Expression> ParsePrimaryExpression();
 
     const std::unique_ptr<const Token> &Consume(TokenType type);

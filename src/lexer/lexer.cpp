@@ -160,7 +160,7 @@ bool Lexer::Tokenize()
         }
         else
         {
-            // std::cout << *token << std::endl;
+            std::cout << *token << std::endl;
             tokens.push_back(std::move(token));
         }
         SkipWhitespace();

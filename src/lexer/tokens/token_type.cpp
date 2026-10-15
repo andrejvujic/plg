@@ -11,8 +11,11 @@ std::ostream &operator<<(std::ostream &out, const TokenType &value)
         INSERT_ELEMENT(KEYWORD_FUNCTION);
         INSERT_ELEMENT(KEYWORD_RETURN);
         INSERT_ELEMENT(KEYWORD_IF);
+        INSERT_ELEMENT(KEYWORD_ELSE);
         INSERT_ELEMENT(KEYWORD_TYPE);
-        INSERT_ELEMENT(ARROW);
+        INSERT_ELEMENT(KEYWORD_FOR);
+        INSERT_ELEMENT(KEYWORD_TRUE);
+        INSERT_ELEMENT(KEYWORD_FALSE);
         INSERT_ELEMENT(ID);
         INSERT_ELEMENT(NUMBER);
         INSERT_ELEMENT(O_CURLY);
@@ -26,6 +29,7 @@ std::ostream &operator<<(std::ostream &out, const TokenType &value)
         INSERT_ELEMENT(ARITHMETIC_OPERATOR);
         INSERT_ELEMENT(RELATIONAL_OPERATOR);
         INSERT_ELEMENT(LOGICAL_OPERATOR);
+        INSERT_ELEMENT(ARROW);
 #undef INSERT_ELEMENT
 
         return result;
