@@ -11,6 +11,22 @@ const std::string &Token::GetLexeme() const
     return lexeme;
 }
 
+bool Token::LexemeEquals(std::string_view lexeme) const
+{
+    return this->lexeme == lexeme;
+}
+
+bool Token::LexemeEqualsAny(std::initializer_list<std::string_view> lexemes) const
+{
+    return std::any_of(
+        lexemes.begin(),
+        lexemes.end(),
+        [this](auto lexeme)
+        {
+            return this->lexeme == lexeme;
+        });
+}
+
 Location Token::GetLocation() const
 {
     return location;

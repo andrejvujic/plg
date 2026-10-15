@@ -425,17 +425,19 @@ bool SemanticAnalyzer::AnalyzeBinaryExpression(const std::unique_ptr<const Expre
         return false;
     }
 
+    if (e->HasAnyOfOperators({BinaryExpression::OP_AND, BinaryExpression::OP_OR}))
+        return leftType == Types::Bool;
+
     if (e->HasArithmeticOperator() || !e->HasAnyOfOperators({BinaryExpression::OP_EQ, BinaryExpression::OP_NEQ}))
     {
-        if (leftType == Types::Int || leftType == Types::UsignedInt)
-            return true;
+        if (leftType != Types::Int && leftType != Types::UsignedInt)
+            PrintErrorPrefix(std::cerr, expression.get())
+                << "Invalid operands, can't apply \""
+                << e->GetOperator() << "\" to operands of type \""
+                << leftType << "\""
+                << std::endl;
 
-        PrintErrorPrefix(std::cerr, expression.get())
-            << "Invalid operands, can't apply \""
-            << e->GetOperator() << "\" to operands of type \""
-            << leftType << "\""
-            << std::endl;
-        return false;
+        return leftType == Types::Int || leftType == Types::UsignedInt;
     }
 
     return true;

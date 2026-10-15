@@ -25,6 +25,7 @@ std::ostream &operator<<(std::ostream &out, const TokenType &value)
         INSERT_ELEMENT(ASSIGNMENT);
         INSERT_ELEMENT(ARITHMETIC_OPERATOR);
         INSERT_ELEMENT(RELATIONAL_OPERATOR);
+        INSERT_ELEMENT(LOGICAL_OPERATOR);
 #undef INSERT_ELEMENT
 
         return result;

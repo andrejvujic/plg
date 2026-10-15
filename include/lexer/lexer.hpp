@@ -64,6 +64,8 @@ static const std::map<std::string_view, TokenType> TOKENS{
     {"<", TokenType::RELATIONAL_OPERATOR},
     {"<=", TokenType::RELATIONAL_OPERATOR},
     {"==", TokenType::RELATIONAL_OPERATOR},
+    {"&&", TokenType::LOGICAL_OPERATOR},
+    {"||", TokenType::LOGICAL_OPERATOR},
     {"=", TokenType::ASSIGNMENT},
     {"->", TokenType::ARROW},
     {"{", TokenType::O_CURLY},

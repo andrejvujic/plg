@@ -17,6 +17,9 @@ public:
     static std::unique_ptr<RuntimeValue> LessThenOrEq(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b);
     static std::unique_ptr<RuntimeValue> Eq(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b);
     static std::unique_ptr<RuntimeValue> NotEq(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b);
+
+    static std::unique_ptr<RuntimeValue> And(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b);
+    static std::unique_ptr<RuntimeValue> Or(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b);
 };
 
 #endif

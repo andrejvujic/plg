@@ -39,5 +39,9 @@ public:
     constexpr static const std::string_view OP_LTE = "<=";
     constexpr static const std::string_view OP_GT = ">";
     constexpr static const std::string_view OP_GTE = ">=";
+
+    // Logical operators:
+    constexpr static const std::string_view OP_AND = "&&";
+    constexpr static const std::string_view OP_OR = "||";
 };
 #endif

@@ -23,6 +23,8 @@ public:
     Token(std::string lexeme, TokenType type, Location location);
 
     const std::string &GetLexeme() const;
+    bool LexemeEquals(std::string_view lexeme) const;
+    bool LexemeEqualsAny(std::initializer_list<std::string_view> lexemes) const;
 
     Location GetLocation() const;
 

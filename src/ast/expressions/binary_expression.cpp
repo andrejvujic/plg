@@ -49,8 +49,8 @@ bool BinaryExpression::HasAnyOfOperators(std::initializer_list<std::string_view>
     return std::any_of(
         operators.begin(),
         operators.end(),
-        [this](std::string_view op)
-        { return op == this->op; });
+        [this](auto op)
+        { return this->op == op; });
 }
 
 std::unique_ptr<RuntimeValue> BinaryExpression::Execute(TreeWalkInterpreter &interpreter) const
@@ -87,6 +87,12 @@ std::unique_ptr<RuntimeValue> BinaryExpression::Execute(TreeWalkInterpreter &int
 
     if (op == BinaryExpression::OP_GTE)
         return RuntimeOperations::GreaterThenOrEq(leftValue, rightValue);
+
+    if (op == BinaryExpression::OP_AND)
+        return RuntimeOperations::And(leftValue, rightValue);
+
+    if (op == BinaryExpression::OP_OR)
+        return RuntimeOperations::Or(leftValue, rightValue);
 
     std::cerr << "[BinaryExpression] ERROR: Execution not implemented for operation \"" << op << "\"" << std::endl;
     std::exit(EXIT_FAILURE);

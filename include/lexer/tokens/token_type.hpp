@@ -27,6 +27,7 @@ enum TokenType
     ASSIGNMENT = 1 << 17,
     ARITHMETIC_OPERATOR = 1 << 18,
     RELATIONAL_OPERATOR = 1 << 19,
+    LOGICAL_OPERATOR = 1 << 20,
     ARROW = 1 << 20,
 };
 

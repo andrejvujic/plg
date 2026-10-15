@@ -357,10 +357,11 @@ std::unique_ptr<const Expression> Parser::ParseExpression()
 
     std::unique_ptr<const Expression> right;
 
-    while (NextMatchesAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR}))
+    while (NextMatchesAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR, TokenType::LOGICAL_OPERATOR}))
     {
-        const auto &opToken = ConsumeAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR});
-        if (opToken->GetLexeme() == BinaryExpression::OP_MUL || opToken->GetLexeme() == BinaryExpression::OP_DIV)
+        const auto &opToken = ConsumeAny({TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR, TokenType::LOGICAL_OPERATOR});
+        if (opToken->LexemeEqualsAny({BinaryExpression::OP_MUL,
+                                      BinaryExpression::OP_DIV}))
             right = ParsePrimaryExpression();
         else
             right = ParseExpression();

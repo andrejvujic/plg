@@ -7,7 +7,7 @@
 std::unique_ptr<RuntimeValue> RuntimeOperations::Add(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {
     if (!a || !b || a->GetType() != b->GetType())
-        return std::make_unique<NullValue>();
+        std::exit(EXIT_FAILURE);
 
     if (a->GetType() == RuntimeValueType::Int)
     {
@@ -23,13 +23,13 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::Add(std::unique_ptr<RuntimeValu
         return std::make_unique<UnsignedIntValue>(aa->GetValue() + bb->GetValue());
     }
 
-    return std::make_unique<NullValue>();
+    std::exit(EXIT_FAILURE);
 }
 
 std::unique_ptr<RuntimeValue> RuntimeOperations::Sub(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {
     if (!a || !b || a->GetType() != b->GetType())
-        return std::make_unique<NullValue>();
+        std::exit(EXIT_FAILURE);
 
     if (a->GetType() == RuntimeValueType::Int)
     {
@@ -45,13 +45,13 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::Sub(std::unique_ptr<RuntimeValu
         return std::make_unique<UnsignedIntValue>(aa->GetValue() - bb->GetValue());
     }
 
-    return std::make_unique<NullValue>();
+    std::exit(EXIT_FAILURE);
 }
 
 std::unique_ptr<RuntimeValue> RuntimeOperations::Mul(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {
     if (!a || !b || a->GetType() != b->GetType())
-        return std::make_unique<NullValue>();
+        std::exit(EXIT_FAILURE);
 
     if (a->GetType() == RuntimeValueType::Int)
     {
@@ -67,13 +67,13 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::Mul(std::unique_ptr<RuntimeValu
         return std::make_unique<UnsignedIntValue>(aa->GetValue() * bb->GetValue());
     }
 
-    return std::make_unique<NullValue>();
+    std::exit(EXIT_FAILURE);
 }
 
 std::unique_ptr<RuntimeValue> RuntimeOperations::Div(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {
     if (!a || !b || a->GetType() != b->GetType())
-        return std::make_unique<NullValue>();
+        std::exit(EXIT_FAILURE);
 
     if (a->GetType() == RuntimeValueType::Int)
     {
@@ -102,13 +102,13 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::Div(std::unique_ptr<RuntimeValu
         return std::make_unique<UnsignedIntValue>(aa->GetValue() / bb->GetValue());
     }
 
-    return std::make_unique<NullValue>();
+    std::exit(EXIT_FAILURE);
 }
 
 std::unique_ptr<RuntimeValue> RuntimeOperations::Eq(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {
     if (!a || !b || a->GetType() != b->GetType())
-        return std::make_unique<NullValue>();
+        std::exit(EXIT_FAILURE);
 
     if (a->GetType() == RuntimeValueType::Int)
     {
@@ -131,13 +131,13 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::Eq(std::unique_ptr<RuntimeValue
         return std::make_unique<BoolValue>(aa->GetValue() == bb->GetValue());
     }
 
-    return std::make_unique<NullValue>();
+    std::exit(EXIT_FAILURE);
 }
 
 std::unique_ptr<RuntimeValue> RuntimeOperations::NotEq(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {
     if (!a || !b || a->GetType() != b->GetType())
-        return std::make_unique<NullValue>();
+        std::exit(EXIT_FAILURE);
 
     if (a->GetType() == RuntimeValueType::Int)
     {
@@ -160,13 +160,13 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::NotEq(std::unique_ptr<RuntimeVa
         return std::make_unique<BoolValue>(aa->GetValue() != bb->GetValue());
     }
 
-    return std::make_unique<NullValue>();
+    std::exit(EXIT_FAILURE);
 }
 
 std::unique_ptr<RuntimeValue> RuntimeOperations::LessThan(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {
     if (!a || !b || a->GetType() != b->GetType())
-        return std::make_unique<NullValue>();
+        std::exit(EXIT_FAILURE);
 
     if (a->GetType() == RuntimeValueType::Int)
     {
@@ -182,13 +182,13 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::LessThan(std::unique_ptr<Runtim
         return std::make_unique<BoolValue>(aa->GetValue() < bb->GetValue());
     }
 
-    return std::make_unique<NullValue>();
+    std::exit(EXIT_FAILURE);
 }
 
 std::unique_ptr<RuntimeValue> RuntimeOperations::LessThenOrEq(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {
     if (!a || !b || a->GetType() != b->GetType())
-        return std::make_unique<NullValue>();
+        std::exit(EXIT_FAILURE);
 
     if (a->GetType() == RuntimeValueType::Int)
     {
@@ -204,13 +204,13 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::LessThenOrEq(std::unique_ptr<Ru
         return std::make_unique<BoolValue>(aa->GetValue() <= bb->GetValue());
     }
 
-    return std::make_unique<NullValue>();
+    std::exit(EXIT_FAILURE);
 }
 
 std::unique_ptr<RuntimeValue> RuntimeOperations::GreaterThan(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {
     if (!a || !b || a->GetType() != b->GetType())
-        return std::make_unique<NullValue>();
+        std::exit(EXIT_FAILURE);
 
     if (a->GetType() == RuntimeValueType::Int)
     {
@@ -226,13 +226,13 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::GreaterThan(std::unique_ptr<Run
         return std::make_unique<BoolValue>(aa->GetValue() > bb->GetValue());
     }
 
-    return std::make_unique<NullValue>();
+    std::exit(EXIT_FAILURE);
 }
 
 std::unique_ptr<RuntimeValue> RuntimeOperations::GreaterThenOrEq(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {
     if (!a || !b || a->GetType() != b->GetType())
-        return std::make_unique<NullValue>();
+        std::exit(EXIT_FAILURE);
 
     if (a->GetType() == RuntimeValueType::Int)
     {
@@ -248,5 +248,35 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::GreaterThenOrEq(std::unique_ptr
         return std::make_unique<BoolValue>(aa->GetValue() >= bb->GetValue());
     }
 
-    return std::make_unique<NullValue>();
+    std::exit(EXIT_FAILURE);
+}
+
+std::unique_ptr<RuntimeValue> RuntimeOperations::And(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
+{
+    if (!a || !b || a->GetType() != b->GetType())
+        std::exit(EXIT_FAILURE);
+
+    if (a->GetType() == RuntimeValueType::Bool)
+    {
+        auto aa = dynamic_cast<BoolValue *>(a.get());
+        auto bb = dynamic_cast<BoolValue *>(b.get());
+        return std::make_unique<BoolValue>(aa->GetValue() && bb->GetValue());
+    }
+
+    std::exit(EXIT_FAILURE);
+}
+
+std::unique_ptr<RuntimeValue> RuntimeOperations::Or(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
+{
+    if (!a || !b || a->GetType() != b->GetType())
+        std::exit(EXIT_FAILURE);
+
+    if (a->GetType() == RuntimeValueType::Bool)
+    {
+        auto aa = dynamic_cast<BoolValue *>(a.get());
+        auto bb = dynamic_cast<BoolValue *>(b.get());
+        return std::make_unique<BoolValue>(aa->GetValue() || bb->GetValue());
+    }
+
+    std::exit(EXIT_FAILURE);
 }
