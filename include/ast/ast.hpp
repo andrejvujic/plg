@@ -8,31 +8,13 @@
 #include <iostream>
 #include <utility>
 
-#include "ast_printer.hpp"
+#include "ast/ast_node_type.hpp"
+#include "ast/ast_printer.hpp"
+
 #include "shared/source_location.hpp"
 #include "runtime/values/runtime_value.hpp"
 
 class TreeWalkInterpreter;
-
-enum class AstNodeType
-{
-    Program,
-    FunctionDeclaration,
-    FunctionParameter,
-    ComplexStatement,
-    IfStatement,
-    ReturnStatement,
-    VariableDeclaration,
-    AssignmentExpression,
-    ForStatement,
-    ExpressionStatement,
-    NumLiteralExpression,
-    BoolLiteralExpression,
-    IdExpression,
-    BinaryExpression,
-    FunctionCallExpression,
-    FunctionCallArguments,
-};
 
 class AstNode
 {

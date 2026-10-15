@@ -10,7 +10,7 @@
 #include "ast/expressions/id_expression.hpp"
 #include "ast/expressions/binary_expression.hpp"
 #include "ast/expressions/assignment_expression.hpp"
-#include "ast/expressions/function_call_expression.hpp"
+#include "ast/expressions/call_expression.hpp"
 
 #include <iostream>
 
@@ -369,14 +369,19 @@ std::unique_ptr<Expression> Parser::ParsePrimaryExpression()
         if (NextMatches(TokenType::O_PAREN))
         {
             Consume(TokenType::O_PAREN);
-            auto functionCall = std::make_unique<FunctionCallExpression>(
+
+            auto calleeExpression = std::make_unique<IdExpression>(
                 idToken->GetLocation(),
                 idToken->GetLexeme());
+
+            auto callExpression = std::make_unique<CallExpression>(
+                idToken->GetLocation(),
+                std::move(calleeExpression));
 
             while (!NextMatches(TokenType::C_PAREN))
             {
                 auto argument = ParseExpression();
-                functionCall->AddArgument(std::move(argument));
+                callExpression->AddArgument(std::move(argument));
 
                 if (NextMatches(TokenType::COMMA))
                 {
@@ -394,7 +399,7 @@ std::unique_ptr<Expression> Parser::ParsePrimaryExpression()
             }
 
             Consume(TokenType::C_PAREN);
-            return functionCall;
+            return callExpression;
         }
 
         return std::make_unique<IdExpression>(

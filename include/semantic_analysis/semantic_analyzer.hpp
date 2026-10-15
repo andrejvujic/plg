@@ -6,6 +6,7 @@
 
 #include "ast/program.hpp"
 #include "ast/statements/functions/function_declaration.hpp"
+#include "ast/expressions/call_expression.hpp"
 
 #include <stack>
 
@@ -29,14 +30,17 @@ private:
     bool AnalyzeExpression(const std::unique_ptr<Expression> &expression);
     bool AnalyzeIdExpression(const std::unique_ptr<Expression> &expression);
     bool AnalyzeNumLiteralExpression(const std::unique_ptr<Expression> &expression);
-    bool AnalyzeFunctionCallExpression(const std::unique_ptr<Expression> &expression);
     bool AnalyzeAssignmentExpression(const std::unique_ptr<Expression> &expression);
     bool AnalyzeBinaryExpression(const std::unique_ptr<Expression> &expression);
+
+    bool AnalyzeCallExpression(const std::unique_ptr<Expression> &expression);
+    bool AnalyzeNonMemberFunctionCall(const CallExpression *call);
+    bool AnalyzeCallArguments(const std::vector<std::unique_ptr<Expression>> &arguments, const std::vector<std::string> &parameterTypes);
 
     std::string ResolveExpressionType(const std::unique_ptr<Expression> &expression);
     std::string GetIdExpressionType(const std::unique_ptr<Expression> &expression);
     std::string GetNumLiteralExpressionType(const std::unique_ptr<Expression> &expression);
-    std::string GetFunctionCallExpressionType(const std::unique_ptr<Expression> &expression);
+    std::string GetCallExpressionType(const std::unique_ptr<Expression> &expression);
     std::string ResolveBinaryExpressionType(const std::unique_ptr<Expression> &expression);
 
     std::ostream &PrintErrorPrefix(std::ostream &out, const AstNode *node) const;

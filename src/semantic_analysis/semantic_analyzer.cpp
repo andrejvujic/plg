@@ -11,11 +11,12 @@
 
 #include "ast/expressions/id_expression.hpp"
 #include "ast/expressions/num_literal_expression.hpp"
-#include "ast/expressions/function_call_expression.hpp"
+#include "ast/expressions/call_expression.hpp"
 #include "ast/expressions/assignment_expression.hpp"
 #include "ast/expressions/binary_expression.hpp"
 
 #include <iostream>
+#include <cmath>
 
 void SemanticAnalyzer::AnalyzeProgram(const std::unique_ptr<Program> &program)
 {
@@ -277,8 +278,8 @@ bool SemanticAnalyzer::AnalyzeExpression(const std::unique_ptr<Expression> &expr
         return true;
     case AstNodeType::BinaryExpression:
         return AnalyzeBinaryExpression(expression);
-    case AstNodeType::FunctionCallExpression:
-        return AnalyzeFunctionCallExpression(expression);
+    case AstNodeType::CallExpression:
+        return AnalyzeCallExpression(expression);
     case AstNodeType::AssignmentExpression:
         return AnalyzeAssignmentExpression(expression);
     default:
@@ -302,10 +303,24 @@ bool SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<Expression> &ex
     return true;
 }
 
-bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<Expression> &expression)
+bool SemanticAnalyzer::AnalyzeCallExpression(const std::unique_ptr<Expression> &expression)
 {
-    const FunctionCallExpression *call = dynamic_cast<const FunctionCallExpression *>(expression.get());
-    if (!currentSymbolTable->SymbolExists(call->GetCallee(), SymbolKind::Function))
+    const CallExpression *call = dynamic_cast<const CallExpression *>(expression.get());
+    auto &callee = call->GetCallee();
+
+    if (callee->GetType() == AstNodeType::IdExpression)
+        return AnalyzeNonMemberFunctionCall(call);
+
+    std::cerr << "[SemanticAnalyzer] Semantic analysis not implemented for " << callee->GetType() << std::endl;
+    exit(EXIT_FAILURE);
+}
+
+bool SemanticAnalyzer::AnalyzeNonMemberFunctionCall(const CallExpression *call)
+{
+    auto &callee = call->GetCallee();
+    auto id = dynamic_cast<IdExpression *>(callee.get());
+
+    if (!currentSymbolTable->SymbolExists(id->GetValue(), SymbolKind::Function))
     {
         PrintErrorPrefix(std::cerr, call)
             << "Function \"" << call->GetCallee()
@@ -314,8 +329,9 @@ bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<Expre
         return false;
     }
 
-    auto &s = currentSymbolTable->GetSymbol(call->GetCallee(), SymbolKind::Function);
-    auto function = dynamic_cast<const FunctionSymbol *>(s.get());
+    auto &symbol = currentSymbolTable->GetSymbol(id->GetValue(), SymbolKind::Function);
+    auto function = dynamic_cast<const FunctionSymbol *>(symbol.get());
+
     if (function->GetParameterCount() != call->GetArgumentCount())
     {
         PrintErrorPrefix(std::cerr, call)
@@ -324,28 +340,25 @@ bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<Expre
             << std::endl;
         return false;
     }
+    return AnalyzeCallArguments(call->GetArguments(), function->GetParameterTypes());
+}
 
-    auto &parameterTypes = function->GetParameterTypes();
-    auto &arguments = call->GetArguments();
-
-    auto parameterTypeIterator = parameterTypes.begin();
-    auto argumentIterator = arguments.begin();
-    size_t index = 0;
-    for (; parameterTypeIterator != parameterTypes.end() && argumentIterator != arguments.end();
-         ++parameterTypeIterator, ++argumentIterator, ++index)
-    {
-        const auto parameterType = *parameterTypeIterator;
-        const auto argumentType = ResolveExpressionType(*argumentIterator);
-
-        if (parameterType == argumentType)
-            continue;
-
-        PrintErrorPrefix(std::cerr, argumentIterator->get())
-            << "Positional argument at position " << index
-            << " is of wrong type, expected \"" << parameterType << "\" but got \"" << argumentType << "\""
-            << std::endl;
-
+bool SemanticAnalyzer::AnalyzeCallArguments(const std::vector<std::unique_ptr<Expression>> &arguments, const std::vector<std::string> &parameterTypes)
+{
+    if (arguments.size() != parameterTypes.size())
         return false;
+
+    for (size_t index = 0; index < arguments.size(); ++index)
+    {
+        auto argumentType = ResolveExpressionType(arguments[index]);
+        if (argumentType != parameterTypes[index])
+        {
+            PrintErrorPrefix(std::cerr, arguments[index].get())
+                << "Positional argument at position " << index
+                << " is of wrong type, expected \"" << parameterTypes[index] << "\" but got \"" << argumentType << "\""
+                << std::endl;
+            return false;
+        }
     }
 
     return true;
@@ -447,8 +460,8 @@ std::string SemanticAnalyzer::ResolveExpressionType(const std::unique_ptr<Expres
         return Types::Bool;
     case AstNodeType::BinaryExpression:
         return ResolveBinaryExpressionType(expression);
-    case AstNodeType::FunctionCallExpression:
-        return GetFunctionCallExpressionType(expression);
+    case AstNodeType::CallExpression:
+        return GetCallExpressionType(expression);
     default:
         PrintErrorPrefix(std::cerr, expression.get()) << "Can't resolve type for given expression" << std::endl;
         return Types::Unknown;
@@ -471,14 +484,23 @@ std::string SemanticAnalyzer::GetNumLiteralExpressionType(const std::unique_ptr<
     return e->GetLiteralType();
 }
 
-std::string SemanticAnalyzer::GetFunctionCallExpressionType(const std::unique_ptr<Expression> &expression)
+std::string SemanticAnalyzer::GetCallExpressionType(const std::unique_ptr<Expression> &expression)
 {
-    auto functionCallExpression = dynamic_cast<const FunctionCallExpression *>(expression.get());
-    if (!currentSymbolTable->SymbolExists(functionCallExpression->GetCallee(), SymbolKind::Function))
-        return Types::Unknown;
+    auto callExpression = dynamic_cast<const CallExpression *>(expression.get());
 
-    auto &symbol = currentSymbolTable->GetSymbol(functionCallExpression->GetCallee(), SymbolKind::Function);
-    return symbol->GetType();
+    auto &callee = callExpression->GetCallee();
+    if (callee->GetType() == AstNodeType::IdExpression)
+    {
+        auto id = dynamic_cast<IdExpression *>(callee.get());
+        if (!currentSymbolTable->SymbolExists(id->GetValue(), SymbolKind::Function))
+            return Types::Unknown;
+
+        auto &symbol = currentSymbolTable->GetSymbol(id->GetValue(), SymbolKind::Function);
+        return symbol->GetType();
+    }
+
+    std::cerr << "[SemanticAnalysis] ERROR Couldn't resolve type of unsupported node type: " << callee->GetType() << std::endl;
+    std::exit(EXIT_FAILURE);
 }
 
 std::string SemanticAnalyzer::ResolveBinaryExpressionType(const std::unique_ptr<Expression> &expression)
