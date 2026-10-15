@@ -1,6 +1,6 @@
 #include "ast/statements/return_statement.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
-#include "runtime/runtime_value.hpp"
+#include "runtime/values/runtime_value.hpp"
 #include "runtime/return_signal.hpp"
 
 bool ReturnStatement::HasValue() const

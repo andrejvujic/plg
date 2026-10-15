@@ -10,7 +10,7 @@
 
 #include "ast_printer.hpp"
 #include "shared/source_location.hpp"
-#include "runtime/runtime_value.hpp"
+#include "runtime/values/runtime_value.hpp"
 
 class TreeWalkInterpreter;
 

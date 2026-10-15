@@ -1,5 +1,5 @@
 #include "ast/expressions/id_expression.hpp"
-#include "symbols/variable_symbol.hpp"
+#include "runtime/bindings/variable_binding.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
 const std::string &IdExpression::GetValue() const
@@ -16,14 +16,14 @@ void IdExpression::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> IdExpression::Execute(TreeWalkInterpreter &interpreter) const
 {
-    auto scope = interpreter.GetCurrentScope();
-    if (!scope->SymbolExists(value, SymbolKind::Variable))
+    auto environment = interpreter.GetCurrentEnvironment();
+    if (!environment->BindingExists(value, BindingKind::Variable))
     {
         std::cerr << "[IdExpression] ERROR: Lookup failed for variable " << value << std::endl;
         std::exit(EXIT_FAILURE);
     }
 
-    auto &symbol = scope->GetSymbol(value, SymbolKind::Variable);
-    auto variableSymbol = dynamic_cast<VariableSymbol *>(symbol.get());
-    return variableSymbol->GetValue()->Clone();
+    auto &binding = environment->GetBinding(value, BindingKind::Variable);
+    auto variable = dynamic_cast<VariableBinding *>(binding.get());
+    return variable->GetValue()->Clone();
 }

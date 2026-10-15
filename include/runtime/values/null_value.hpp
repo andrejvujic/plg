@@ -1,7 +1,7 @@
 #ifndef NULL_VALUE_HPP_INCLUDED
 #define NULL_VALUE_HPP_INCLUDED
 
-#include "runtime/runtime_value.hpp"
+#include "runtime/values/runtime_value.hpp"
 
 class NullValue : public RuntimeValue
 {

@@ -1,17 +1,12 @@
-#include "symbols/function_symbol.hpp"
+#include "semantic_analysis/symbols/function_symbol.hpp"
 
 FunctionSymbol::FunctionSymbol(std::string_view name,
                                std::string_view type,
-                               const FunctionDeclaration *declaration)
-    : Symbol(name, type, SymbolKind::Function), declaration(declaration)
+                               const FunctionDeclaration &declaration)
+    : Symbol(name, type, SymbolKind::Function)
 {
-    for (const auto &parameter : declaration->GetParameters())
-        AddParameterType(parameter->GetVarType());
-}
-
-void FunctionSymbol::AddParameterType(std::string type)
-{
-    parameterTypes.push_back(std::move(type));
+    for (const auto &parameter : declaration.GetParameters())
+        parameterTypes.push_back(parameter->GetVarType());
 }
 
 const std::vector<std::string> &FunctionSymbol::GetParameterTypes() const
@@ -22,11 +17,6 @@ const std::vector<std::string> &FunctionSymbol::GetParameterTypes() const
 size_t FunctionSymbol::GetParameterCount() const
 {
     return parameterTypes.size();
-}
-
-const FunctionDeclaration *FunctionSymbol::GetFunctionDeclaration() const
-{
-    return declaration;
 }
 
 void FunctionSymbol::Print(std::ostream &out) const

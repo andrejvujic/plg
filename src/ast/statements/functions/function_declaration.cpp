@@ -1,6 +1,6 @@
 #include "ast/statements/functions/function_declaration.hpp"
 
-#include "symbols/function_symbol.hpp"
+#include "runtime/bindings/function_binding.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
 const std::string &FunctionDeclaration::GetName() const
@@ -54,12 +54,9 @@ void FunctionDeclaration::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> FunctionDeclaration::Execute(TreeWalkInterpreter &interpreter) const
 {
-    std::unique_ptr<Symbol> symbol = std::make_unique<FunctionSymbol>(
-        name,
-        returnType,
-        this);
-    auto scope = interpreter.GetCurrentScope();
-    scope->DeclareSymbol(std::move(symbol));
+    std::unique_ptr<Binding> function = std::make_unique<FunctionBinding>(*this);
+    auto environment = interpreter.GetCurrentEnvironment();
+    environment->DeclareBinding(std::move(function));
 
     return nullptr;
 }

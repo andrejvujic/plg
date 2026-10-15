@@ -1,4 +1,4 @@
-#include "runtime/int_value.hpp"
+#include "runtime/values/int_value.hpp"
 
 int IntValue::GetValue() const
 {

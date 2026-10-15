@@ -1,7 +1,8 @@
 #include "ast/statements/variable_declaration.hpp"
 
-#include "symbols/variable_symbol.hpp"
+#include "runtime/bindings/variable_binding.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
+#include "runtime/values/null_value.hpp"
 
 const std::string &VariableDeclaration::GetVarName() const
 {
@@ -37,12 +38,12 @@ std::unique_ptr<RuntimeValue> VariableDeclaration::Execute(TreeWalkInterpreter &
     auto varValue = initialValue ? initialValue->Execute(interpreter) : std::make_unique<NullValue>();
     auto varValueClone = varValue->Clone();
 
-    auto scope = interpreter.GetCurrentScope();
-    std::unique_ptr<Symbol> varSymbol = std::make_unique<VariableSymbol>(
+    auto environment = interpreter.GetCurrentEnvironment();
+    std::unique_ptr<Binding> variable = std::make_unique<VariableBinding>(
         varName,
         varType,
         std::move(varValue));
-    scope->DeclareSymbol(std::move(varSymbol));
+    environment->DeclareBinding(std::move(variable));
 
     return varValueClone;
 }

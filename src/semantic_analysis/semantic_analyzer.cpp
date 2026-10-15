@@ -1,6 +1,6 @@
 #include "semantic_analysis/semantic_analyzer.hpp"
-#include "symbols/function_symbol.hpp"
-#include "symbols/variable_symbol.hpp"
+#include "semantic_analysis/symbols/function_symbol.hpp"
+#include "semantic_analysis/symbols/variable_symbol.hpp"
 #include "shared/types.hpp"
 
 #include "ast/statements/if_statement.hpp"
@@ -34,19 +34,19 @@ bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<Statemen
     std::unique_ptr<Symbol> symbol = std::make_unique<FunctionSymbol>(
         functionDeclaration->GetName(),
         functionDeclaration->GetReturnType(),
-        functionDeclaration);
-    currentScope->DeclareSymbol(std::move(symbol));
+        *functionDeclaration);
+    currentSymbolTable->DeclareSymbol(std::move(symbol));
 
-    auto functionScope = std::make_shared<Scope>(currentScope);
-    currentScope = functionScope;
+    auto functionSymbolTable = std::make_shared<SymbolTable>(currentSymbolTable);
+    currentSymbolTable = functionSymbolTable;
     for (auto &parameter : functionDeclaration->GetParameters())
     {
-        if (!currentScope->SymbolExists(parameter->GetVarName(), SymbolKind::Variable, Scope::Local))
+        if (!currentSymbolTable->SymbolExists(parameter->GetVarName(), SymbolKind::Variable, SymbolTable::Local))
         {
             std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
                 parameter->GetVarName(),
                 parameter->GetVarType());
-            currentScope->DeclareSymbol(std::move(symbol));
+            currentSymbolTable->DeclareSymbol(std::move(symbol));
         }
         else
             PrintErrorPrefix(std::cerr, parameter.get())
@@ -62,7 +62,7 @@ bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<Statemen
         result = AnalyzeStatement(statement) && result;
     functionStack.pop();
 
-    currentScope = currentScope->GetParent();
+    currentSymbolTable = currentSymbolTable->GetParent();
 
     return result;
     // TODO: Check if a value is returned from non-void functions
@@ -98,12 +98,12 @@ bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<Statement> 
     auto result = true;
     auto complexStatement = dynamic_cast<const ComplexStatement *>(statement.get());
 
-    auto bodyScope = std::make_shared<Scope>(currentScope);
-    currentScope = bodyScope;
+    auto bodySymbolTable = std::make_shared<SymbolTable>(currentSymbolTable);
+    currentSymbolTable = bodySymbolTable;
     for (auto &childStatement : complexStatement->GetStatements())
         result = AnalyzeStatement(childStatement) && result;
 
-    currentScope = bodyScope->GetParent();
+    currentSymbolTable = bodySymbolTable->GetParent();
     return result;
 }
 
@@ -121,20 +121,20 @@ bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<Statement> &stat
             << std::endl;
     }
 
-    auto consequentScope = std::make_shared<Scope>(currentScope);
-    currentScope = consequentScope;
+    auto consequentSymbolTable = std::make_shared<SymbolTable>(currentSymbolTable);
+    currentSymbolTable = consequentSymbolTable;
     result = AnalyzeStatement(ifStatement->GetConsequentStatement()) && result;
 
-    currentScope = consequentScope->GetParent();
+    currentSymbolTable = consequentSymbolTable->GetParent();
 
     if (!ifStatement->HasAlternateStatement())
         return result;
 
-    auto alternateScope = std::make_shared<Scope>(currentScope);
-    currentScope = alternateScope;
+    auto alternateSymbolTable = std::make_shared<SymbolTable>(currentSymbolTable);
+    currentSymbolTable = alternateSymbolTable;
     result = AnalyzeStatement(ifStatement->GetAlternateStatement()) && result;
 
-    currentScope = alternateScope->GetParent();
+    currentSymbolTable = alternateSymbolTable->GetParent();
 
     return result;
 }
@@ -157,11 +157,11 @@ bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<Statement> &sta
 
     result = AnalyzeExpression(forStatement->GetUpdateExpression()) && result; // TODO: This needs to be an AssignmentExpression.
 
-    auto bodyScope = std::make_shared<Scope>(currentScope);
-    currentScope = bodyScope;
+    auto bodySymbolTable = std::make_shared<SymbolTable>(currentSymbolTable);
+    currentSymbolTable = bodySymbolTable;
     result = AnalyzeStatement(forStatement->GetBody()) && result;
 
-    currentScope = bodyScope->GetParent();
+    currentSymbolTable = bodySymbolTable->GetParent();
     return result;
 }
 
@@ -174,7 +174,7 @@ bool SemanticAnalyzer::AnalyzeExpressionStatement(const std::unique_ptr<Statemen
 bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<Statement> &statement)
 {
     auto returnStatement = dynamic_cast<const ReturnStatement *>(statement.get());
-    if (functionStack.empty() || !currentScope->SymbolExists(functionStack.top(), SymbolKind::Function))
+    if (functionStack.empty() || !currentSymbolTable->SymbolExists(functionStack.top(), SymbolKind::Function))
     {
         PrintErrorPrefix(std::cerr, returnStatement)
             << "Unexpected return statement"
@@ -182,7 +182,7 @@ bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<Statement> &
         return false;
     }
 
-    auto &functionSymbol = currentScope->GetSymbol(functionStack.top(), SymbolKind::Function);
+    auto &functionSymbol = currentSymbolTable->GetSymbol(functionStack.top(), SymbolKind::Function);
 
     if (!returnStatement->HasValue())
     {
@@ -232,7 +232,7 @@ bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<Statemen
         return false;
     }
 
-    if (currentScope->SymbolExists(variableDeclaration->GetVarName(), SymbolKind::Variable, Scope::Local))
+    if (currentSymbolTable->SymbolExists(variableDeclaration->GetVarName(), SymbolKind::Variable, SymbolTable::Local))
     {
         PrintErrorPrefix(std::cerr, variableDeclaration)
             << "Redefinition of variable \""
@@ -244,7 +244,7 @@ bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<Statemen
     std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
         variableDeclaration->GetVarName(),
         variableDeclaration->GetVarType());
-    currentScope->DeclareSymbol(std::move(symbol));
+    currentSymbolTable->DeclareSymbol(std::move(symbol));
 
     if (variableDeclaration->HasInitialValue())
     {
@@ -290,7 +290,7 @@ bool SemanticAnalyzer::AnalyzeExpression(const std::unique_ptr<Expression> &expr
 bool SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<Expression> &expression)
 {
     const IdExpression *e = dynamic_cast<const IdExpression *>(expression.get());
-    if (!currentScope->SymbolExists(e->GetValue(), SymbolKind::Variable))
+    if (!currentSymbolTable->SymbolExists(e->GetValue(), SymbolKind::Variable))
     {
         PrintErrorPrefix(std::cerr, e)
             << "Variable \"" << e->GetValue()
@@ -305,7 +305,7 @@ bool SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<Expression> &ex
 bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<Expression> &expression)
 {
     const FunctionCallExpression *call = dynamic_cast<const FunctionCallExpression *>(expression.get());
-    if (!currentScope->SymbolExists(call->GetCallee(), SymbolKind::Function))
+    if (!currentSymbolTable->SymbolExists(call->GetCallee(), SymbolKind::Function))
     {
         PrintErrorPrefix(std::cerr, call)
             << "Function \"" << call->GetCallee()
@@ -314,7 +314,7 @@ bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<Expre
         return false;
     }
 
-    auto &s = currentScope->GetSymbol(call->GetCallee(), SymbolKind::Function);
+    auto &s = currentSymbolTable->GetSymbol(call->GetCallee(), SymbolKind::Function);
     auto function = dynamic_cast<const FunctionSymbol *>(s.get());
     if (function->GetParameterCount() != call->GetArgumentCount())
     {
@@ -368,7 +368,7 @@ bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<Express
     }
 
     auto assigneeIdExpression = dynamic_cast<const IdExpression *>(assigneeExpression.get());
-    if (!currentScope->SymbolExists(assigneeIdExpression->GetValue(), SymbolKind::Variable))
+    if (!currentSymbolTable->SymbolExists(assigneeIdExpression->GetValue(), SymbolKind::Variable))
     {
         PrintErrorPrefix(std::cerr, assignmentExpression)
             << "Variable \""
@@ -377,7 +377,7 @@ bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<Express
         return false;
     }
 
-    auto &symbol = currentScope->GetSymbol(assigneeIdExpression->GetValue(), SymbolKind::Variable);
+    auto &symbol = currentSymbolTable->GetSymbol(assigneeIdExpression->GetValue(), SymbolKind::Variable);
     if (!AnalyzeExpression(assignmentExpression->GetValue()))
         return false;
 
@@ -458,10 +458,10 @@ std::string SemanticAnalyzer::ResolveExpressionType(const std::unique_ptr<Expres
 std::string SemanticAnalyzer::GetIdExpressionType(const std::unique_ptr<Expression> &expression)
 {
     auto idExpression = dynamic_cast<const IdExpression *>(expression.get());
-    if (!currentScope->SymbolExists(idExpression->GetValue(), SymbolKind::Variable))
+    if (!currentSymbolTable->SymbolExists(idExpression->GetValue(), SymbolKind::Variable))
         return Types::Unknown;
 
-    auto &symbol = currentScope->GetSymbol(idExpression->GetValue(), SymbolKind::Variable);
+    auto &symbol = currentSymbolTable->GetSymbol(idExpression->GetValue(), SymbolKind::Variable);
     return symbol->GetType();
 }
 
@@ -474,10 +474,10 @@ std::string SemanticAnalyzer::GetNumLiteralExpressionType(const std::unique_ptr<
 std::string SemanticAnalyzer::GetFunctionCallExpressionType(const std::unique_ptr<Expression> &expression)
 {
     auto functionCallExpression = dynamic_cast<const FunctionCallExpression *>(expression.get());
-    if (!currentScope->SymbolExists(functionCallExpression->GetCallee(), SymbolKind::Function))
+    if (!currentSymbolTable->SymbolExists(functionCallExpression->GetCallee(), SymbolKind::Function))
         return Types::Unknown;
 
-    auto &symbol = currentScope->GetSymbol(functionCallExpression->GetCallee(), SymbolKind::Function);
+    auto &symbol = currentSymbolTable->GetSymbol(functionCallExpression->GetCallee(), SymbolKind::Function);
     return symbol->GetType();
 }
 

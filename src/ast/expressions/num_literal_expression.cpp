@@ -1,6 +1,6 @@
 #include "ast/expressions/num_literal_expression.hpp"
-#include "runtime/int_value.hpp"
-#include "runtime/unsigned_int_value.hpp"
+#include "runtime/values/int_value.hpp"
+#include "runtime/values/unsigned_int_value.hpp"
 #include "shared/types.hpp"
 
 const std::string &NumLiteralExpression::GetRawValue() const

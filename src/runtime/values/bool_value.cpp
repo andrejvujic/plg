@@ -1,4 +1,4 @@
-#include "runtime/bool_value.hpp"
+#include "runtime/values/bool_value.hpp"
 
 bool BoolValue::GetValue() const
 {

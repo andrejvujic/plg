@@ -1,7 +1,7 @@
 #ifndef BOOL_VALUE_HPP_INCLUDED
 #define BOOL_VALUE_HPP_INCLUDED
 
-#include "runtime/runtime_value.hpp"
+#include "runtime/values/runtime_value.hpp"
 
 class BoolValue : public RuntimeValue
 {

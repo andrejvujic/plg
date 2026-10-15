@@ -1,7 +1,7 @@
 #ifndef RUNTIME_OPERATIONS_HPP_INCLUDED
 #define RUNTIME_OPERATIONS_HPP_INCLUDED
 
-#include "runtime/runtime_value.hpp"
+#include "runtime/values/runtime_value.hpp"
 
 class RuntimeOperations
 {

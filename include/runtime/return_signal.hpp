@@ -2,7 +2,7 @@
 #define RETURN_SIGNAL_HPP_INCLUDED
 
 #include <memory>
-#include "runtime/runtime_value.hpp"
+#include "runtime/values/runtime_value.hpp"
 
 class ReturnSignal
 {

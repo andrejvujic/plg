@@ -2,6 +2,7 @@
 #define RUNTIME_VALUE_HPP_INCLUDED
 
 #include <iostream>
+#include <memory>
 
 enum class RuntimeValueType
 {

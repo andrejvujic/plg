@@ -1,8 +1,8 @@
 #ifndef SEMANTIC_ANALYZER_HPP_INCLUDED
 #define SEMANTIC_ANALYZER_HPP_INCLUDED
 
-#include "symbols/scope.hpp"
-#include "symbols/function_symbol.hpp"
+#include "semantic_analysis/symbol_table.hpp"
+#include "semantic_analysis/symbols/function_symbol.hpp"
 
 #include "ast/program.hpp"
 #include "ast/statements/functions/function_declaration.hpp"
@@ -12,7 +12,7 @@
 class SemanticAnalyzer
 {
 private:
-    std::shared_ptr<Scope> currentScope;
+    std::shared_ptr<SymbolTable> currentSymbolTable;
     std::stack<std::string> functionStack;
 
     bool AnalyzeStatement(const std::unique_ptr<Statement> &statement);
@@ -42,7 +42,7 @@ private:
     std::ostream &PrintErrorPrefix(std::ostream &out, const AstNode *node) const;
 
 public:
-    SemanticAnalyzer() : currentScope(std::make_shared<Scope>()) {}
+    SemanticAnalyzer() : currentSymbolTable(std::make_shared<SymbolTable>()) {}
 
     void AnalyzeProgram(const std::unique_ptr<Program> &program);
 };

@@ -1,9 +1,9 @@
 #include "ast/expressions/function_call_expression.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 #include "runtime/return_signal.hpp"
-#include "symbols/function_symbol.hpp"
-#include "symbols/variable_symbol.hpp"
-#include "runtime/scoped_new_scope.hpp"
+#include "runtime/bindings/function_binding.hpp"
+#include "runtime/bindings/variable_binding.hpp"
+#include "runtime/scoped_environment.hpp"
 
 void FunctionCallExpression::AddArgument(std::unique_ptr<Expression> argument)
 {
@@ -44,19 +44,19 @@ void FunctionCallExpression::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> FunctionCallExpression::Execute(TreeWalkInterpreter &interpreter) const
 {
-    ScopedNewScope scopeGuard(interpreter);
-    auto scope = interpreter.GetCurrentScope();
+    ScopedEnvironment environmentGuard(interpreter);
+    auto environment = interpreter.GetCurrentEnvironment();
 
-    if (!scope->SymbolExists(callee, SymbolKind::Function))
+    if (!environment->BindingExists(callee, BindingKind::Function))
         std::exit(EXIT_FAILURE);
 
-    auto &symbol = scope->GetSymbol(callee, SymbolKind::Function);
-    auto function = dynamic_cast<FunctionSymbol *>(symbol.get());
+    auto &binding = environment->GetBinding(callee, BindingKind::Function);
+    auto function = dynamic_cast<FunctionBinding *>(binding.get());
 
     try
     {
-        auto declaration = function->GetFunctionDeclaration();
-        auto &parameters = declaration->GetParameters();
+        const auto &declaration = function->GetDeclaration();
+        auto &parameters = declaration.GetParameters();
 
         auto parameterIterartor = parameters.begin();
         auto argumentIterator = arguments.begin();
@@ -67,19 +67,18 @@ std::unique_ptr<RuntimeValue> FunctionCallExpression::Execute(TreeWalkInterprete
             auto &parameter = *parameterIterartor;
 
             auto value = argument->Execute(interpreter);
-            std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
+            std::unique_ptr<Binding> variable = std::make_unique<VariableBinding>(
                 parameter->GetVarName(),
                 parameter->GetVarType(),
                 std::move(value));
-            scope->DeclareSymbol(std::move(symbol));
+            environment->DeclareBinding(std::move(variable));
         }
 
-        auto &body = declaration->GetBody();
+        auto &body = declaration.GetBody();
         body->Execute(interpreter);
     }
     catch (const ReturnSignal &returnSignal)
     {
-        interpreter.DestroyScope();
         auto &returnValue = returnSignal.GetValue();
         return returnValue->Clone();
     }

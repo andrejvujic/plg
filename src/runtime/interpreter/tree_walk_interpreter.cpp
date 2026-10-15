@@ -4,24 +4,24 @@
 void TreeWalkInterpreter::Run()
 {
     program->Execute(*this);
-    currentScope->Print(std::cout);
+    currentEnvironment->Print(std::cout);
 }
 
-std::shared_ptr<Scope> TreeWalkInterpreter::GetCurrentScope()
+std::shared_ptr<Environment> TreeWalkInterpreter::GetCurrentEnvironment()
 {
-    return currentScope;
+    return currentEnvironment;
 }
 
-std::shared_ptr<Scope> TreeWalkInterpreter::CreateScope()
+std::shared_ptr<Environment> TreeWalkInterpreter::CreateEnvironment()
 {
-    auto newScope = std::make_shared<Scope>(currentScope);
-    currentScope = newScope;
-    return currentScope;
+    auto environment = std::make_shared<Environment>(currentEnvironment);
+    currentEnvironment = environment;
+    return currentEnvironment;
 }
 
-void TreeWalkInterpreter::DestroyScope()
+void TreeWalkInterpreter::DestroyEnvironment()
 {
-    if (!currentScope->HasParent())
+    if (!currentEnvironment->HasParent())
         return;
-    currentScope = currentScope->GetParent();
+    currentEnvironment = currentEnvironment->GetParent();
 }

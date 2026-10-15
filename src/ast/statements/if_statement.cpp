@@ -1,9 +1,9 @@
 #include "ast/statements/if_statement.hpp"
 
-#include "runtime/runtime_value.hpp"
-#include "runtime/bool_value.hpp"
+#include "runtime/values/runtime_value.hpp"
+#include "runtime/values/bool_value.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
-#include "runtime/scoped_new_scope.hpp"
+#include "runtime/scoped_environment.hpp"
 
 const std::unique_ptr<Expression> &IfStatement::GetCondition() const
 {
@@ -43,12 +43,12 @@ std::unique_ptr<RuntimeValue> IfStatement::Execute(TreeWalkInterpreter &interpre
     auto cc = dynamic_cast<BoolValue *>(c.get());
     if (cc->GetValue())
     {
-        ScopedNewScope scopeGuard(interpreter);
+        ScopedEnvironment environmentGuard(interpreter);
         consequent->Execute(interpreter);
     }
     else if (alternate)
     {
-        ScopedNewScope scopeGuard(interpreter);
+        ScopedEnvironment environmentGuard(interpreter);
         alternate->Execute(interpreter);
     }
 

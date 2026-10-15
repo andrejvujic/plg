@@ -1,8 +1,8 @@
 #include "runtime/runtime_operations.hpp"
-#include "runtime/null_value.hpp"
-#include "runtime/int_value.hpp"
-#include "runtime/unsigned_int_value.hpp"
-#include "runtime/bool_value.hpp"
+#include "runtime/values/null_value.hpp"
+#include "runtime/values/int_value.hpp"
+#include "runtime/values/unsigned_int_value.hpp"
+#include "runtime/values/bool_value.hpp"
 
 std::unique_ptr<RuntimeValue> RuntimeOperations::Add(std::unique_ptr<RuntimeValue> &a, std::unique_ptr<RuntimeValue> &b)
 {

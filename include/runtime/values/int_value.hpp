@@ -1,7 +1,7 @@
 #ifndef INT_VALUE_HPP_INCLUDED
 #define INT_VALUE_HPP_INCLUDED
 
-#include "runtime/runtime_value.hpp"
+#include "runtime/values/runtime_value.hpp"
 
 class IntValue : public RuntimeValue
 {

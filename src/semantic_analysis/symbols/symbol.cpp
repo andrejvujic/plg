@@ -1,4 +1,4 @@
-#include "symbols/symbol.hpp"
+#include "semantic_analysis/symbols/symbol.hpp"
 
 const std::string &Symbol::GetName() const
 {

@@ -1,7 +1,7 @@
 #include "ast/expressions/bool_literal_expression.hpp"
 
 #include "shared/types.hpp"
-#include "runtime/bool_value.hpp"
+#include "runtime/values/bool_value.hpp"
 
 const std::string &BoolLiteralExpression::GetRawValue() const
 {
