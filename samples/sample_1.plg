@@ -1,11 +1,17 @@
-function main() -> int {
-    a: int = 5;
-    b: int = 10;
-    c: int = a * a;
-    d: int = b * b;
-
-    if (c == d) {
-        return 1;
+function fib(int n) -> int {
+    if (n < 1) return 0;
+    if (n == 1) return 1;
+    if (n == 2) return 1;
+    
+    int n1 = 1;
+    int n2 = 1;
+    int i;
+    for (i = 3; i < n; i = i + 1) {
+        int n3 = n1 + n2;
+        n1 = n2;
+        n2 = n3;
     }
-    return 69;
+    return n1 + n2;
 }
+
+int fib15 = fib(15);

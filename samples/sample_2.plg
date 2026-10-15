@@ -1,11 +1,7 @@
-function main(int a, int b) -> int {
-    function main2() -> int {
-        return 0;
-    }
-
-    int c = 5;
-    1 + 2 + 3;
-    return 2 + main2();
+function fib(uint n) -> uint {
+    if (n < 1u) return 0u;
+    if ((n == 1u) || (n == 2u)) return 1u;
+    return fib(n - 1u) + fib(n - 2u);
 }
 
-1 + 2 + 3;
+uint fib15 = fib(15);
