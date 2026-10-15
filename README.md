@@ -29,6 +29,122 @@ function pow(int value, int exponent) -> int {
 int answer = pow(2, 5);
 ```
 
+## Generated AST
+
+The parser represents the example above with the following AST, as printed by
+`AstPrinter`:
+
+```text
+[Program] {
+  [FunctionDeclaration] {
+    Name -> pow
+    Return Type -> int
+    Body -> [ComplexStatement] {
+      [VariableDeclaration] {
+        Var. Name -> result
+        Var. Type -> int
+        Initial Value -> [NumLiteralExpression] {
+          Raw Value -> 1
+          Literal Type -> int
+        }
+      }
+      [VariableDeclaration] {
+        Var. Name -> i
+        Var. Type -> int
+        Initial Value -> null
+      }
+      [ForStatement] {
+        Init -> [AssignmentExpression] {
+          Assignee -> [IdExpression] {
+            Value -> i
+          }
+          Value -> [NumLiteralExpression] {
+            Raw Value -> 0
+            Literal Type -> int
+          }
+        }
+        Condition -> [BinaryExpression] {
+          Operator -> <
+          Left -> [IdExpression] {
+            Value -> i
+          }
+          Right -> [IdExpression] {
+            Value -> exponent
+          }
+        }
+        Update -> [AssignmentExpression] {
+          Assignee -> [IdExpression] {
+            Value -> i
+          }
+          Value -> [BinaryExpression] {
+            Operator -> +
+            Left -> [IdExpression] {
+              Value -> i
+            }
+            Right -> [NumLiteralExpression] {
+              Raw Value -> 1
+              Literal Type -> int
+            }
+          }
+        }
+        Body -> [ExpressionStatement] {
+          Expression -> [AssignmentExpression] {
+            Assignee -> [IdExpression] {
+              Value -> result
+            }
+            Value -> [BinaryExpression] {
+              Operator -> *
+              Left -> [IdExpression] {
+                Value -> result
+              }
+              Right -> [IdExpression] {
+                Value -> value
+              }
+            }
+          }
+        }
+      }
+      [ReturnStatement] {
+        Value -> [IdExpression] {
+          Value -> result
+        }
+      }
+    }
+    Parameter Count -> 2
+    [Parameters] {
+      [FunctionParameter] {
+        Var. Type -> int
+        Var. Name -> value
+      }
+      [FunctionParameter] {
+        Var. Type -> int
+        Var. Name -> exponent
+      }
+    }
+  }
+  [VariableDeclaration] {
+    Var. Name -> answer
+    Var. Type -> int
+    Initial Value -> [CallExpression] {
+      Callee -> [IdExpression] {
+        Value -> pow
+      }
+      Argument Count -> 2
+      [Arguments] {
+        [NumLiteralExpression] {
+          Raw Value -> 2
+          Literal Type -> int
+        }
+        [NumLiteralExpression] {
+          Raw Value -> 5
+          Literal Type -> int
+        }
+      }
+    }
+  }
+}
+```
+
 More programs are available in the [`samples`](samples) directory.
 
 ## Building and running
