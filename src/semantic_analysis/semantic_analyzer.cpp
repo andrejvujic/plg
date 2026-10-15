@@ -108,11 +108,13 @@ bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<const State
 {
     auto result = true;
     auto complexStatement = dynamic_cast<const ComplexStatement *>(statement.get());
+
+    auto bodyScope = std::make_shared<Scope>(currentScope);
+    currentScope = bodyScope;
     for (auto &childStatement : complexStatement->GetStatements())
-    {
-        auto nextResult = AnalyzeStatement(childStatement);
-        result = result && nextResult;
-    }
+        result = AnalyzeStatement(childStatement) && result;
+
+    currentScope = bodyScope->GetParent();
     return result;
 }
 
@@ -126,7 +128,7 @@ bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement>
     {
         result = false;
         PrintErrorPrefix(std::cerr, ifStatement)
-            << "Invalid type in condition, expected \"bool\" but got \"" << conditionType << "\""
+            << "Got invalid type after resolving condition expression, expected \"bool\" but got \"" << conditionType << "\""
             << std::endl;
     }
 
@@ -160,7 +162,7 @@ bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<const Statement
     {
         result = false;
         PrintErrorPrefix(std::cerr, forStatement)
-            << "Invalid type in condition, expected \"bool\" but got \"" << conditionType << "\""
+            << "Got invalid type after resolving condition expression, expected \"bool\" but got \"" << conditionType << "\""
             << std::endl;
     }
 

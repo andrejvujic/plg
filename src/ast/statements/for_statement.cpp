@@ -1,5 +1,8 @@
 #include "ast/statements/for_statement.hpp"
 
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
+#include "runtime/bool_value.hpp"
+
 ForStatement::ForStatement() : Statement(AstNodeType::ForStatement)
 {
 }
@@ -56,5 +59,20 @@ void ForStatement::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> ForStatement::Execute(TreeWalkInterpreter &interpreter) const
 {
+    init->Execute(interpreter);
+    for (;;)
+    {
+        auto c = condition->Execute(interpreter);
+        auto cc = dynamic_cast<BoolValue *>(c.get());
+
+        if (!cc->GetValue())
+            break;
+
+        interpreter.CreateScope();
+        body->Execute(interpreter);
+        interpreter.DestroyScope();
+
+        update->Execute(interpreter);
+    }
     return nullptr;
 }

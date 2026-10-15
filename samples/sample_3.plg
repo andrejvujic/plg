@@ -1,4 +1,4 @@
-uint a = 5u;
-uint b = 2u * 2u;
-uint d =  (a * a) / 2u;
-uint c = (a + a) + d * 2u + 10u;
+int i;
+int pow = 1;
+for (i = 0; i < 10; i = i + 1)
+    pow = pow * 2;

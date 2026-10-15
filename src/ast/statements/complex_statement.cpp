@@ -27,11 +27,8 @@ void ComplexStatement::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> ComplexStatement::Execute(TreeWalkInterpreter &interpreter) const
 {
-    interpreter.CreateScope();
     for (auto &statement : body)
         if (statement)
             statement->Execute(interpreter);
-    interpreter.DestroyScope();
-
     return nullptr;
 }

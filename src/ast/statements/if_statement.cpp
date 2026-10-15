@@ -60,7 +60,19 @@ std::unique_ptr<RuntimeValue> IfStatement::Execute(TreeWalkInterpreter &interpre
 
     auto cc = dynamic_cast<BoolValue *>(c.get());
     if (cc->GetValue())
-        return consequent->Execute(interpreter);
+    {
+        interpreter.CreateScope();
+        consequent->Execute(interpreter);
+        interpreter.DestroyScope();
+        return nullptr;
+    }
 
-    return alternate ? alternate->Execute(interpreter) : nullptr;
+    if (alternate)
+    {
+        interpreter.CreateScope();
+        alternate->Execute(interpreter);
+        interpreter.DestroyScope();
+    }
+
+    return nullptr;
 }
