@@ -46,7 +46,7 @@ bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<Statemen
     currentScope = functionScope;
     for (auto &parameter : functionDeclaration->GetParameters())
     {
-        if (!currentScope->SymbolExists(parameter->GetVarName(), SymbolKind::Variable))
+        if (!currentScope->SymbolExists(parameter->GetVarName(), SymbolKind::Variable, Scope::Local))
         {
             std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
                 parameter->GetVarName(),
@@ -237,7 +237,7 @@ bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<Statemen
         return false;
     }
 
-    if (currentScope->SymbolExists(variableDeclaration->GetVarName(), SymbolKind::Variable))
+    if (currentScope->SymbolExists(variableDeclaration->GetVarName(), SymbolKind::Variable, Scope::Local))
     {
         PrintErrorPrefix(std::cerr, variableDeclaration)
             << "Redefinition of variable \""

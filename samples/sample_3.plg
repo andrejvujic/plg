@@ -7,11 +7,15 @@ function pow(int num, int exp) -> int {
 } 
 
 function upow(uint num, int exp) -> uint {
-    uint result = 1u;
-    int j;
-    for (j = 0; j < exp; j = j + 1)
-        result = result * num;
-    return result;
+    function inner(uint num, int exp) -> uint {
+        uint result = 1u;
+        int j;
+        for (j = 0; j < exp; j = j + 1)
+            result = result * num;
+        return result;
+    }
+
+    return inner(num, exp);
 }
 
 int a = pow(2, 5);

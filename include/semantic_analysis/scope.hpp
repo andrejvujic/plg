@@ -23,7 +23,12 @@ public:
 
     void DeclareSymbol(std::unique_ptr<Symbol> &symbol);
     std::unique_ptr<Symbol> &GetSymbol(const std::string &name, SymbolKind kind);
+    std::unique_ptr<Symbol> &GetSymbol(const std::string &name, SymbolKind kind, size_t distance);
     bool SymbolExists(const std::string &name, SymbolKind kind) const;
+    bool SymbolExists(const std::string &name, SymbolKind kind, size_t distance);
+
+    constexpr static size_t Local = 0;
+    constexpr static size_t Parent = 1;
 
     void Print(std::ostream &out) const;
 };

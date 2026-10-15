@@ -38,6 +38,23 @@ std::unique_ptr<Symbol> &Scope::GetSymbol(const std::string &name, SymbolKind ki
     std::exit(EXIT_FAILURE);
 }
 
+std::unique_ptr<Symbol> &Scope::GetSymbol(const std::string &name, SymbolKind kind, size_t distance)
+{
+    auto &scope = *this;
+    while (scope.HasParent() && distance-- > 0)
+        scope = scope.GetParent();
+
+    for (auto iterator = symbols.begin(); iterator != symbols.end(); ++iterator)
+    {
+        auto &symbol = iterator->second;
+        if (symbol->GetName() == name && symbol->IsOfKind(kind))
+            return symbol;
+    }
+
+    std::cerr << "[Scope] ERROR: Symbol with given name and kind doesn't exist, always call SymbolExists() before calling GetSymbol()" << std::endl;
+    std::exit(EXIT_FAILURE);
+}
+
 bool Scope::SymbolExists(const std::string &name, SymbolKind kind) const
 {
     for (auto iterator = symbols.begin(); iterator != symbols.end(); ++iterator)
@@ -48,6 +65,22 @@ bool Scope::SymbolExists(const std::string &name, SymbolKind kind) const
     }
 
     return parent ? parent->SymbolExists(name, kind) : false;
+}
+
+bool Scope::SymbolExists(const std::string &name, SymbolKind kind, size_t distance)
+{
+    auto &scope = *this;
+    while (scope.HasParent() && distance-- > 0)
+        scope = scope.GetParent();
+
+    for (auto iterator = symbols.begin(); iterator != symbols.end(); ++iterator)
+    {
+        const auto &symbol = iterator->second;
+        if (symbol->GetName() == name && symbol->IsOfKind(kind))
+            return true;
+    }
+
+    return false;
 }
 
 void Scope::Print(std::ostream &out) const
