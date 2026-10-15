@@ -17,7 +17,7 @@ const std::string &VariableDeclaration::GetVarType() const
     return varType;
 }
 
-const std::unique_ptr<const Expression> &VariableDeclaration::GetInitialValue() const
+const std::unique_ptr<Expression> &VariableDeclaration::GetInitialValue() const
 {
     return initialValue;
 }
@@ -32,7 +32,7 @@ void VariableDeclaration::SetVarType(std::string varType)
     this->varType = varType;
 }
 
-void VariableDeclaration::SetInitialVarValue(std::unique_ptr<const Expression> &expression)
+void VariableDeclaration::SetInitialVarValue(std::unique_ptr<Expression> &expression)
 {
     this->initialValue = std::move(expression);
 }

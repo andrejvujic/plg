@@ -7,22 +7,22 @@ AssignmentExpression::AssignmentExpression() : Expression(AstNodeType::Assignmen
 {
 }
 
-const std::unique_ptr<const Expression> &AssignmentExpression::GetAssignee() const
+const std::unique_ptr<Expression> &AssignmentExpression::GetAssignee() const
 {
     return assignee;
 }
 
-const std::unique_ptr<const Expression> &AssignmentExpression::GetValue() const
+const std::unique_ptr<Expression> &AssignmentExpression::GetValue() const
 {
     return value;
 }
 
-void AssignmentExpression::SetAssignee(std::unique_ptr<const Expression> &assignee)
+void AssignmentExpression::SetAssignee(std::unique_ptr<Expression> &assignee)
 {
     this->assignee = std::move(assignee);
 }
 
-void AssignmentExpression::SetValue(std::unique_ptr<const Expression> &value)
+void AssignmentExpression::SetValue(std::unique_ptr<Expression> &value)
 {
     this->value = std::move(value);
 }

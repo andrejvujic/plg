@@ -12,12 +12,12 @@ bool ReturnStatement::HasValue() const
     return value != nullptr;
 };
 
-const std::unique_ptr<const Expression> &ReturnStatement::GetValue() const
+const std::unique_ptr<Expression> &ReturnStatement::GetValue() const
 {
     return value;
 }
 
-void ReturnStatement::SetValue(std::unique_ptr<const Expression> &value)
+void ReturnStatement::SetValue(std::unique_ptr<Expression> &value)
 {
     this->value = std::move(value);
 }

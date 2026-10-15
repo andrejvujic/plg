@@ -8,42 +8,42 @@ ForStatement::ForStatement() : Statement(AstNodeType::ForStatement)
 {
 }
 
-void ForStatement::SetBody(std::unique_ptr<const Statement> &body)
+void ForStatement::SetBody(std::unique_ptr<Statement> &body)
 {
     this->body = std::move(body);
 }
 
-const std::unique_ptr<const Statement> &ForStatement::GetBody() const
+const std::unique_ptr<Statement> &ForStatement::GetBody() const
 {
     return body;
 }
 
-void ForStatement::SetInitExpression(std::unique_ptr<const Expression> &init)
+void ForStatement::SetInitExpression(std::unique_ptr<Expression> &init)
 {
     this->init = std::move(init);
 }
 
-const std::unique_ptr<const Expression> &ForStatement::GetInitExpression() const
+const std::unique_ptr<Expression> &ForStatement::GetInitExpression() const
 {
     return init;
 }
 
-void ForStatement::SetUpdateExpression(std::unique_ptr<const Expression> &update)
+void ForStatement::SetUpdateExpression(std::unique_ptr<Expression> &update)
 {
     this->update = std::move(update);
 }
 
-const std::unique_ptr<const Expression> &ForStatement::GetUpdateExpression() const
+const std::unique_ptr<Expression> &ForStatement::GetUpdateExpression() const
 {
     return update;
 }
 
-void ForStatement::SetCondition(std::unique_ptr<const Expression> &condition)
+void ForStatement::SetCondition(std::unique_ptr<Expression> &condition)
 {
     this->condition = std::move(condition);
 }
 
-const std::unique_ptr<const Expression> &ForStatement::GetCondition() const
+const std::unique_ptr<Expression> &ForStatement::GetCondition() const
 {
     return condition;
 }

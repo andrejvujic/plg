@@ -6,13 +6,13 @@
 class ComplexStatement : public Statement
 {
 private:
-    std::vector<std::unique_ptr<const Statement>> body;
+    std::vector<std::unique_ptr<Statement>> body;
 
 public:
     ComplexStatement();
 
-    const std::vector<std::unique_ptr<const Statement>> &GetStatements() const;
-    void AddStatement(std::unique_ptr<const Statement> &statement);
+    const std::vector<std::unique_ptr<Statement>> &GetStatements() const;
+    void AddStatement(std::unique_ptr<Statement> &statement);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

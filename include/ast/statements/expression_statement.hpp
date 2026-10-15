@@ -8,13 +8,13 @@
 class ExpressionStatement : public Statement
 {
 private:
-    std::unique_ptr<const Expression> expression;
+    std::unique_ptr<Expression> expression;
 
 public:
     ExpressionStatement();
 
-    const std::unique_ptr<const Expression> &GetExpression() const;
-    void SetExpression(std::unique_ptr<const Expression> &expression);
+    const std::unique_ptr<Expression> &GetExpression() const;
+    void SetExpression(std::unique_ptr<Expression> &expression);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

@@ -9,7 +9,7 @@ class FunctionCallExpression : public Expression
 {
 private:
     std::string callee;
-    std::vector<std::unique_ptr<const Expression>> arguments;
+    std::vector<std::unique_ptr<Expression>> arguments;
 
 public:
     FunctionCallExpression();
@@ -18,9 +18,9 @@ public:
     const std::string &GetCallee() const;
 
     size_t GetArgumentCount() const;
-    const std::vector<std::unique_ptr<const Expression>> &GetArguments() const;
+    const std::vector<std::unique_ptr<Expression>> &GetArguments() const;
 
-    void AddArgument(std::unique_ptr<const Expression> &argument);
+    void AddArgument(std::unique_ptr<Expression> &argument);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

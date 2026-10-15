@@ -6,15 +6,15 @@
 class AssignmentExpression : public Expression
 {
 private:
-    std::unique_ptr<const Expression> assignee, value;
+    std::unique_ptr<Expression> assignee, value;
 
 public:
     AssignmentExpression();
 
-    const std::unique_ptr<const Expression> &GetAssignee() const;
-    const std::unique_ptr<const Expression> &GetValue() const;
-    void SetAssignee(std::unique_ptr<const Expression> &assignee);
-    void SetValue(std::unique_ptr<const Expression> &value);
+    const std::unique_ptr<Expression> &GetAssignee() const;
+    const std::unique_ptr<Expression> &GetValue() const;
+    void SetAssignee(std::unique_ptr<Expression> &assignee);
+    void SetValue(std::unique_ptr<Expression> &value);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

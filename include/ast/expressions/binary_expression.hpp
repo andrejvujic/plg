@@ -7,18 +7,18 @@
 class BinaryExpression : public Expression
 {
 private:
-    std::unique_ptr<const Expression> left, right;
+    std::unique_ptr<Expression> left, right;
     std::string op;
 
 public:
     BinaryExpression();
 
     void SetOperator(std::string op);
-    void SetLeft(std::unique_ptr<const Expression> &left);
-    void SetRight(std::unique_ptr<const Expression> &right);
+    void SetLeft(std::unique_ptr<Expression> &left);
+    void SetRight(std::unique_ptr<Expression> &right);
 
-    const std::unique_ptr<const Expression> &GetLeft() const;
-    const std::unique_ptr<const Expression> &GetRight() const;
+    const std::unique_ptr<Expression> &GetLeft() const;
+    const std::unique_ptr<Expression> &GetRight() const;
     const std::string &GetOperator() const;
     bool HasArithmeticOperator() const;
     bool HasAnyOfOperators(std::initializer_list<std::string_view> ops) const;

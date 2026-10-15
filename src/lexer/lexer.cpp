@@ -172,7 +172,7 @@ bool Lexer::Tokenize()
     return !errors;
 }
 
-std::vector<std::unique_ptr<const Token>> &Lexer::GetTokens()
+std::vector<std::unique_ptr<Token>> &Lexer::GetTokens()
 {
     return tokens;
 }

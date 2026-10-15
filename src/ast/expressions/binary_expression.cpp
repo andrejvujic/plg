@@ -6,12 +6,12 @@ BinaryExpression::BinaryExpression() : Expression(AstNodeType::BinaryExpression)
 {
 }
 
-void BinaryExpression::SetLeft(std::unique_ptr<const Expression> &left)
+void BinaryExpression::SetLeft(std::unique_ptr<Expression> &left)
 {
     this->left = std::move(left);
 }
 
-void BinaryExpression::SetRight(std::unique_ptr<const Expression> &right)
+void BinaryExpression::SetRight(std::unique_ptr<Expression> &right)
 {
     this->right = std::move(right);
 }
@@ -21,12 +21,12 @@ void BinaryExpression::SetOperator(std::string op)
     this->op = op;
 }
 
-const std::unique_ptr<const Expression> &BinaryExpression::GetLeft() const
+const std::unique_ptr<Expression> &BinaryExpression::GetLeft() const
 {
     return left;
 };
 
-const std::unique_ptr<const Expression> &BinaryExpression::GetRight() const
+const std::unique_ptr<Expression> &BinaryExpression::GetRight() const
 {
     return right;
 };

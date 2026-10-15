@@ -17,7 +17,7 @@ private:
     std::size_t index = 0, lastStopIndex = 0;
     std::size_t line = 1, lineStartIndex = 0;
     std::string ReadEntireFile();
-    std::vector<std::unique_ptr<const Token>> tokens;
+    std::vector<std::unique_ptr<Token>> tokens;
 
     bool IsWhitespace(const char &c) const;
     bool IsAlpha(const char &c) const;
@@ -39,7 +39,7 @@ public:
     Lexer(std::string &&text);
 
     bool Tokenize();
-    std::vector<std::unique_ptr<const Token>> &GetTokens();
+    std::vector<std::unique_ptr<Token>> &GetTokens();
 };
 
 static const std::map<std::string_view, TokenType> TOKENS{

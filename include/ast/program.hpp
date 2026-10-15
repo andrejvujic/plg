@@ -9,13 +9,13 @@
 class Program : public AstNode
 {
 private:
-    std::vector<std::unique_ptr<const Statement>> statements;
+    std::vector<std::unique_ptr<Statement>> statements;
 
 public:
     Program();
 
-    void AddStatement(std::unique_ptr<const Statement> &statement);
-    const std::vector<std::unique_ptr<const Statement>> &GetStatements() const;
+    void AddStatement(std::unique_ptr<Statement> &statement);
+    const std::vector<std::unique_ptr<Statement>> &GetStatements() const;
 
     virtual std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

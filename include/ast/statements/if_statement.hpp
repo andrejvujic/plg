@@ -6,20 +6,20 @@
 class IfStatement : public Statement
 {
 private:
-    std::unique_ptr<const Statement> consequent, alternate;
-    std::unique_ptr<const Expression> condition;
+    std::unique_ptr<Statement> consequent, alternate;
+    std::unique_ptr<Expression> condition;
 
 public:
     IfStatement();
 
-    const std::unique_ptr<const Expression> &GetCondition() const;
-    const std::unique_ptr<const Statement> &GetConsequentStatement() const;
-    const std::unique_ptr<const Statement> &GetAlternateStatement() const;
+    const std::unique_ptr<Expression> &GetCondition() const;
+    const std::unique_ptr<Statement> &GetConsequentStatement() const;
+    const std::unique_ptr<Statement> &GetAlternateStatement() const;
     bool HasAlternateStatement() const;
 
-    void SetConsequentStatement(std::unique_ptr<const Statement> &statement);
-    void SetAlternateStatement(std::unique_ptr<const Statement> &statement);
-    void SetCondition(std::unique_ptr<const Expression> &condition);
+    void SetConsequentStatement(std::unique_ptr<Statement> &statement);
+    void SetAlternateStatement(std::unique_ptr<Statement> &statement);
+    void SetCondition(std::unique_ptr<Expression> &condition);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

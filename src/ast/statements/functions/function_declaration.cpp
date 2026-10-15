@@ -17,7 +17,7 @@ const std::string &FunctionDeclaration::GetReturnType() const
     return returnType;
 }
 
-const std::unique_ptr<const ComplexStatement> &FunctionDeclaration::GetBody() const
+const std::unique_ptr<ComplexStatement> &FunctionDeclaration::GetBody() const
 {
     return body;
 }
@@ -32,17 +32,17 @@ void FunctionDeclaration::SetReturnType(std::string returnType)
     this->returnType = returnType;
 }
 
-void FunctionDeclaration::SetBody(std::unique_ptr<const ComplexStatement> &body)
+void FunctionDeclaration::SetBody(std::unique_ptr<ComplexStatement> &body)
 {
     this->body = std::move(body);
 }
 
-void FunctionDeclaration::AddParameter(std::unique_ptr<const FunctionParameter> &parameter)
+void FunctionDeclaration::AddParameter(std::unique_ptr<FunctionParameter> &parameter)
 {
     parameters.push_back(std::move(parameter));
 }
 
-const std::vector<std::unique_ptr<const FunctionParameter>> &FunctionDeclaration::GetParameters() const
+const std::vector<std::unique_ptr<FunctionParameter>> &FunctionDeclaration::GetParameters() const
 {
     return parameters;
 }

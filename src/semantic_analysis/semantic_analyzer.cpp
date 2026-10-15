@@ -31,7 +31,7 @@ void SemanticAnalyzer::AnalyzeProgram(const std::unique_ptr<Program> &program)
         std::exit(EXIT_FAILURE);
 }
 
-bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<Statement> &statement)
 {
     auto functionDeclaration = dynamic_cast<const FunctionDeclaration *>(statement.get());
 
@@ -73,7 +73,7 @@ bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<const St
     // TODO: Check if a value is returned from non-void functions
 }
 
-bool SemanticAnalyzer::AnalyzeStatement(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeStatement(const std::unique_ptr<Statement> &statement)
 {
     switch (statement->GetType())
     {
@@ -98,7 +98,7 @@ bool SemanticAnalyzer::AnalyzeStatement(const std::unique_ptr<const Statement> &
     }
 }
 
-bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<Statement> &statement)
 {
     auto result = true;
     auto complexStatement = dynamic_cast<const ComplexStatement *>(statement.get());
@@ -112,7 +112,7 @@ bool SemanticAnalyzer::AnalyzeComplexStatement(const std::unique_ptr<const State
     return result;
 }
 
-bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<Statement> &statement)
 {
     auto ifStatement = dynamic_cast<const IfStatement *>(statement.get());
 
@@ -144,7 +144,7 @@ bool SemanticAnalyzer::AnalyzeIfStatement(const std::unique_ptr<const Statement>
     return result;
 }
 
-bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<Statement> &statement)
 {
     auto forStatement = dynamic_cast<const ForStatement *>(statement.get());
 
@@ -170,13 +170,13 @@ bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<const Statement
     return result;
 }
 
-bool SemanticAnalyzer::AnalyzeExpressionStatement(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeExpressionStatement(const std::unique_ptr<Statement> &statement)
 {
     auto expressionStatement = dynamic_cast<const ExpressionStatement *>(statement.get());
     return AnalyzeExpression(expressionStatement->GetExpression());
 }
 
-bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<Statement> &statement)
 {
     auto returnStatement = dynamic_cast<const ReturnStatement *>(statement.get());
     if (functionStack.empty() || !currentScope->SymbolExists(functionStack.top(), SymbolKind::Function))
@@ -223,7 +223,7 @@ bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<const Statem
     return false;
 }
 
-bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<const Statement> &statement)
+bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<Statement> &statement)
 {
     auto variableDeclaration = dynamic_cast<const VariableDeclaration *>(statement.get());
 
@@ -271,7 +271,7 @@ bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<const St
     return true;
 }
 
-bool SemanticAnalyzer::AnalyzeExpression(const std::unique_ptr<const Expression> &expression)
+bool SemanticAnalyzer::AnalyzeExpression(const std::unique_ptr<Expression> &expression)
 {
     switch (expression->GetType())
     {
@@ -292,7 +292,7 @@ bool SemanticAnalyzer::AnalyzeExpression(const std::unique_ptr<const Expression>
     }
 }
 
-bool SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<const Expression> &expression)
+bool SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<Expression> &expression)
 {
     const IdExpression *e = dynamic_cast<const IdExpression *>(expression.get());
     if (!currentScope->SymbolExists(e->GetValue(), SymbolKind::Variable))
@@ -307,7 +307,7 @@ bool SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<const Expressio
     return true;
 }
 
-bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const Expression> &expression)
+bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<Expression> &expression)
 {
     const FunctionCallExpression *call = dynamic_cast<const FunctionCallExpression *>(expression.get());
     if (!currentScope->SymbolExists(call->GetCallee(), SymbolKind::Function))
@@ -356,7 +356,7 @@ bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const
     return true;
 }
 
-bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const Expression> &expression)
+bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<Expression> &expression)
 {
     if (expression->GetType() != AstNodeType::AssignmentExpression)
     {
@@ -398,7 +398,7 @@ bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<const E
     return false;
 }
 
-bool SemanticAnalyzer::AnalyzeBinaryExpression(const std::unique_ptr<const Expression> &expression)
+bool SemanticAnalyzer::AnalyzeBinaryExpression(const std::unique_ptr<Expression> &expression)
 {
     const BinaryExpression *e = dynamic_cast<const BinaryExpression *>(expression.get());
 
@@ -440,7 +440,7 @@ bool SemanticAnalyzer::AnalyzeBinaryExpression(const std::unique_ptr<const Expre
     return true;
 }
 
-std::string SemanticAnalyzer::ResolveExpressionType(const std::unique_ptr<const Expression> &expression)
+std::string SemanticAnalyzer::ResolveExpressionType(const std::unique_ptr<Expression> &expression)
 {
     switch (expression->GetType())
     {
@@ -460,7 +460,7 @@ std::string SemanticAnalyzer::ResolveExpressionType(const std::unique_ptr<const 
     }
 }
 
-std::string SemanticAnalyzer::GetIdExpressionType(const std::unique_ptr<const Expression> &expression)
+std::string SemanticAnalyzer::GetIdExpressionType(const std::unique_ptr<Expression> &expression)
 {
     auto idExpression = dynamic_cast<const IdExpression *>(expression.get());
     if (!currentScope->SymbolExists(idExpression->GetValue(), SymbolKind::Variable))
@@ -470,13 +470,13 @@ std::string SemanticAnalyzer::GetIdExpressionType(const std::unique_ptr<const Ex
     return symbol->GetType();
 }
 
-std::string SemanticAnalyzer::GetNumLiteralExpressionType(const std::unique_ptr<const Expression> &expression)
+std::string SemanticAnalyzer::GetNumLiteralExpressionType(const std::unique_ptr<Expression> &expression)
 {
     auto e = dynamic_cast<const NumLiteralExpression *>(expression.get());
     return e->GetLiteralType();
 }
 
-std::string SemanticAnalyzer::GetFunctionCallExpressionType(const std::unique_ptr<const Expression> &expression)
+std::string SemanticAnalyzer::GetFunctionCallExpressionType(const std::unique_ptr<Expression> &expression)
 {
     auto functionCallExpression = dynamic_cast<const FunctionCallExpression *>(expression.get());
     if (!currentScope->SymbolExists(functionCallExpression->GetCallee(), SymbolKind::Function))
@@ -486,7 +486,7 @@ std::string SemanticAnalyzer::GetFunctionCallExpressionType(const std::unique_pt
     return symbol->GetType();
 }
 
-std::string SemanticAnalyzer::ResolveBinaryExpressionType(const std::unique_ptr<const Expression> &expression)
+std::string SemanticAnalyzer::ResolveBinaryExpressionType(const std::unique_ptr<Expression> &expression)
 {
     auto binaryExpression = dynamic_cast<const BinaryExpression *>(expression.get());
 

@@ -19,7 +19,7 @@ void FunctionCallExpression::SetCallee(std::string callee)
     this->callee = callee;
 }
 
-void FunctionCallExpression::AddArgument(std::unique_ptr<const Expression> &argument)
+void FunctionCallExpression::AddArgument(std::unique_ptr<Expression> &argument)
 {
     arguments.push_back(std::move(argument));
 }
@@ -29,7 +29,7 @@ size_t FunctionCallExpression::GetArgumentCount() const
     return arguments.size();
 }
 
-const std::vector<std::unique_ptr<const Expression>> &FunctionCallExpression::GetArguments() const
+const std::vector<std::unique_ptr<Expression>> &FunctionCallExpression::GetArguments() const
 {
     return arguments;
 }

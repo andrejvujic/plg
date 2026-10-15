@@ -6,12 +6,12 @@ ComplexStatement::ComplexStatement() : Statement(AstNodeType::ComplexStatement)
 {
 }
 
-void ComplexStatement::AddStatement(std::unique_ptr<const Statement> &statement)
+void ComplexStatement::AddStatement(std::unique_ptr<Statement> &statement)
 {
     body.push_back(std::move(statement));
 }
 
-const std::vector<std::unique_ptr<const Statement>> &ComplexStatement::GetStatements() const
+const std::vector<std::unique_ptr<Statement>> &ComplexStatement::GetStatements() const
 {
     return body;
 }

@@ -6,14 +6,14 @@
 class ReturnStatement : public Statement
 {
 private:
-    std::unique_ptr<const Expression> value;
+    std::unique_ptr<Expression> value;
 
 public:
     ReturnStatement();
 
     bool HasValue() const;
-    const std::unique_ptr<const Expression> &GetValue() const;
-    void SetValue(std::unique_ptr<const Expression> &value);
+    const std::unique_ptr<Expression> &GetValue() const;
+    void SetValue(std::unique_ptr<Expression> &value);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

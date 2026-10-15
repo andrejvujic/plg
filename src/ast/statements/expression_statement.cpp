@@ -6,12 +6,12 @@ ExpressionStatement::ExpressionStatement() : Statement(AstNodeType::ExpressionSt
 {
 }
 
-const std::unique_ptr<const Expression> &ExpressionStatement::GetExpression() const
+const std::unique_ptr<Expression> &ExpressionStatement::GetExpression() const
 {
     return expression;
 };
 
-void ExpressionStatement::SetExpression(std::unique_ptr<const Expression> &expression)
+void ExpressionStatement::SetExpression(std::unique_ptr<Expression> &expression)
 {
     this->expression = std::move(expression);
 }

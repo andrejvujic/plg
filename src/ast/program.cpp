@@ -5,12 +5,12 @@ Program::Program() : AstNode(AstNodeType::Program)
 {
 }
 
-void Program::AddStatement(std::unique_ptr<const Statement> &statement)
+void Program::AddStatement(std::unique_ptr<Statement> &statement)
 {
     statements.push_back(std::move(statement));
 }
 
-const std::vector<std::unique_ptr<const Statement>> &Program::GetStatements() const
+const std::vector<std::unique_ptr<Statement>> &Program::GetStatements() const
 {
     return statements;
 }

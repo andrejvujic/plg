@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-Parser::Parser(const std::vector<std::unique_ptr<const Token>> &t) : ast(std::make_unique<Program>()), tokens(t)
+Parser::Parser(const std::vector<std::unique_ptr<Token>> &t) : ast(std::make_unique<Program>()), tokens(t)
 {
 }
 
@@ -42,7 +42,7 @@ bool Parser::NextMatches(TokenType type) const
     if (!HasMoreTokens())
         return false;
 
-    const std::unique_ptr<const Token> &token = tokens.at(index);
+    const std::unique_ptr<Token> &token = tokens.at(index);
     return token->Matches(type);
 }
 
@@ -51,11 +51,11 @@ bool Parser::NextMatchesAny(const std::initializer_list<TokenType> &types) const
     if (!HasMoreTokens())
         return false;
 
-    const std::unique_ptr<const Token> &token = tokens.at(index);
+    const std::unique_ptr<Token> &token = tokens.at(index);
     return token->MatchesAny(types);
 }
 
-const std::unique_ptr<const Token> &Parser::Consume(TokenType type)
+const std::unique_ptr<Token> &Parser::Consume(TokenType type)
 {
     if (!HasMoreTokens())
     {
@@ -64,7 +64,7 @@ const std::unique_ptr<const Token> &Parser::Consume(TokenType type)
         exit(EXIT_FAILURE);
     }
 
-    const std::unique_ptr<const Token> &token = tokens.at(index);
+    const std::unique_ptr<Token> &token = tokens.at(index);
     if (!token->Matches(type))
     {
         PrintUnexpectedToken(token);
@@ -76,7 +76,7 @@ const std::unique_ptr<const Token> &Parser::Consume(TokenType type)
     return token;
 }
 
-const std::unique_ptr<const Token> &Parser::ConsumeAny(std::initializer_list<TokenType> types)
+const std::unique_ptr<Token> &Parser::ConsumeAny(std::initializer_list<TokenType> types)
 {
     if (!HasMoreTokens())
     {
@@ -85,7 +85,7 @@ const std::unique_ptr<const Token> &Parser::ConsumeAny(std::initializer_list<Tok
         exit(EXIT_FAILURE);
     }
 
-    const std::unique_ptr<const Token> &token = tokens.at(index);
+    const std::unique_ptr<Token> &token = tokens.at(index);
     if (!token->MatchesAny(types))
     {
         PrintUnexpectedToken(token);
@@ -103,7 +103,7 @@ void Parser::ConsumeAll(std::initializer_list<TokenType> types)
         Consume(type);
 }
 
-std::unique_ptr<const FunctionDeclaration> Parser::ParseFunctionDeclaration()
+std::unique_ptr<FunctionDeclaration> Parser::ParseFunctionDeclaration()
 {
     auto function = std::make_unique<FunctionDeclaration>();
 
@@ -145,7 +145,7 @@ std::unique_ptr<const FunctionDeclaration> Parser::ParseFunctionDeclaration()
     return function;
 }
 
-std::unique_ptr<const FunctionParameter> Parser::ParseFunctionParameter()
+std::unique_ptr<FunctionParameter> Parser::ParseFunctionParameter()
 {
     auto parameter = std::make_unique<FunctionParameter>();
 
@@ -159,7 +159,7 @@ std::unique_ptr<const FunctionParameter> Parser::ParseFunctionParameter()
     return parameter;
 }
 
-std::unique_ptr<const ComplexStatement> Parser::ParseComplexStatement()
+std::unique_ptr<ComplexStatement> Parser::ParseComplexStatement()
 {
     auto complexStatement = std::make_unique<ComplexStatement>();
     const auto &startToken = Consume(TokenType::O_CURLY);
@@ -180,7 +180,7 @@ std::unique_ptr<const ComplexStatement> Parser::ParseComplexStatement()
     return complexStatement;
 }
 
-std::unique_ptr<const Statement> Parser::ParseStatement()
+std::unique_ptr<Statement> Parser::ParseStatement()
 {
     if (NextMatches(TokenType::KEYWORD_FUNCTION))
         return ParseFunctionDeclaration();
@@ -209,7 +209,7 @@ std::unique_ptr<const Statement> Parser::ParseStatement()
     // exit(EXIT_FAILURE);
 }
 
-std::unique_ptr<const VariableDeclaration> Parser::ParseVariableDeclaration()
+std::unique_ptr<VariableDeclaration> Parser::ParseVariableDeclaration()
 
 {
     auto statement = std::make_unique<VariableDeclaration>();
@@ -234,7 +234,7 @@ std::unique_ptr<const VariableDeclaration> Parser::ParseVariableDeclaration()
     return statement;
 }
 
-std::unique_ptr<const IfStatement> Parser::ParseIfStatement()
+std::unique_ptr<IfStatement> Parser::ParseIfStatement()
 {
     auto statement = std::make_unique<IfStatement>();
 
@@ -249,7 +249,7 @@ std::unique_ptr<const IfStatement> Parser::ParseIfStatement()
 
     if (NextMatches(TokenType::O_CURLY))
     {
-        std::unique_ptr<const Statement> consequent = ParseComplexStatement();
+        std::unique_ptr<Statement> consequent = ParseComplexStatement();
         statement->SetConsequentStatement(consequent);
     }
     else
@@ -265,14 +265,14 @@ std::unique_ptr<const IfStatement> Parser::ParseIfStatement()
 
     if (NextMatches(TokenType::KEYWORD_IF))
     {
-        std::unique_ptr<const Statement> alternate = ParseIfStatement();
+        std::unique_ptr<Statement> alternate = ParseIfStatement();
         statement->SetAlternateStatement(alternate);
         return statement;
     }
 
     if (NextMatches(TokenType::O_CURLY))
     {
-        std::unique_ptr<const Statement> alternate = ParseComplexStatement();
+        std::unique_ptr<Statement> alternate = ParseComplexStatement();
         statement->SetAlternateStatement(alternate);
     }
     else
@@ -284,7 +284,7 @@ std::unique_ptr<const IfStatement> Parser::ParseIfStatement()
     return statement;
 }
 
-std::unique_ptr<const ReturnStatement> Parser::ParseReturnStatement()
+std::unique_ptr<ReturnStatement> Parser::ParseReturnStatement()
 {
     auto statement = std::make_unique<ReturnStatement>();
     const auto &startToken = Consume(TokenType::KEYWORD_RETURN);
@@ -303,7 +303,7 @@ std::unique_ptr<const ReturnStatement> Parser::ParseReturnStatement()
     return statement;
 }
 
-std::unique_ptr<const ForStatement> Parser::ParseForStatement()
+std::unique_ptr<ForStatement> Parser::ParseForStatement()
 {
     auto statement = std::make_unique<ForStatement>();
 
@@ -311,7 +311,7 @@ std::unique_ptr<const ForStatement> Parser::ParseForStatement()
     statement->SetLocation(startToken->GetLocation());
     Consume(TokenType::O_PAREN);
 
-    std::unique_ptr<const Expression> init = ParseExpression();
+    std::unique_ptr<Expression> init = ParseExpression();
     statement->SetInitExpression(init);
 
     Consume(TokenType::SEMICOLON);
@@ -321,14 +321,14 @@ std::unique_ptr<const ForStatement> Parser::ParseForStatement()
 
     Consume(TokenType::SEMICOLON);
 
-    std::unique_ptr<const Expression> update = ParseExpression();
+    std::unique_ptr<Expression> update = ParseExpression();
     statement->SetUpdateExpression(update);
 
     Consume(TokenType::C_PAREN);
 
     if (NextMatches(TokenType::O_CURLY))
     {
-        std::unique_ptr<const Statement> body = ParseComplexStatement();
+        std::unique_ptr<Statement> body = ParseComplexStatement();
         statement->SetBody(body);
     }
     else
@@ -340,9 +340,9 @@ std::unique_ptr<const ForStatement> Parser::ParseForStatement()
     return statement;
 }
 
-std::unique_ptr<const Expression> Parser::ParseExpression()
+std::unique_ptr<Expression> Parser::ParseExpression()
 {
-    std::unique_ptr<const Expression> left;
+    std::unique_ptr<Expression> left;
 
     if (NextMatches(TokenType::O_PAREN))
         left = ParseGroupedExpression();
@@ -360,7 +360,7 @@ std::unique_ptr<const Expression> Parser::ParseExpression()
         return assignmentExpression;
     }
 
-    std::unique_ptr<const Expression> right;
+    std::unique_ptr<Expression> right;
     auto opTokens = {TokenType::ARITHMETIC_OPERATOR, TokenType::RELATIONAL_OPERATOR, TokenType::LOGICAL_OPERATOR};
     while (NextMatchesAny(opTokens) || NextMatches(TokenType::C_PAREN))
     {
@@ -386,7 +386,7 @@ std::unique_ptr<const Expression> Parser::ParseExpression()
     return left;
 }
 
-std::unique_ptr<const Expression> Parser::ParseGroupedExpression()
+std::unique_ptr<Expression> Parser::ParseGroupedExpression()
 {
     Consume(TokenType::O_PAREN);
     auto expression = ParseExpression();
@@ -394,7 +394,7 @@ std::unique_ptr<const Expression> Parser::ParseGroupedExpression()
     return expression;
 }
 
-std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
+std::unique_ptr<Expression> Parser::ParsePrimaryExpression()
 {
     if (NextMatchesAny({TokenType::KEYWORD_TRUE, TokenType::KEYWORD_FALSE}))
     {
@@ -474,7 +474,7 @@ std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
     exit(EXIT_FAILURE);
 }
 
-void Parser::PrintUnexpectedToken(const std::unique_ptr<const Token> &token) const
+void Parser::PrintUnexpectedToken(const std::unique_ptr<Token> &token) const
 {
     const auto location = token->GetLocation();
     std::cerr << "[Parser] ERROR: line " << location.line << " column " << location.column

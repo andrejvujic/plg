@@ -7,19 +7,19 @@ class VariableDeclaration : public Statement
 {
 private:
     std::string varName, varType;
-    std::unique_ptr<const Expression> initialValue;
+    std::unique_ptr<Expression> initialValue;
 
 public:
     VariableDeclaration();
 
     const std::string &GetVarName() const;
     const std::string &GetVarType() const;
-    const std::unique_ptr<const Expression> &GetInitialValue() const;
+    const std::unique_ptr<Expression> &GetInitialValue() const;
     bool HasInitialValue() const;
 
     void SetVarName(std::string varName);
     void SetVarType(std::string varType);
-    void SetInitialVarValue(std::unique_ptr<const Expression> &initialValue);
+    void SetInitialVarValue(std::unique_ptr<Expression> &initialValue);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 
