@@ -1,10 +1,6 @@
 #include "ast/ast_printer.hpp"
 #include "ast/ast.hpp"
 
-AstPrinter::AstPrinter(std::ostream &out, bool skipNull) : out(out), skipNull(skipNull)
-{
-}
-
 void AstPrinter::BeginNode(std::string_view name)
 {
     if (isAtLineStart)

@@ -42,7 +42,7 @@ private:
     std::ostream &PrintErrorPrefix(std::ostream &out, const AstNode *node) const;
 
 public:
-    SemanticAnalyzer();
+    SemanticAnalyzer() : currentScope(std::make_shared<Scope>()) {}
 
     void AnalyzeProgram(const std::unique_ptr<Program> &program);
 };

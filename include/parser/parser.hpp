@@ -52,7 +52,7 @@ private:
     void PrintExpectedAnyOfTypes(const std::initializer_list<TokenType> &types) const;
 
 public:
-    Parser(const std::vector<std::unique_ptr<Token>> &t);
+    explicit Parser(const std::vector<std::unique_ptr<Token>> &tokens) : tokens(tokens) {}
 
     void Parse();
 

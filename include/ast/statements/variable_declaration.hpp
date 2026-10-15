@@ -10,16 +10,26 @@ private:
     std::unique_ptr<Expression> initialValue;
 
 public:
-    VariableDeclaration();
+    VariableDeclaration(SourceLocation location,
+                        std::string varName,
+                        std::string varType)
+        : Statement(AstNodeType::VariableDeclaration, location),
+          varName(std::move(varName)),
+          varType(std::move(varType)) {}
+
+    VariableDeclaration(SourceLocation location,
+                        std::string varName,
+                        std::string varType,
+                        std::unique_ptr<Expression> initialValue)
+        : Statement(AstNodeType::VariableDeclaration, location),
+          varName(std::move(varName)),
+          varType(std::move(varType)),
+          initialValue(std::move(initialValue)) {}
 
     const std::string &GetVarName() const;
     const std::string &GetVarType() const;
     const std::unique_ptr<Expression> &GetInitialValue() const;
     bool HasInitialValue() const;
-
-    void SetVarName(std::string varName);
-    void SetVarType(std::string varType);
-    void SetInitialVarValue(std::unique_ptr<Expression> &initialValue);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

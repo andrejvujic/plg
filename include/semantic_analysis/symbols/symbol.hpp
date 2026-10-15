@@ -18,7 +18,8 @@ private:
     SymbolKind kind;
 
 public:
-    Symbol(std::string_view name, std::string_view type, SymbolKind kind);
+    Symbol(std::string_view name, std::string_view type, SymbolKind kind)
+        : name(name), type(type), kind(kind) {}
 
     const std::string &GetName() const;
     const std::string &GetType() const;

@@ -9,10 +9,10 @@ private:
     std::string value;
 
 public:
-    IdExpression();
+    IdExpression(SourceLocation location, std::string value)
+        : Expression(AstNodeType::IdExpression, location), value(std::move(value)) {}
 
     const std::string &GetValue() const;
-    void SetValue(std::string value);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

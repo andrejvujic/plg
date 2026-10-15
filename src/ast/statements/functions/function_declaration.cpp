@@ -3,10 +3,6 @@
 #include "semantic_analysis/symbols/function_symbol.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
-FunctionDeclaration::FunctionDeclaration() : Statement(AstNodeType::FunctionDeclaration)
-{
-}
-
 const std::string &FunctionDeclaration::GetName() const
 {
     return name;
@@ -22,22 +18,7 @@ const std::unique_ptr<ComplexStatement> &FunctionDeclaration::GetBody() const
     return body;
 }
 
-void FunctionDeclaration::SetName(std::string name)
-{
-    this->name = name;
-}
-
-void FunctionDeclaration::SetReturnType(std::string returnType)
-{
-    this->returnType = returnType;
-}
-
-void FunctionDeclaration::SetBody(std::unique_ptr<ComplexStatement> &body)
-{
-    this->body = std::move(body);
-}
-
-void FunctionDeclaration::AddParameter(std::unique_ptr<FunctionParameter> &parameter)
+void FunctionDeclaration::AddParameter(std::unique_ptr<FunctionParameter> parameter)
 {
     parameters.push_back(std::move(parameter));
 }
@@ -73,14 +54,12 @@ void FunctionDeclaration::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> FunctionDeclaration::Execute(TreeWalkInterpreter &interpreter) const
 {
-    FunctionSymbol function(name, returnType);
-    function.SetFunctionDeclaration(this);
-    for (auto &parameter : GetParameters())
-        function.AddParameterType(parameter->GetVarType());
-
-    std::unique_ptr<Symbol> symbol = std::make_unique<FunctionSymbol>(function);
+    std::unique_ptr<Symbol> symbol = std::make_unique<FunctionSymbol>(
+        name,
+        returnType,
+        this);
     auto scope = interpreter.GetCurrentScope();
-    scope->DeclareSymbol(symbol);
+    scope->DeclareSymbol(std::move(symbol));
 
     return nullptr;
 }

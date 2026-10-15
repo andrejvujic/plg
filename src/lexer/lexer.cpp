@@ -1,10 +1,6 @@
 #include "lexer/lexer.hpp"
 #include "lexer/tokens/token.hpp"
 
-Lexer::Lexer(std::string &&t) : text(t)
-{
-}
-
 bool Lexer::IsWhitespace(const char &character) const
 {
     return static_cast<bool>(std::iswspace(static_cast<wchar_t>(character)));
@@ -49,7 +45,7 @@ std::unique_ptr<Token> Lexer::GetAlphaNumToken()
 
     const std::string lexeme = ss.str();
 
-    const Location location{.line = line, .column = column};
+    const SourceLocation location{.line = line, .column = column};
     TokenType type;
     if (!GetTypeByLexeme(lexeme, type))
         return std::make_unique<Token>(Token(lexeme, TokenType::ID, location));
@@ -70,7 +66,7 @@ std::unique_ptr<Token> Lexer::GetNumToken()
         ss << text[index++];
 
     const std::string lexeme = ss.str();
-    const Location location{.line = line, .column = column};
+    const SourceLocation location{.line = line, .column = column};
 
     return std::make_unique<Token>(Token(lexeme, TokenType::NUMBER, location));
 }
@@ -94,7 +90,7 @@ std::unique_ptr<Token> Lexer::GetToken()
 
             index = lastValidTokenEndIndex;
             const std::string lexeme = text.substr(lastStopIndex, lastValidTokenEndIndex - lastStopIndex);
-            const Location location{.line = line, .column = column};
+            const SourceLocation location{.line = line, .column = column};
             return std::make_unique<Token>(Token(lexeme, lastValidTokenType, location));
         }
 
@@ -106,7 +102,7 @@ std::unique_ptr<Token> Lexer::GetToken()
     {
         index = lastValidTokenEndIndex;
         const std::string lexeme = text.substr(lastStopIndex, lastValidTokenEndIndex - lastStopIndex);
-        const Location location = {.line = line, .column = column};
+        const SourceLocation location = {.line = line, .column = column};
         return std::make_unique<Token>(Token(lexeme, lastValidTokenType, location));
     }
 

@@ -17,10 +17,6 @@
 
 #include <iostream>
 
-SemanticAnalyzer::SemanticAnalyzer() : currentScope(std::make_shared<Scope>())
-{
-}
-
 void SemanticAnalyzer::AnalyzeProgram(const std::unique_ptr<Program> &program)
 {
     auto result = true;
@@ -35,12 +31,11 @@ bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<Statemen
 {
     auto functionDeclaration = dynamic_cast<const FunctionDeclaration *>(statement.get());
 
-    FunctionSymbol function(functionDeclaration->GetName(), functionDeclaration->GetReturnType());
-    function.SetFunctionDeclaration(functionDeclaration);
-    for (auto &parameter : functionDeclaration->GetParameters())
-        function.AddParameterType(parameter->GetVarType());
-    std::unique_ptr<Symbol> symbol = std::make_unique<FunctionSymbol>(function);
-    currentScope->DeclareSymbol(symbol);
+    std::unique_ptr<Symbol> symbol = std::make_unique<FunctionSymbol>(
+        functionDeclaration->GetName(),
+        functionDeclaration->GetReturnType(),
+        functionDeclaration);
+    currentScope->DeclareSymbol(std::move(symbol));
 
     auto functionScope = std::make_shared<Scope>(currentScope);
     currentScope = functionScope;
@@ -51,7 +46,7 @@ bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<Statemen
             std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
                 parameter->GetVarName(),
                 parameter->GetVarType());
-            currentScope->DeclareSymbol(symbol);
+            currentScope->DeclareSymbol(std::move(symbol));
         }
         else
             PrintErrorPrefix(std::cerr, parameter.get())
@@ -249,7 +244,7 @@ bool SemanticAnalyzer::AnalyzeVariableDeclaration(const std::unique_ptr<Statemen
     std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
         variableDeclaration->GetVarName(),
         variableDeclaration->GetVarType());
-    currentScope->DeclareSymbol(symbol);
+    currentScope->DeclareSymbol(std::move(symbol));
 
     if (variableDeclaration->HasInitialValue())
     {
@@ -422,10 +417,10 @@ bool SemanticAnalyzer::AnalyzeBinaryExpression(const std::unique_ptr<Expression>
         return false;
     }
 
-    if (e->HasAnyOfOperators({BinaryExpression::OP_AND, BinaryExpression::OP_OR}))
+    if (e->HasAnyOfOperators({BinaryExpression::And, BinaryExpression::OP_OR}))
         return leftType == Types::Bool;
 
-    if (e->HasArithmeticOperator() || !e->HasAnyOfOperators({BinaryExpression::OP_EQ, BinaryExpression::OP_NEQ}))
+    if (e->HasArithmeticOperator() || !e->HasAnyOfOperators({BinaryExpression::Eq, BinaryExpression::Neq}))
     {
         if (leftType != Types::Int && leftType != Types::UsignedInt)
             PrintErrorPrefix(std::cerr, expression.get())

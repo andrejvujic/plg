@@ -3,10 +3,6 @@
 #include "semantic_analysis/symbols/variable_symbol.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
-VariableDeclaration::VariableDeclaration() : Statement(AstNodeType::VariableDeclaration)
-{
-}
-
 const std::string &VariableDeclaration::GetVarName() const
 {
     return varName;
@@ -20,21 +16,6 @@ const std::string &VariableDeclaration::GetVarType() const
 const std::unique_ptr<Expression> &VariableDeclaration::GetInitialValue() const
 {
     return initialValue;
-}
-
-void VariableDeclaration::SetVarName(std::string varName)
-{
-    this->varName = varName;
-}
-
-void VariableDeclaration::SetVarType(std::string varType)
-{
-    this->varType = varType;
-}
-
-void VariableDeclaration::SetInitialVarValue(std::unique_ptr<Expression> &expression)
-{
-    this->initialValue = std::move(expression);
 }
 
 bool VariableDeclaration::HasInitialValue() const
@@ -60,8 +41,8 @@ std::unique_ptr<RuntimeValue> VariableDeclaration::Execute(TreeWalkInterpreter &
     std::unique_ptr<Symbol> varSymbol = std::make_unique<VariableSymbol>(
         varName,
         varType,
-        varValue);
-    scope->DeclareSymbol(varSymbol);
+        std::move(varValue));
+    scope->DeclareSymbol(std::move(varSymbol));
 
     return varValueClone;
 }

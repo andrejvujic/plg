@@ -9,13 +9,14 @@ private:
     std::string rawValue, literalType;
 
 public:
-    NumLiteralExpression();
+    NumLiteralExpression(SourceLocation location, std::string rawValue, std::string literalType)
+        : Expression(AstNodeType::NumLiteralExpression, location),
+          rawValue(std::move(rawValue)),
+          literalType(std::move(literalType)) {}
 
     const std::string &GetLiteralType() const;
-    void SetLiteralType(std::string literalType);
 
     const std::string &GetRawValue() const;
-    void SetRawValue(std::string rawValue);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

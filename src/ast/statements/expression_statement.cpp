@@ -2,19 +2,10 @@
 
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
-ExpressionStatement::ExpressionStatement() : Statement(AstNodeType::ExpressionStatement)
-{
-}
-
 const std::unique_ptr<Expression> &ExpressionStatement::GetExpression() const
 {
     return expression;
 };
-
-void ExpressionStatement::SetExpression(std::unique_ptr<Expression> &expression)
-{
-    this->expression = std::move(expression);
-}
 
 void ExpressionStatement::Print(AstPrinter &printer) const
 {

@@ -11,10 +11,10 @@ private:
     std::unique_ptr<Expression> expression;
 
 public:
-    ExpressionStatement();
+    ExpressionStatement(SourceLocation location, std::unique_ptr<Expression> expression)
+        : Statement(AstNodeType::ExpressionStatement, location), expression(std::move(expression)) {}
 
     const std::unique_ptr<Expression> &GetExpression() const;
-    void SetExpression(std::unique_ptr<Expression> &expression);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

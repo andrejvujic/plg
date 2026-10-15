@@ -13,9 +13,10 @@ private:
     std::vector<std::string> parameterTypes;
 
 public:
-    FunctionSymbol(std::string_view name, std::string_view type);
+    FunctionSymbol(std::string_view name,
+                   std::string_view type,
+                   const FunctionDeclaration *declaration);
 
-    void SetFunctionDeclaration(const FunctionDeclaration *declaration);
     const FunctionDeclaration *GetFunctionDeclaration() const;
 
     void AddParameterType(std::string type);

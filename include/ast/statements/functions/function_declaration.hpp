@@ -14,17 +14,20 @@ private:
     std::unique_ptr<ComplexStatement> body;
 
 public:
-    FunctionDeclaration();
+    FunctionDeclaration(SourceLocation location,
+                        std::string name,
+                        std::string returnType,
+                        std::unique_ptr<ComplexStatement> body)
+        : Statement(AstNodeType::FunctionDeclaration, location),
+          name(std::move(name)),
+          returnType(std::move(returnType)),
+          body(std::move(body)) {}
 
     const std::string &GetName() const;
     const std::string &GetReturnType() const;
     const std::unique_ptr<ComplexStatement> &GetBody() const;
 
-    void SetName(std::string name);
-    void SetReturnType(std::string returnType);
-    void SetBody(std::unique_ptr<ComplexStatement> &body);
-
-    void AddParameter(std::unique_ptr<FunctionParameter> &parameter);
+    void AddParameter(std::unique_ptr<FunctionParameter> parameter);
     const std::vector<std::unique_ptr<FunctionParameter>> &GetParameters() const;
     size_t GetParameterCount() const;
 

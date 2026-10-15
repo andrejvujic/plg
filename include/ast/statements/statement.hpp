@@ -8,7 +8,7 @@ class Statement : public AstNode
 {
 private:
 public:
-    Statement(AstNodeType type);
+    Statement(AstNodeType type, SourceLocation location) : AstNode(type, location) {}
     virtual ~Statement() = default;
 };
 

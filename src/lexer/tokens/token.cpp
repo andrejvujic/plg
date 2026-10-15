@@ -1,11 +1,5 @@
 #include "lexer/tokens/token.hpp"
 
-Token::Token() {}
-
-Token::Token(std::string lexeme, TokenType type, Location location) : location(location), type(type), lexeme(lexeme)
-{
-}
-
 const std::string &Token::GetLexeme() const
 {
     return lexeme;
@@ -27,7 +21,7 @@ bool Token::LexemeEqualsAny(std::initializer_list<std::string_view> lexemes) con
         });
 }
 
-Location Token::GetLocation() const
+SourceLocation Token::GetLocation() const
 {
     return location;
 }

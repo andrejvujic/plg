@@ -3,13 +3,6 @@
 #include "runtime/unsigned_int_value.hpp"
 #include "shared/types.hpp"
 
-NumLiteralExpression::NumLiteralExpression() : Expression(AstNodeType::NumLiteralExpression) {}
-
-void NumLiteralExpression::SetRawValue(std::string rawValue)
-{
-    this->rawValue = rawValue;
-}
-
 const std::string &NumLiteralExpression::GetRawValue() const
 {
     return rawValue;
@@ -20,11 +13,6 @@ const std::string &NumLiteralExpression::GetLiteralType() const
     return literalType;
 }
 
-void NumLiteralExpression::SetLiteralType(std::string literalType)
-{
-    this->literalType = literalType;
-}
-
 void NumLiteralExpression::Print(AstPrinter &printer) const
 {
     printer.BeginNode("NumLiteralExpression");
@@ -33,7 +21,7 @@ void NumLiteralExpression::Print(AstPrinter &printer) const
     printer.EndNode();
 }
 
-std::unique_ptr<RuntimeValue> NumLiteralExpression::Execute(TreeWalkInterpreter &interpreter) const
+std::unique_ptr<RuntimeValue> NumLiteralExpression::Execute(TreeWalkInterpreter &) const
 {
     if (literalType == Types::Int)
     {

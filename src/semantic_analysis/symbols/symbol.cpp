@@ -1,7 +1,5 @@
 #include "semantic_analysis/symbols/symbol.hpp"
 
-Symbol::Symbol(std::string_view name, std::string_view type, SymbolKind kind) : name(std::string(name)), type(std::string(type)), kind(kind) {}
-
 const std::string &Symbol::GetName() const
 {
     return name;

@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 #include <list>
+#include <utility>
 
 #include "lexer/tokens/token.hpp"
 #include "lexer/tokens/token_type.hpp"
@@ -36,7 +37,7 @@ private:
     size_t GetCurrentColumnNumber() const;
 
 public:
-    Lexer(std::string &&text);
+    explicit Lexer(std::string &&text) : text(std::move(text)) {}
 
     bool Tokenize();
     std::vector<std::unique_ptr<Token>> &GetTokens();

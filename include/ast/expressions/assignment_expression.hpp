@@ -9,12 +9,15 @@ private:
     std::unique_ptr<Expression> assignee, value;
 
 public:
-    AssignmentExpression();
+    AssignmentExpression(SourceLocation location,
+                         std::unique_ptr<Expression> assignee,
+                         std::unique_ptr<Expression> value)
+        : Expression(AstNodeType::AssignmentExpression, location),
+          assignee(std::move(assignee)),
+          value(std::move(value)) {}
 
     const std::unique_ptr<Expression> &GetAssignee() const;
     const std::unique_ptr<Expression> &GetValue() const;
-    void SetAssignee(std::unique_ptr<Expression> &assignee);
-    void SetValue(std::unique_ptr<Expression> &value);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

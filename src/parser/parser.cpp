@@ -14,16 +14,13 @@
 
 #include <iostream>
 
-Parser::Parser(const std::vector<std::unique_ptr<Token>> &t) : ast(std::make_unique<Program>()), tokens(t)
-{
-}
-
 void Parser::Parse()
 {
+    ast = std::make_unique<Program>();
     while (HasMoreTokens())
     {
         auto statement = ParseStatement();
-        ast->AddStatement(statement);
+        ast->AddStatement(std::move(statement));
     }
 }
 
@@ -105,19 +102,14 @@ void Parser::ConsumeAll(std::initializer_list<TokenType> types)
 
 std::unique_ptr<FunctionDeclaration> Parser::ParseFunctionDeclaration()
 {
-    auto function = std::make_unique<FunctionDeclaration>();
-
     auto &startToken = Consume(TokenType::KEYWORD_FUNCTION);
-    function->SetLocation(startToken->GetLocation());
-
     auto &nameToken = Consume(TokenType::ID);
-    function->SetName(nameToken->GetLexeme());
 
+    std::vector<std::unique_ptr<FunctionParameter>> parameters;
     Consume(TokenType::O_PAREN);
     while (!NextMatches(TokenType::C_PAREN))
     {
-        auto parameter = ParseFunctionParameter();
-        function->AddParameter(parameter);
+        parameters.push_back(ParseFunctionParameter());
 
         if (NextMatches(TokenType::COMMA))
         {
@@ -137,33 +129,33 @@ std::unique_ptr<FunctionDeclaration> Parser::ParseFunctionDeclaration()
     ConsumeAll({TokenType::C_PAREN, TokenType::ARROW});
 
     auto &returnType = Consume(TokenType::KEYWORD_TYPE);
-    function->SetReturnType(returnType->GetLexeme());
-
     auto body = ParseComplexStatement();
-    function->SetBody(body);
+    auto function = std::make_unique<FunctionDeclaration>(
+        startToken->GetLocation(),
+        nameToken->GetLexeme(),
+        returnType->GetLexeme(),
+        std::move(body));
+
+    for (auto &parameter : parameters)
+        function->AddParameter(std::move(parameter));
 
     return function;
 }
 
 std::unique_ptr<FunctionParameter> Parser::ParseFunctionParameter()
 {
-    auto parameter = std::make_unique<FunctionParameter>();
-
     auto &parameterTypeToken = Consume(TokenType::KEYWORD_TYPE);
-    parameter->SetLocation(parameterTypeToken->GetLocation());
-    parameter->SetVarType(parameterTypeToken->GetLexeme());
-
     auto &parameterNameToken = Consume(TokenType::ID);
-    parameter->SetVarName(parameterNameToken->GetLexeme());
-
-    return parameter;
+    return std::make_unique<FunctionParameter>(
+        parameterTypeToken->GetLocation(),
+        parameterTypeToken->GetLexeme(),
+        parameterNameToken->GetLexeme());
 }
 
 std::unique_ptr<ComplexStatement> Parser::ParseComplexStatement()
 {
-    auto complexStatement = std::make_unique<ComplexStatement>();
     const auto &startToken = Consume(TokenType::O_CURLY);
-    complexStatement->SetLocation(startToken->GetLocation());
+    auto complexStatement = std::make_unique<ComplexStatement>(startToken->GetLocation());
 
     while (true)
     {
@@ -174,10 +166,8 @@ std::unique_ptr<ComplexStatement> Parser::ParseComplexStatement()
         }
 
         auto statement = ParseStatement();
-        complexStatement->AddStatement(statement);
+        complexStatement->AddStatement(std::move(statement));
     }
-
-    return complexStatement;
 }
 
 std::unique_ptr<Statement> Parser::ParseStatement()
@@ -197,147 +187,115 @@ std::unique_ptr<Statement> Parser::ParseStatement()
     if (NextMatches(TokenType::KEYWORD_FOR))
         return ParseForStatement();
 
-    std::unique_ptr<ExpressionStatement> statement = std::make_unique<ExpressionStatement>();
     auto expression = ParseExpression();
     Consume(TokenType::SEMICOLON);
-    statement->SetLocation(expression->GetLocation());
-    statement->SetExpression(expression);
-    return statement;
-
-    // auto &token = tokens.at(index);
-    // PrintUnexpectedToken(token);
-    // exit(EXIT_FAILURE);
+    const auto location = expression->GetLocation();
+    return std::make_unique<ExpressionStatement>(location, std::move(expression));
 }
 
 std::unique_ptr<VariableDeclaration> Parser::ParseVariableDeclaration()
-
 {
-    auto statement = std::make_unique<VariableDeclaration>();
-
     auto &varTypeToken = Consume(TokenType::KEYWORD_TYPE);
-    statement->SetLocation(varTypeToken->GetLocation());
-    statement->SetVarType(varTypeToken->GetLexeme());
-
     auto &varNameToken = Consume(TokenType::ID);
-    statement->SetVarName(varNameToken->GetLexeme());
 
     if (NextMatches(TokenType::SEMICOLON))
     {
         Consume(TokenType::SEMICOLON);
-        return statement;
+        return std::make_unique<VariableDeclaration>(
+            varTypeToken->GetLocation(),
+            varNameToken->GetLexeme(),
+            varTypeToken->GetLexeme());
     }
 
     Consume(TokenType::ASSIGNMENT);
-    auto expression = ParseExpression();
-    statement->SetInitialVarValue(expression);
+    auto initialValue = ParseExpression();
     Consume(TokenType::SEMICOLON);
-    return statement;
+
+    return std::make_unique<VariableDeclaration>(
+        varTypeToken->GetLocation(),
+        varNameToken->GetLexeme(),
+        varTypeToken->GetLexeme(),
+        std::move(initialValue));
 }
 
 std::unique_ptr<IfStatement> Parser::ParseIfStatement()
 {
-    auto statement = std::make_unique<IfStatement>();
-
     const auto &startToken = Consume(TokenType::KEYWORD_IF);
-    statement->SetLocation(startToken->GetLocation());
     Consume(TokenType::O_PAREN);
 
     auto condition = ParseExpression();
-    statement->SetCondition(condition);
-
     Consume(TokenType::C_PAREN);
 
+    std::unique_ptr<Statement> consequent;
     if (NextMatches(TokenType::O_CURLY))
-    {
-        std::unique_ptr<Statement> consequent = ParseComplexStatement();
-        statement->SetConsequentStatement(consequent);
-    }
+        consequent = ParseComplexStatement();
     else
-    {
-        auto consequent = ParseStatement();
-        statement->SetConsequentStatement(consequent);
-    }
+        consequent = ParseStatement();
 
     if (!NextMatches(TokenType::KEYWORD_ELSE))
-        return statement;
+        return std::make_unique<IfStatement>(
+            startToken->GetLocation(),
+            std::move(condition),
+            std::move(consequent));
 
     Consume(TokenType::KEYWORD_ELSE);
 
+    std::unique_ptr<Statement> alternate;
     if (NextMatches(TokenType::KEYWORD_IF))
-    {
-        std::unique_ptr<Statement> alternate = ParseIfStatement();
-        statement->SetAlternateStatement(alternate);
-        return statement;
-    }
-
-    if (NextMatches(TokenType::O_CURLY))
-    {
-        std::unique_ptr<Statement> alternate = ParseComplexStatement();
-        statement->SetAlternateStatement(alternate);
-    }
+        alternate = ParseIfStatement();
+    else if (NextMatches(TokenType::O_CURLY))
+        alternate = ParseComplexStatement();
     else
-    {
-        auto alternate = ParseStatement();
-        statement->SetAlternateStatement(alternate);
-    }
+        alternate = ParseStatement();
 
-    return statement;
+    return std::make_unique<IfStatement>(
+        startToken->GetLocation(),
+        std::move(condition),
+        std::move(consequent),
+        std::move(alternate));
 }
 
 std::unique_ptr<ReturnStatement> Parser::ParseReturnStatement()
 {
-    auto statement = std::make_unique<ReturnStatement>();
     const auto &startToken = Consume(TokenType::KEYWORD_RETURN);
-    statement->SetLocation(startToken->GetLocation());
 
     if (!NextMatchesAny({TokenType::ID, TokenType::NUMBER}))
     {
         Consume(TokenType::SEMICOLON);
-        return statement;
+        return std::make_unique<ReturnStatement>(startToken->GetLocation());
     }
 
     auto expression = ParseExpression();
-    statement->SetValue(expression);
-
     Consume(TokenType::SEMICOLON);
-    return statement;
+    return std::make_unique<ReturnStatement>(startToken->GetLocation(), std::move(expression));
 }
 
 std::unique_ptr<ForStatement> Parser::ParseForStatement()
 {
-    auto statement = std::make_unique<ForStatement>();
-
     const auto &startToken = Consume(TokenType::KEYWORD_FOR);
-    statement->SetLocation(startToken->GetLocation());
     Consume(TokenType::O_PAREN);
 
-    std::unique_ptr<Expression> init = ParseExpression();
-    statement->SetInitExpression(init);
-
+    auto init = ParseExpression();
     Consume(TokenType::SEMICOLON);
 
     auto condition = ParseExpression();
-    statement->SetCondition(condition);
-
     Consume(TokenType::SEMICOLON);
 
-    std::unique_ptr<Expression> update = ParseExpression();
-    statement->SetUpdateExpression(update);
-
+    auto update = ParseExpression();
     Consume(TokenType::C_PAREN);
 
+    std::unique_ptr<Statement> body;
     if (NextMatches(TokenType::O_CURLY))
-    {
-        std::unique_ptr<Statement> body = ParseComplexStatement();
-        statement->SetBody(body);
-    }
+        body = ParseComplexStatement();
     else
-    {
-        auto body = ParseStatement();
-        statement->SetBody(body);
-    }
+        body = ParseStatement();
 
-    return statement;
+    return std::make_unique<ForStatement>(
+        startToken->GetLocation(),
+        std::move(init),
+        std::move(condition),
+        std::move(update),
+        std::move(body));
 }
 
 std::unique_ptr<Expression> Parser::ParseExpression()
@@ -353,11 +311,11 @@ std::unique_ptr<Expression> Parser::ParseExpression()
     {
         Consume(TokenType::ASSIGNMENT);
         auto right = ParseExpression();
-        auto assignmentExpression = std::make_unique<AssignmentExpression>();
-        assignmentExpression->SetLocation(left->GetLocation());
-        assignmentExpression->SetAssignee(left);
-        assignmentExpression->SetValue(right);
-        return assignmentExpression;
+        const auto location = left->GetLocation();
+        return std::make_unique<AssignmentExpression>(
+            location,
+            std::move(left),
+            std::move(right));
     }
 
     std::unique_ptr<Expression> right;
@@ -370,17 +328,17 @@ std::unique_ptr<Expression> Parser::ParseExpression()
         const auto &opToken = ConsumeAny(opTokens);
         if (NextMatches(TokenType::O_PAREN))
             right = ParseGroupedExpression();
-        else if (opToken->GetLexeme() == BinaryExpression::OP_MUL || opToken->GetLexeme() == BinaryExpression::OP_DIV)
+        else if (opToken->GetLexeme() == BinaryExpression::Mul || opToken->GetLexeme() == BinaryExpression::Div)
             right = ParsePrimaryExpression();
         else
             right = ParseExpression();
 
-        auto tmp = std::make_unique<BinaryExpression>();
-        tmp->SetLocation(left->GetLocation());
-        tmp->SetOperator(opToken->GetLexeme());
-        tmp->SetLeft(left);
-        tmp->SetRight(right);
-        left = std::move(tmp);
+        const auto location = left->GetLocation();
+        left = std::make_unique<BinaryExpression>(
+            location,
+            opToken->GetLexeme(),
+            std::move(left),
+            std::move(right));
     }
 
     return left;
@@ -399,10 +357,9 @@ std::unique_ptr<Expression> Parser::ParsePrimaryExpression()
     if (NextMatchesAny({TokenType::KEYWORD_TRUE, TokenType::KEYWORD_FALSE}))
     {
         auto &valueToken = ConsumeAny({TokenType::KEYWORD_TRUE, TokenType::KEYWORD_FALSE});
-        auto expression = std::make_unique<BoolLiteralExpression>();
-        expression->SetLocation(valueToken->GetLocation());
-        expression->SetRawValue(valueToken->GetLexeme());
-        return expression;
+        return std::make_unique<BoolLiteralExpression>(
+            valueToken->GetLocation(),
+            valueToken->GetLexeme());
     }
 
     if (NextMatches(TokenType::ID))
@@ -412,14 +369,14 @@ std::unique_ptr<Expression> Parser::ParsePrimaryExpression()
         if (NextMatches(TokenType::O_PAREN))
         {
             Consume(TokenType::O_PAREN);
-            auto functionCall = std::make_unique<FunctionCallExpression>();
-            functionCall->SetLocation(idToken->GetLocation());
-            functionCall->SetCallee(idToken->GetLexeme());
+            auto functionCall = std::make_unique<FunctionCallExpression>(
+                idToken->GetLocation(),
+                idToken->GetLexeme());
 
             while (!NextMatches(TokenType::C_PAREN))
             {
                 auto argument = ParseExpression();
-                functionCall->AddArgument(argument);
+                functionCall->AddArgument(std::move(argument));
 
                 if (NextMatches(TokenType::COMMA))
                 {
@@ -440,10 +397,9 @@ std::unique_ptr<Expression> Parser::ParsePrimaryExpression()
             return functionCall;
         }
 
-        auto expression = std::make_unique<IdExpression>();
-        expression->SetLocation(idToken->GetLocation());
-        expression->SetValue(idToken->GetLexeme());
-        return expression;
+        return std::make_unique<IdExpression>(
+            idToken->GetLocation(),
+            idToken->GetLexeme());
     }
 
     if (NextMatches(TokenType::NUMBER))
@@ -451,22 +407,17 @@ std::unique_ptr<Expression> Parser::ParsePrimaryExpression()
         auto &valueToken = Consume(TokenType::NUMBER);
 
         auto &value = valueToken->GetLexeme();
-        auto expression = std::make_unique<NumLiteralExpression>();
-        expression->SetLocation(valueToken->GetLocation());
-
         auto const length = value.size();
         if (value.at(length - 1) == 'u')
-        {
-            expression->SetRawValue(value.substr(0, length - 1));
-            expression->SetLiteralType(Types::UsignedInt);
-        }
-        else
-        {
-            expression->SetRawValue(value);
-            expression->SetLiteralType(Types::Int);
-        }
+            return std::make_unique<NumLiteralExpression>(
+                valueToken->GetLocation(),
+                value.substr(0, length - 1),
+                Types::UsignedInt);
 
-        return expression;
+        return std::make_unique<NumLiteralExpression>(
+            valueToken->GetLocation(),
+            value,
+            Types::Int);
     }
 
     auto &token = tokens.at(index);

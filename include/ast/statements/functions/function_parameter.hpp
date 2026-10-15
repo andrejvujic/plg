@@ -10,13 +10,13 @@ private:
     std::string varName;
 
 public:
-    FunctionParameter();
+    FunctionParameter(SourceLocation location, std::string varType, std::string varName)
+        : AstNode(AstNodeType::FunctionParameter, location),
+          varType(std::move(varType)),
+          varName(std::move(varName)) {}
 
     const std::string &GetVarName() const;
     const std::string &GetVarType() const;
-
-    void SetVarName(std::string varName);
-    void SetVarType(std::string varType);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

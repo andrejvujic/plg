@@ -3,10 +3,6 @@
 #include "runtime/runtime_value.hpp"
 #include "runtime/return_signal.hpp"
 
-ReturnStatement::ReturnStatement() : Statement(AstNodeType::ReturnStatement)
-{
-}
-
 bool ReturnStatement::HasValue() const
 {
     return value != nullptr;
@@ -15,11 +11,6 @@ bool ReturnStatement::HasValue() const
 const std::unique_ptr<Expression> &ReturnStatement::GetValue() const
 {
     return value;
-}
-
-void ReturnStatement::SetValue(std::unique_ptr<Expression> &value)
-{
-    this->value = std::move(value);
 }
 
 void ReturnStatement::Print(AstPrinter &printer) const
@@ -31,5 +22,8 @@ void ReturnStatement::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> ReturnStatement::Execute(TreeWalkInterpreter &interpreter) const
 {
-    throw ReturnSignal(value ? value->Execute(interpreter) : nullptr);
+    if (value)
+        throw ReturnSignal(value->Execute(interpreter));
+
+    throw ReturnSignal();
 }

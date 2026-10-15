@@ -1,11 +1,7 @@
 #include "ast/program.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
-Program::Program() : AstNode(AstNodeType::Program)
-{
-}
-
-void Program::AddStatement(std::unique_ptr<Statement> &statement)
+void Program::AddStatement(std::unique_ptr<Statement> statement)
 {
     statements.push_back(std::move(statement));
 }

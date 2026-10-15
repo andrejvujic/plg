@@ -11,18 +11,23 @@ private:
     std::unique_ptr<Expression> init, update, condition;
 
 public:
-    ForStatement();
+    ForStatement(SourceLocation location,
+                 std::unique_ptr<Expression> init,
+                 std::unique_ptr<Expression> condition,
+                 std::unique_ptr<Expression> update,
+                 std::unique_ptr<Statement> body)
+        : Statement(AstNodeType::ForStatement, location),
+          body(std::move(body)),
+          init(std::move(init)),
+          update(std::move(update)),
+          condition(std::move(condition)) {}
 
-    void SetBody(std::unique_ptr<Statement> &body);
     const std::unique_ptr<Statement> &GetBody() const;
 
-    void SetInitExpression(std::unique_ptr<Expression> &init);
     const std::unique_ptr<Expression> &GetInitExpression() const;
 
-    void SetUpdateExpression(std::unique_ptr<Expression> &update);
     const std::unique_ptr<Expression> &GetUpdateExpression() const;
 
-    void SetCondition(std::unique_ptr<Expression> &condition);
     const std::unique_ptr<Expression> &GetCondition() const;
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;

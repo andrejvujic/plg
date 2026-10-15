@@ -2,11 +2,7 @@
 
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
-ComplexStatement::ComplexStatement() : Statement(AstNodeType::ComplexStatement)
-{
-}
-
-void ComplexStatement::AddStatement(std::unique_ptr<Statement> &statement)
+void ComplexStatement::AddStatement(std::unique_ptr<Statement> statement)
 {
     body.push_back(std::move(statement));
 }

@@ -12,9 +12,9 @@ private:
     std::vector<std::unique_ptr<Statement>> statements;
 
 public:
-    Program();
+    Program() : AstNode(AstNodeType::Program, SourceLocation{}) {}
 
-    void AddStatement(std::unique_ptr<Statement> &statement);
+    void AddStatement(std::unique_ptr<Statement> statement);
     const std::vector<std::unique_ptr<Statement>> &GetStatements() const;
 
     virtual std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;

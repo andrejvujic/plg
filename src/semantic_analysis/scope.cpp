@@ -1,10 +1,6 @@
 #include "semantic_analysis/scope.hpp"
 #include <iostream>
 
-Scope::Scope() {}
-
-Scope::Scope(std::shared_ptr<Scope> parent) : parent(parent) {}
-
 std::shared_ptr<Scope> Scope::GetParent() const
 {
     return parent;
@@ -15,7 +11,7 @@ bool Scope::HasParent() const
     return parent != nullptr;
 }
 
-void Scope::DeclareSymbol(std::unique_ptr<Symbol> &symbol)
+void Scope::DeclareSymbol(std::unique_ptr<Symbol> symbol)
 {
     const std::string name = std::string(symbol->GetName());
     symbols[name] = std::move(symbol);

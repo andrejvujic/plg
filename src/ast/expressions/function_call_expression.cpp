@@ -5,23 +5,14 @@
 #include "semantic_analysis/symbols/variable_symbol.hpp"
 #include "semantic_analysis/scoped_new_scope.hpp"
 
-FunctionCallExpression::FunctionCallExpression() : Expression(AstNodeType::FunctionCallExpression)
+void FunctionCallExpression::AddArgument(std::unique_ptr<Expression> argument)
 {
+    arguments.push_back(std::move(argument));
 }
 
 const std::string &FunctionCallExpression::GetCallee() const
 {
     return callee;
-}
-
-void FunctionCallExpression::SetCallee(std::string callee)
-{
-    this->callee = callee;
-}
-
-void FunctionCallExpression::AddArgument(std::unique_ptr<Expression> &argument)
-{
-    arguments.push_back(std::move(argument));
 }
 
 size_t FunctionCallExpression::GetArgumentCount() const
@@ -79,8 +70,8 @@ std::unique_ptr<RuntimeValue> FunctionCallExpression::Execute(TreeWalkInterprete
             std::unique_ptr<Symbol> symbol = std::make_unique<VariableSymbol>(
                 parameter->GetVarName(),
                 parameter->GetVarType(),
-                value);
-            scope->DeclareSymbol(symbol);
+                std::move(value));
+            scope->DeclareSymbol(std::move(symbol));
         }
 
         auto &body = declaration->GetBody();

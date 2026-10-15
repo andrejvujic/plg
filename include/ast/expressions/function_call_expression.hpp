@@ -12,15 +12,14 @@ private:
     std::vector<std::unique_ptr<Expression>> arguments;
 
 public:
-    FunctionCallExpression();
+    FunctionCallExpression(SourceLocation location, std::string callee)
+        : Expression(AstNodeType::FunctionCallExpression, location), callee(std::move(callee)) {}
 
-    void SetCallee(std::string callee);
     const std::string &GetCallee() const;
 
     size_t GetArgumentCount() const;
     const std::vector<std::unique_ptr<Expression>> &GetArguments() const;
-
-    void AddArgument(std::unique_ptr<Expression> &argument);
+    void AddArgument(std::unique_ptr<Expression> argument);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 

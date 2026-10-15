@@ -5,7 +5,7 @@ std::unique_ptr<RuntimeValue> &VariableSymbol::GetValue()
     return value;
 }
 
-void VariableSymbol::SetValue(std::unique_ptr<RuntimeValue> &value)
+void VariableSymbol::SetValue(std::unique_ptr<RuntimeValue> value)
 {
     this->value = std::move(value);
 }

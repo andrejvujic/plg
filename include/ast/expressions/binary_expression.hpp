@@ -11,11 +11,14 @@ private:
     std::string op;
 
 public:
-    BinaryExpression();
-
-    void SetOperator(std::string op);
-    void SetLeft(std::unique_ptr<Expression> &left);
-    void SetRight(std::unique_ptr<Expression> &right);
+    BinaryExpression(SourceLocation location,
+                     std::string op,
+                     std::unique_ptr<Expression> left,
+                     std::unique_ptr<Expression> right)
+        : Expression(AstNodeType::BinaryExpression, location),
+          left(std::move(left)),
+          right(std::move(right)),
+          op(std::move(op)) {}
 
     const std::unique_ptr<Expression> &GetLeft() const;
     const std::unique_ptr<Expression> &GetRight() const;
@@ -28,21 +31,21 @@ public:
     void Print(AstPrinter &printer) const override;
 
     // Arithmetic operators:
-    constexpr static const std::string_view OP_PLUS = "+";
-    constexpr static const std::string_view OP_MINUS = "-";
-    constexpr static const std::string_view OP_MUL = "*";
-    constexpr static const std::string_view OP_DIV = "/";
+    constexpr static const std::string_view Plus = "+";
+    constexpr static const std::string_view Minus = "-";
+    constexpr static const std::string_view Mul = "*";
+    constexpr static const std::string_view Div = "/";
 
     // Relational operators:
-    constexpr static const std::string_view OP_EQ = "==";
-    constexpr static const std::string_view OP_NEQ = "!=";
-    constexpr static const std::string_view OP_LT = "<";
-    constexpr static const std::string_view OP_LTE = "<=";
-    constexpr static const std::string_view OP_GT = ">";
-    constexpr static const std::string_view OP_GTE = ">=";
+    constexpr static const std::string_view Eq = "==";
+    constexpr static const std::string_view Neq = "!=";
+    constexpr static const std::string_view Lt = "<";
+    constexpr static const std::string_view Lte = "<=";
+    constexpr static const std::string_view Gt = ">";
+    constexpr static const std::string_view Gte = ">=";
 
     // Logical operators:
-    constexpr static const std::string_view OP_AND = "&&";
+    constexpr static const std::string_view And = "&&";
     constexpr static const std::string_view OP_OR = "||";
 };
 #endif

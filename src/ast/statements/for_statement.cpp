@@ -4,23 +4,9 @@
 #include "runtime/bool_value.hpp"
 #include "semantic_analysis/scoped_new_scope.hpp"
 
-ForStatement::ForStatement() : Statement(AstNodeType::ForStatement)
-{
-}
-
-void ForStatement::SetBody(std::unique_ptr<Statement> &body)
-{
-    this->body = std::move(body);
-}
-
 const std::unique_ptr<Statement> &ForStatement::GetBody() const
 {
     return body;
-}
-
-void ForStatement::SetInitExpression(std::unique_ptr<Expression> &init)
-{
-    this->init = std::move(init);
 }
 
 const std::unique_ptr<Expression> &ForStatement::GetInitExpression() const
@@ -28,19 +14,9 @@ const std::unique_ptr<Expression> &ForStatement::GetInitExpression() const
     return init;
 }
 
-void ForStatement::SetUpdateExpression(std::unique_ptr<Expression> &update)
-{
-    this->update = std::move(update);
-}
-
 const std::unique_ptr<Expression> &ForStatement::GetUpdateExpression() const
 {
     return update;
-}
-
-void ForStatement::SetCondition(std::unique_ptr<Expression> &condition)
-{
-    this->condition = std::move(condition);
 }
 
 const std::unique_ptr<Expression> &ForStatement::GetCondition() const

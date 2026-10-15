@@ -6,9 +6,10 @@
 #include <string>
 #include <string_view>
 #include <iostream>
+#include <utility>
 
 #include "ast_printer.hpp"
-#include "shared/location.hpp"
+#include "shared/source_location.hpp"
 #include "runtime/runtime_value.hpp"
 
 class TreeWalkInterpreter;
@@ -37,16 +38,15 @@ class AstNode
 {
 private:
     AstNodeType type;
-    Location location;
+    SourceLocation location;
 
 public:
-    AstNode(AstNodeType type);
+    AstNode(AstNodeType type, SourceLocation location) : type(type), location(location) {}
     virtual ~AstNode() = default;
 
     AstNodeType GetType() const;
 
-    Location GetLocation() const;
-    void SetLocation(Location location);
+    SourceLocation GetLocation() const;
 
     virtual std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const = 0;
 

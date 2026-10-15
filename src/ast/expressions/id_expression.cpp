@@ -2,13 +2,6 @@
 #include "semantic_analysis/symbols/variable_symbol.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
-IdExpression::IdExpression() : Expression(AstNodeType::IdExpression) {}
-
-void IdExpression::SetValue(std::string value)
-{
-    this->value = value;
-}
-
 const std::string &IdExpression::GetValue() const
 {
     return value;

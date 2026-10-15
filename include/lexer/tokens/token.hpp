@@ -3,14 +3,15 @@
 
 #include <string>
 #include <iostream>
+#include <utility>
 
 #include "lexer/tokens/token_type.hpp"
-#include "shared/location.hpp"
+#include "shared/source_location.hpp"
 
 class Token
 {
 protected:
-    Location location;
+    SourceLocation location;
     TokenType type;
     std::string name;
 
@@ -18,15 +19,16 @@ private:
     std::string lexeme;
 
 public:
-    Token();
+    Token() = default;
 
-    Token(std::string lexeme, TokenType type, Location location);
+    Token(std::string lexeme, TokenType type, SourceLocation location)
+        : location(location), type(type), lexeme(std::move(lexeme)) {}
 
     const std::string &GetLexeme() const;
     bool LexemeEquals(std::string_view lexeme) const;
     bool LexemeEqualsAny(std::initializer_list<std::string_view> lexemes) const;
 
-    Location GetLocation() const;
+    SourceLocation GetLocation() const;
 
     TokenType GetType() const;
     bool Matches(TokenType type) const;

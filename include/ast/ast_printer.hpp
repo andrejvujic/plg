@@ -15,7 +15,7 @@ private:
     bool isAtLineStart = true, skipNull = false;
 
 public:
-    AstPrinter(std::ostream &out, bool skipNull = false);
+    AstPrinter(std::ostream &out, bool skipNull = false) : out(out), skipNull(skipNull) {}
 
     void BeginNode(std::string_view name);
     void Field(std::string_view name, std::string_view value);

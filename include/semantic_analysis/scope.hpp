@@ -5,6 +5,7 @@
 #include <string>
 #include <string_view>
 #include <iostream>
+#include <utility>
 
 #include "semantic_analysis/symbols/symbol.hpp"
 
@@ -15,20 +16,19 @@ private:
     std::unordered_map<std::string, std::unique_ptr<Symbol>> symbols;
 
 public:
-    Scope();
-    Scope(std::shared_ptr<Scope> parent);
+    Scope() = default;
+    Scope(std::shared_ptr<Scope> parent) : parent(std::move(parent)) {}
 
     std::shared_ptr<Scope> GetParent() const;
     bool HasParent() const;
 
-    void DeclareSymbol(std::unique_ptr<Symbol> &symbol);
+    void DeclareSymbol(std::unique_ptr<Symbol> symbol);
     std::unique_ptr<Symbol> &GetSymbol(const std::string &name, SymbolKind kind);
     std::unique_ptr<Symbol> &GetSymbol(const std::string &name, SymbolKind kind, size_t distance);
     bool SymbolExists(const std::string &name, SymbolKind kind) const;
     bool SymbolExists(const std::string &name, SymbolKind kind, size_t distance);
 
-    constexpr static size_t Local = 0;
-    constexpr static size_t Parent = 1;
+    constexpr static size_t Local = 0, Parent = 1;
 
     void Print(std::ostream &out) const;
 };

@@ -3,10 +3,6 @@
 #include "semantic_analysis/symbols/variable_symbol.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 
-AssignmentExpression::AssignmentExpression() : Expression(AstNodeType::AssignmentExpression)
-{
-}
-
 const std::unique_ptr<Expression> &AssignmentExpression::GetAssignee() const
 {
     return assignee;
@@ -15,16 +11,6 @@ const std::unique_ptr<Expression> &AssignmentExpression::GetAssignee() const
 const std::unique_ptr<Expression> &AssignmentExpression::GetValue() const
 {
     return value;
-}
-
-void AssignmentExpression::SetAssignee(std::unique_ptr<Expression> &assignee)
-{
-    this->assignee = std::move(assignee);
-}
-
-void AssignmentExpression::SetValue(std::unique_ptr<Expression> &value)
-{
-    this->value = std::move(value);
 }
 
 void AssignmentExpression::Print(AstPrinter &printer) const
@@ -50,7 +36,7 @@ std::unique_ptr<RuntimeValue> AssignmentExpression::Execute(TreeWalkInterpreter 
 
         auto varValue = value->Execute(interpreter);
         auto varValueClone = varValue->Clone();
-        varSymbol->SetValue(varValue);
+        varSymbol->SetValue(std::move(varValue));
 
         return varValueClone;
     }

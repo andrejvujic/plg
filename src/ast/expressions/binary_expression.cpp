@@ -2,25 +2,6 @@
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 #include "runtime/runtime_operations.hpp"
 
-BinaryExpression::BinaryExpression() : Expression(AstNodeType::BinaryExpression)
-{
-}
-
-void BinaryExpression::SetLeft(std::unique_ptr<Expression> &left)
-{
-    this->left = std::move(left);
-}
-
-void BinaryExpression::SetRight(std::unique_ptr<Expression> &right)
-{
-    this->right = std::move(right);
-}
-
-void BinaryExpression::SetOperator(std::string op)
-{
-    this->op = op;
-}
-
 const std::unique_ptr<Expression> &BinaryExpression::GetLeft() const
 {
     return left;
@@ -38,10 +19,10 @@ const std::string &BinaryExpression::GetOperator() const
 
 bool BinaryExpression::HasArithmeticOperator() const
 {
-    return HasAnyOfOperators({BinaryExpression::OP_PLUS,
-                              BinaryExpression::OP_MINUS,
-                              BinaryExpression::OP_MUL,
-                              BinaryExpression::OP_DIV});
+    return HasAnyOfOperators({BinaryExpression::Plus,
+                              BinaryExpression::Minus,
+                              BinaryExpression::Mul,
+                              BinaryExpression::Div});
 }
 
 bool BinaryExpression::HasAnyOfOperators(std::initializer_list<std::string_view> operators) const
@@ -58,37 +39,37 @@ std::unique_ptr<RuntimeValue> BinaryExpression::Execute(TreeWalkInterpreter &int
     auto leftValue = left->Execute(interpreter);
     auto rightValue = right->Execute(interpreter);
 
-    if (op == BinaryExpression::OP_PLUS)
+    if (op == BinaryExpression::Plus)
         return RuntimeOperations::Add(leftValue, rightValue);
 
-    if (op == BinaryExpression::OP_MINUS)
+    if (op == BinaryExpression::Minus)
         return RuntimeOperations::Sub(leftValue, rightValue);
 
-    if (op == BinaryExpression::OP_MUL)
+    if (op == BinaryExpression::Mul)
         return RuntimeOperations::Mul(leftValue, rightValue);
 
-    if (op == BinaryExpression::OP_DIV)
+    if (op == BinaryExpression::Div)
         return RuntimeOperations::Div(leftValue, rightValue);
 
-    if (op == BinaryExpression::OP_EQ)
+    if (op == BinaryExpression::Eq)
         return RuntimeOperations::Eq(leftValue, rightValue);
 
-    if (op == BinaryExpression::OP_NEQ)
+    if (op == BinaryExpression::Neq)
         return RuntimeOperations::NotEq(leftValue, rightValue);
 
-    if (op == BinaryExpression::OP_LT)
+    if (op == BinaryExpression::Lt)
         return RuntimeOperations::LessThan(leftValue, rightValue);
 
-    if (op == BinaryExpression::OP_LTE)
+    if (op == BinaryExpression::Lte)
         return RuntimeOperations::LessThenOrEq(leftValue, rightValue);
 
-    if (op == BinaryExpression::OP_GT)
+    if (op == BinaryExpression::Gt)
         return RuntimeOperations::GreaterThan(leftValue, rightValue);
 
-    if (op == BinaryExpression::OP_GTE)
+    if (op == BinaryExpression::Gte)
         return RuntimeOperations::GreaterThenOrEq(leftValue, rightValue);
 
-    if (op == BinaryExpression::OP_AND)
+    if (op == BinaryExpression::And)
         return RuntimeOperations::And(leftValue, rightValue);
 
     if (op == BinaryExpression::OP_OR)

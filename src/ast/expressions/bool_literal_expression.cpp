@@ -3,13 +3,6 @@
 #include "shared/types.hpp"
 #include "runtime/bool_value.hpp"
 
-BoolLiteralExpression::BoolLiteralExpression() : Expression(AstNodeType::BoolLiteralExpression) {}
-
-void BoolLiteralExpression::SetRawValue(std::string rawValue)
-{
-    this->rawValue = rawValue;
-}
-
 const std::string &BoolLiteralExpression::GetRawValue() const
 {
     return rawValue;
@@ -22,7 +15,7 @@ void BoolLiteralExpression::Print(AstPrinter &printer) const
     printer.EndNode();
 }
 
-std::unique_ptr<RuntimeValue> BoolLiteralExpression::Execute(TreeWalkInterpreter &interpreter) const
+std::unique_ptr<RuntimeValue> BoolLiteralExpression::Execute(TreeWalkInterpreter &) const
 {
-    return std::make_unique<BoolValue>(rawValue == BoolLiteralExpression::BOOL_TRUE);
+    return std::make_unique<BoolValue>(rawValue == BoolLiteralExpression::True);
 }

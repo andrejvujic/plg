@@ -9,17 +9,17 @@ private:
     std::string rawValue;
 
 public:
-    BoolLiteralExpression();
+    BoolLiteralExpression(SourceLocation location, std::string rawValue)
+        : Expression(AstNodeType::BoolLiteralExpression, location), rawValue(std::move(rawValue)) {}
 
     const std::string &GetRawValue() const;
-    void SetRawValue(std::string rawValue);
 
     std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override;
 
     void Print(AstPrinter &printer) const override;
 
-    constexpr static const std::string_view BOOL_TRUE = "true";
-    constexpr static const std::string_view BOOL_FALSE = "false";
+    constexpr static const std::string_view True = "true";
+    constexpr static const std::string_view False = "false";
 };
 
 #endif

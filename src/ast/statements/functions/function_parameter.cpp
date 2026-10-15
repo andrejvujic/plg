@@ -1,9 +1,5 @@
 #include "ast/statements/functions/function_parameter.hpp"
 
-FunctionParameter::FunctionParameter() : AstNode(AstNodeType::FunctionParameter)
-{
-}
-
 const std::string &FunctionParameter::GetVarName() const
 {
     return varName;
@@ -14,16 +10,6 @@ const std::string &FunctionParameter::GetVarType() const
     return varType;
 }
 
-void FunctionParameter::SetVarName(std::string varName)
-{
-    this->varName = varName;
-}
-
-void FunctionParameter::SetVarType(std::string varType)
-{
-    this->varType = varType;
-}
-
 void FunctionParameter::Print(AstPrinter &printer) const
 {
     printer.BeginNode("FunctionParameter");
@@ -32,7 +18,7 @@ void FunctionParameter::Print(AstPrinter &printer) const
     printer.EndNode();
 }
 
-std::unique_ptr<RuntimeValue> FunctionParameter::Execute(TreeWalkInterpreter &interpreter) const
+std::unique_ptr<RuntimeValue> FunctionParameter::Execute(TreeWalkInterpreter &) const
 {
     return nullptr;
 }
