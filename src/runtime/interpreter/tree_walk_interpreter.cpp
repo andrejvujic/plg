@@ -12,10 +12,11 @@ std::shared_ptr<Scope> TreeWalkInterpreter::GetCurrentScope()
     return currentScope;
 }
 
-void TreeWalkInterpreter::CreateScope()
+std::shared_ptr<Scope> TreeWalkInterpreter::CreateScope()
 {
     auto newScope = std::make_shared<Scope>(currentScope);
     currentScope = newScope;
+    return currentScope;
 }
 
 void TreeWalkInterpreter::DestroyScope()

@@ -2,6 +2,7 @@
 
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
 #include "runtime/bool_value.hpp"
+#include "semantic_analysis/scoped_new_scope.hpp"
 
 ForStatement::ForStatement() : Statement(AstNodeType::ForStatement)
 {
@@ -68,10 +69,8 @@ std::unique_ptr<RuntimeValue> ForStatement::Execute(TreeWalkInterpreter &interpr
         if (!cc->GetValue())
             break;
 
-        interpreter.CreateScope();
+        ScopedNewScope scopeGuard(interpreter);
         body->Execute(interpreter);
-        interpreter.DestroyScope();
-
         update->Execute(interpreter);
     }
     return nullptr;

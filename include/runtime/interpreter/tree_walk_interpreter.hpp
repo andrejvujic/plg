@@ -14,7 +14,7 @@ public:
     TreeWalkInterpreter(const std::unique_ptr<Program> &program)
         : program(program), currentScope(std::make_shared<Scope>()) {}
 
-    void CreateScope();
+    std::shared_ptr<Scope> CreateScope();
     void DestroyScope();
     std::shared_ptr<Scope> GetCurrentScope();
 

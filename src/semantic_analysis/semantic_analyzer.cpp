@@ -31,19 +31,16 @@ void SemanticAnalyzer::AnalyzeProgram(const std::unique_ptr<Program> &program)
         std::exit(EXIT_FAILURE);
 }
 
-std::unique_ptr<FunctionSymbol> SemanticAnalyzer::CreateFunctionSymbol(const FunctionDeclaration *function)
-{
-    FunctionSymbol functionSymbol(function->GetName(), function->GetReturnType());
-    for (auto &parameter : function->GetParameters())
-        functionSymbol.AddParameter(parameter->GetVarType());
-    return std::make_unique<FunctionSymbol>(functionSymbol);
-}
-
 bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<const Statement> &statement)
 {
     auto functionDeclaration = dynamic_cast<const FunctionDeclaration *>(statement.get());
-    std::unique_ptr<Symbol> functionSymbol = CreateFunctionSymbol(functionDeclaration);
-    currentScope->DeclareSymbol(functionSymbol);
+
+    FunctionSymbol function(functionDeclaration->GetName(), functionDeclaration->GetReturnType());
+    function.SetFunctionDeclaration(functionDeclaration);
+    for (auto &parameter : functionDeclaration->GetParameters())
+        function.AddParameterType(parameter->GetVarType());
+    std::unique_ptr<Symbol> symbol = std::make_unique<FunctionSymbol>(function);
+    currentScope->DeclareSymbol(symbol);
 
     auto functionScope = std::make_shared<Scope>(currentScope);
     currentScope = functionScope;
@@ -67,10 +64,7 @@ bool SemanticAnalyzer::AnalyzeFunctionDeclaration(const std::unique_ptr<const St
 
     functionStack.push(functionDeclaration->GetName());
     for (auto &statement : body->GetStatements())
-    {
-        auto nextResult = AnalyzeStatement(statement);
-        result = result && nextResult;
-    }
+        result = AnalyzeStatement(statement) && result;
     functionStack.pop();
 
     currentScope = currentScope->GetParent();
@@ -316,16 +310,16 @@ bool SemanticAnalyzer::AnalyzeIdExpression(const std::unique_ptr<const Expressio
 bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const Expression> &expression)
 {
     const FunctionCallExpression *call = dynamic_cast<const FunctionCallExpression *>(expression.get());
-    if (!currentScope->SymbolExists(call->GetFunction(), SymbolKind::Function))
+    if (!currentScope->SymbolExists(call->GetCallee(), SymbolKind::Function))
     {
         PrintErrorPrefix(std::cerr, call)
-            << "Function \"" << call->GetFunction()
+            << "Function \"" << call->GetCallee()
             << "\" doesn't exist"
             << std::endl;
         return false;
     }
 
-    auto &s = currentScope->GetSymbol(call->GetFunction(), SymbolKind::Function);
+    auto &s = currentScope->GetSymbol(call->GetCallee(), SymbolKind::Function);
     auto function = dynamic_cast<const FunctionSymbol *>(s.get());
     if (function->GetParameterCount() != call->GetArgumentCount())
     {
@@ -336,15 +330,16 @@ bool SemanticAnalyzer::AnalyzeFunctionCallExpression(const std::unique_ptr<const
         return false;
     }
 
-    auto &parameters = function->GetParameters();
+    auto &parameterTypes = function->GetParameterTypes();
     auto &arguments = call->GetArguments();
 
-    auto parameterIterator = parameters.begin();
+    auto parameterTypeIterator = parameterTypes.begin();
     auto argumentIterator = arguments.begin();
     size_t index = 0;
-    for (; parameterIterator != parameters.end() && argumentIterator != arguments.end(); ++parameterIterator, ++argumentIterator, ++index)
+    for (; parameterTypeIterator != parameterTypes.end() && argumentIterator != arguments.end();
+         ++parameterTypeIterator, ++argumentIterator, ++index)
     {
-        const auto parameterType = *parameterIterator;
+        const auto parameterType = *parameterTypeIterator;
         const auto argumentType = ResolveExpressionType(*argumentIterator);
 
         if (parameterType == argumentType)
@@ -484,10 +479,10 @@ std::string SemanticAnalyzer::GetNumLiteralExpressionType(const std::unique_ptr<
 std::string SemanticAnalyzer::GetFunctionCallExpressionType(const std::unique_ptr<const Expression> &expression)
 {
     auto functionCallExpression = dynamic_cast<const FunctionCallExpression *>(expression.get());
-    if (!currentScope->SymbolExists(functionCallExpression->GetFunction(), SymbolKind::Function))
+    if (!currentScope->SymbolExists(functionCallExpression->GetCallee(), SymbolKind::Function))
         return Types::Unknown;
 
-    auto &symbol = currentScope->GetSymbol(functionCallExpression->GetFunction(), SymbolKind::Function);
+    auto &symbol = currentScope->GetSymbol(functionCallExpression->GetCallee(), SymbolKind::Function);
     return symbol->GetType();
 }
 

@@ -8,14 +8,14 @@
 class FunctionCallExpression : public Expression
 {
 private:
-    std::string function;
+    std::string callee;
     std::vector<std::unique_ptr<const Expression>> arguments;
 
 public:
     FunctionCallExpression();
 
-    void SetFunction(std::string function);
-    const std::string &GetFunction() const;
+    void SetCallee(std::string callee);
+    const std::string &GetCallee() const;
 
     size_t GetArgumentCount() const;
     const std::vector<std::unique_ptr<const Expression>> &GetArguments() const;

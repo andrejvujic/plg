@@ -3,6 +3,7 @@
 #include "runtime/runtime_value.hpp"
 #include "runtime/bool_value.hpp"
 #include "runtime/interpreter/tree_walk_interpreter.hpp"
+#include "semantic_analysis/scoped_new_scope.hpp"
 
 IfStatement::IfStatement() : Statement(AstNodeType::IfStatement)
 {
@@ -61,17 +62,13 @@ std::unique_ptr<RuntimeValue> IfStatement::Execute(TreeWalkInterpreter &interpre
     auto cc = dynamic_cast<BoolValue *>(c.get());
     if (cc->GetValue())
     {
-        interpreter.CreateScope();
+        ScopedNewScope scopeGuard(interpreter);
         consequent->Execute(interpreter);
-        interpreter.DestroyScope();
-        return nullptr;
     }
-
-    if (alternate)
+    else if (alternate)
     {
-        interpreter.CreateScope();
+        ScopedNewScope scopeGuard(interpreter);
         alternate->Execute(interpreter);
-        interpreter.DestroyScope();
     }
 
     return nullptr;

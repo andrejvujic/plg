@@ -1,4 +1,7 @@
 #include "ast/statements/return_statement.hpp"
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
+#include "runtime/runtime_value.hpp"
+#include "runtime/return_signal.hpp"
 
 ReturnStatement::ReturnStatement() : Statement(AstNodeType::ReturnStatement)
 {
@@ -28,5 +31,5 @@ void ReturnStatement::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> ReturnStatement::Execute(TreeWalkInterpreter &interpreter) const
 {
-    return nullptr;
+    throw ReturnSignal(value ? value->Execute(interpreter) : nullptr);
 }

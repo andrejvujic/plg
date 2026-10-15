@@ -1,5 +1,8 @@
 #include "ast/statements/functions/function_declaration.hpp"
 
+#include "semantic_analysis/symbols/function_symbol.hpp"
+#include "runtime/interpreter/tree_walk_interpreter.hpp"
+
 FunctionDeclaration::FunctionDeclaration() : Statement(AstNodeType::FunctionDeclaration)
 {
 }
@@ -70,5 +73,14 @@ void FunctionDeclaration::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> FunctionDeclaration::Execute(TreeWalkInterpreter &interpreter) const
 {
+    FunctionSymbol function(name, returnType);
+    function.SetFunctionDeclaration(this);
+    for (auto &parameter : GetParameters())
+        function.AddParameterType(parameter->GetVarType());
+
+    std::unique_ptr<Symbol> symbol = std::make_unique<FunctionSymbol>(function);
+    auto scope = interpreter.GetCurrentScope();
+    scope->DeclareSymbol(symbol);
+
     return nullptr;
 }

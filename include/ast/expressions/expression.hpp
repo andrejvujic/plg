@@ -7,6 +7,8 @@ class Expression : public AstNode
 {
 public:
     Expression(AstNodeType type);
+
+    std::unique_ptr<RuntimeValue> Execute(TreeWalkInterpreter &interpreter) const override = 0;
 };
 
 #endif

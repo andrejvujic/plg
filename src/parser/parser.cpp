@@ -414,7 +414,7 @@ std::unique_ptr<const Expression> Parser::ParsePrimaryExpression()
             Consume(TokenType::O_PAREN);
             auto functionCall = std::make_unique<FunctionCallExpression>();
             functionCall->SetLocation(idToken->GetLocation());
-            functionCall->SetFunction(idToken->GetLexeme());
+            functionCall->SetCallee(idToken->GetLexeme());
 
             while (!NextMatches(TokenType::C_PAREN))
             {

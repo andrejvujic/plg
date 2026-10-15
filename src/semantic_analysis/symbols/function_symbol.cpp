@@ -4,21 +4,40 @@ FunctionSymbol::FunctionSymbol(std::string_view name, std::string_view type) : S
 {
 }
 
-void FunctionSymbol::AddParameter(std::string type)
+void FunctionSymbol::AddParameterType(std::string type)
 {
-    parameters.push_back(type);
+    parameterTypes.push_back(type);
 }
 
-const std::vector<std::string> &FunctionSymbol::GetParameters() const
+const std::vector<std::string> &FunctionSymbol::GetParameterTypes() const
 {
-    return parameters;
+    return parameterTypes;
 }
 
 size_t FunctionSymbol::GetParameterCount() const
 {
-    return parameters.size();
+    return parameterTypes.size();
+}
+
+void FunctionSymbol::SetFunctionDeclaration(const FunctionDeclaration *declaration)
+{
+    this->declaration = declaration;
+}
+
+const FunctionDeclaration *FunctionSymbol::GetFunctionDeclaration() const
+{
+    return declaration;
 }
 
 void FunctionSymbol::Print(std::ostream &out) const
 {
+    out << this->GetType() << " " << this->GetName() << "(";
+    for (size_t index = 0; index < parameterTypes.size(); ++index)
+    {
+        if (index < parameterTypes.size() - 1)
+            out << parameterTypes[index] << ", ";
+        else
+            out << parameterTypes[index];
+    }
+    out << ")" << std::endl;
 }
