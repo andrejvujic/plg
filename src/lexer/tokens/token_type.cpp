@@ -15,6 +15,7 @@ std::ostream &operator<<(std::ostream &out, const TokenType &value)
         INSERT_ELEMENT(KEYWORD_TYPE);
         INSERT_ELEMENT(KEYWORD_FOR);
         INSERT_ELEMENT(KEYWORD_TRUE);
+        INSERT_ELEMENT(KEYWORD_WHILE)
         INSERT_ELEMENT(KEYWORD_FALSE);
         INSERT_ELEMENT(ID);
         INSERT_ELEMENT(NUMBER);

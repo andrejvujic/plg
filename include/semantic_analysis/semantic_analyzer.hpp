@@ -25,6 +25,7 @@ private:
     bool AnalyzeIfStatement(const std::unique_ptr<Statement> &statement);
     bool AnalyzeReturnStatement(const std::unique_ptr<Statement> &statement);
     bool AnalyzeForStatement(const std::unique_ptr<Statement> &statement);
+    bool AnalyzeWhileStatement(const std::unique_ptr<Statement> &statement);
     bool AnalyzeComplexStatement(const std::unique_ptr<Statement> &statement);
 
     bool AnalyzeExpression(const std::unique_ptr<Expression> &expression);

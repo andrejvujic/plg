@@ -43,12 +43,12 @@ std::unique_ptr<RuntimeValue> IfStatement::Execute(TreeWalkInterpreter &interpre
     auto cc = dynamic_cast<BoolValue *>(c.get());
     if (cc->GetValue())
     {
-        ScopedEnvironment environmentGuard(interpreter);
+        ScopedEnvironment e(interpreter);
         consequent->Execute(interpreter);
     }
     else if (alternate)
     {
-        ScopedEnvironment environmentGuard(interpreter);
+        ScopedEnvironment e(interpreter);
         alternate->Execute(interpreter);
     }
 

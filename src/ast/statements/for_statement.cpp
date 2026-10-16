@@ -45,7 +45,7 @@ std::unique_ptr<RuntimeValue> ForStatement::Execute(TreeWalkInterpreter &interpr
         if (!cc->GetValue())
             break;
 
-        ScopedEnvironment environmentGuard(interpreter);
+        ScopedEnvironment e(interpreter);
         body->Execute(interpreter);
         update->Execute(interpreter);
     }

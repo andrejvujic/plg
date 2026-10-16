@@ -11,6 +11,7 @@ enum class AstNodeType
     ComplexStatement,
     IfStatement,
     ReturnStatement,
+    WhileStatement,
     VariableDeclaration,
     AssignmentExpression,
     ForStatement,

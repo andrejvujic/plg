@@ -6,6 +6,7 @@
 #include "ast/statements/if_statement.hpp"
 #include "ast/statements/return_statement.hpp"
 #include "ast/statements/for_statement.hpp"
+#include "ast/statements/while_statement.hpp"
 #include "ast/statements/variable_declaration.hpp"
 #include "ast/statements/expression_statement.hpp"
 
@@ -81,6 +82,8 @@ bool SemanticAnalyzer::AnalyzeStatement(const std::unique_ptr<Statement> &statem
         return AnalyzeIfStatement(statement);
     case AstNodeType::ForStatement:
         return AnalyzeForStatement(statement);
+    case AstNodeType::WhileStatement:
+        return AnalyzeWhileStatement(statement);
     case AstNodeType::ReturnStatement:
         return AnalyzeReturnStatement(statement);
     case AstNodeType::ComplexStatement:
@@ -161,6 +164,28 @@ bool SemanticAnalyzer::AnalyzeForStatement(const std::unique_ptr<Statement> &sta
     auto bodySymbolTable = std::make_shared<SymbolTable>(currentSymbolTable);
     currentSymbolTable = bodySymbolTable;
     result = AnalyzeStatement(forStatement->GetBody()) && result;
+
+    currentSymbolTable = bodySymbolTable->GetParent();
+    return result;
+}
+
+bool SemanticAnalyzer::AnalyzeWhileStatement(const std::unique_ptr<Statement> &statement)
+{
+    auto whileStatement = dynamic_cast<const WhileStatement *>(statement.get());
+
+    auto result = AnalyzeExpression(whileStatement->GetCondition());
+    auto conditionType = ResolveExpressionType(whileStatement->GetCondition());
+    if (conditionType != Types::Bool)
+    {
+        result = false;
+        PrintErrorPrefix(std::cerr, whileStatement)
+            << "Got invalid type after resolving condition expression, expected \"bool\" but got \"" << conditionType << "\""
+            << std::endl;
+    }
+
+    auto bodySymbolTable = std::make_shared<SymbolTable>(currentSymbolTable);
+    currentSymbolTable = bodySymbolTable;
+    result = AnalyzeStatement(whileStatement->GetBody()) && result;
 
     currentSymbolTable = bodySymbolTable->GetParent();
     return result;

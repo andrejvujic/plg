@@ -187,6 +187,9 @@ std::unique_ptr<Statement> Parser::ParseStatement()
     if (NextMatches(TokenType::KEYWORD_FOR))
         return ParseForStatement();
 
+    if (NextMatches(TokenType::KEYWORD_WHILE))
+        return ParseWhileStatement();
+
     auto expression = ParseExpression();
     Consume(TokenType::SEMICOLON);
     const auto location = expression->GetLocation();
@@ -295,6 +298,25 @@ std::unique_ptr<ForStatement> Parser::ParseForStatement()
         std::move(init),
         std::move(condition),
         std::move(update),
+        std::move(body));
+}
+
+std::unique_ptr<WhileStatement> Parser::ParseWhileStatement()
+{
+    auto &token = Consume(TokenType::KEYWORD_WHILE);
+    Consume(TokenType::O_PAREN);
+    auto condition = ParseExpression();
+    Consume(TokenType::C_PAREN);
+
+    std::unique_ptr<Statement> body;
+    if (NextMatches(TokenType::O_CURLY))
+        body = ParseComplexStatement();
+    else
+        body = ParseStatement();
+
+    return std::make_unique<WhileStatement>(
+        token->GetLocation(),
+        std::move(condition),
         std::move(body));
 }
 

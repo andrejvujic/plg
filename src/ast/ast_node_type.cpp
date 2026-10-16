@@ -22,6 +22,7 @@ std::ostream &operator<<(std::ostream &out, const AstNodeType &type)
         INSERT_ELEMENT(AstNodeType::IfStatement);
         INSERT_ELEMENT(AstNodeType::VariableDeclaration);
         INSERT_ELEMENT(AstNodeType::ReturnStatement);
+        INSERT_ELEMENT(AstNodeType::WhileStatement);
         INSERT_ELEMENT(AstNodeType::Program);
 #undef INSERT_ELEMENT
         return types;

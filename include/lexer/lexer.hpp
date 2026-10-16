@@ -53,6 +53,7 @@ static const std::map<std::string_view, TokenType> TOKENS{
     {"bool", TokenType::KEYWORD_TYPE},
     {"void", TokenType::KEYWORD_TYPE},
     {"for", TokenType::KEYWORD_FOR},
+    {"while", TokenType::KEYWORD_WHILE},
     {"true", TokenType::KEYWORD_TRUE},
     {"false", TokenType::KEYWORD_FALSE},
     {"+", TokenType::ARITHMETIC_OPERATOR},

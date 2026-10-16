@@ -31,7 +31,7 @@ std::string ReadEntireFile(const std::string &path)
 
 int main()
 {
-    const std::string path = "samples/sample_2.plg";
+    const std::string path = "samples/sample_4.plg";
 
     std::cout << "Tokenizing -> " << path << std::endl;
 

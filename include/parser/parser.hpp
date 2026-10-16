@@ -12,6 +12,7 @@
 #include "ast/statements/return_statement.hpp"
 #include "ast/statements/if_statement.hpp"
 #include "ast/statements/for_statement.hpp"
+#include "ast/statements/while_statement.hpp"
 #include "ast/statements/expression_statement.hpp"
 #include "ast/statements/functions/function_declaration.hpp"
 
@@ -38,6 +39,7 @@ private:
     std::unique_ptr<IfStatement> ParseIfStatement();
     std::unique_ptr<ReturnStatement> ParseReturnStatement();
     std::unique_ptr<ForStatement> ParseForStatement();
+    std::unique_ptr<WhileStatement> ParseWhileStatement();
 
     std::unique_ptr<Expression> ParseExpression();
     std::unique_ptr<Expression> ParseGroupedExpression();

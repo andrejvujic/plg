@@ -55,7 +55,7 @@ std::unique_ptr<RuntimeValue> CallExpression::Execute(TreeWalkInterpreter &inter
 
 std::unique_ptr<RuntimeValue> CallExpression::ExecuteNonMemberFunction(TreeWalkInterpreter &interpreter) const
 {
-    ScopedEnvironment environmentGuard(interpreter);
+    ScopedEnvironment e(interpreter);
     auto environment = interpreter.GetCurrentEnvironment();
 
     auto c = dynamic_cast<IdExpression *>(callee.get());
