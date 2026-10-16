@@ -8,29 +8,29 @@ std::ostream &operator<<(std::ostream &out, const TokenType &value)
         std::map<TokenType, std::string_view> result;
 
 #define INSERT_ELEMENT(p) result.emplace(p, #p);
-        INSERT_ELEMENT(KEYWORD_FUNCTION);
-        INSERT_ELEMENT(KEYWORD_RETURN);
-        INSERT_ELEMENT(KEYWORD_IF);
-        INSERT_ELEMENT(KEYWORD_ELSE);
-        INSERT_ELEMENT(KEYWORD_TYPE);
-        INSERT_ELEMENT(KEYWORD_FOR);
-        INSERT_ELEMENT(KEYWORD_TRUE);
-        INSERT_ELEMENT(KEYWORD_WHILE)
-        INSERT_ELEMENT(KEYWORD_FALSE);
-        INSERT_ELEMENT(ID);
-        INSERT_ELEMENT(NUMBER);
-        INSERT_ELEMENT(O_CURLY);
-        INSERT_ELEMENT(C_CURLY);
-        INSERT_ELEMENT(O_PAREN);
-        INSERT_ELEMENT(C_PAREN);
-        INSERT_ELEMENT(COLON);
-        INSERT_ELEMENT(SEMICOLON);
-        INSERT_ELEMENT(COMMA);
-        INSERT_ELEMENT(ASSIGNMENT);
-        INSERT_ELEMENT(ARITHMETIC_OPERATOR);
-        INSERT_ELEMENT(RELATIONAL_OPERATOR);
-        INSERT_ELEMENT(LOGICAL_OPERATOR);
-        INSERT_ELEMENT(ARROW);
+        INSERT_ELEMENT(TokenType::KeywordFunction);
+        INSERT_ELEMENT(TokenType::KeywordReturn);
+        INSERT_ELEMENT(TokenType::KeywordIf);
+        INSERT_ELEMENT(TokenType::KeywordElse);
+        INSERT_ELEMENT(TokenType::KeywordType);
+        INSERT_ELEMENT(TokenType::KeywordFor);
+        INSERT_ELEMENT(TokenType::KeywordTrue);
+        INSERT_ELEMENT(TokenType::KeywordWhile)
+        INSERT_ELEMENT(TokenType::KeywordFalse);
+        INSERT_ELEMENT(TokenType::Id);
+        INSERT_ELEMENT(TokenType::Number);
+        INSERT_ELEMENT(TokenType::OCurly);
+        INSERT_ELEMENT(TokenType::CCurly);
+        INSERT_ELEMENT(TokenType::OParen);
+        INSERT_ELEMENT(TokenType::CParen);
+        INSERT_ELEMENT(TokenType::Colon);
+        INSERT_ELEMENT(TokenType::Semicolon);
+        INSERT_ELEMENT(TokenType::Comma);
+        INSERT_ELEMENT(TokenType::Assignment);
+        INSERT_ELEMENT(TokenType::ArithmeticOperator);
+        INSERT_ELEMENT(TokenType::RelationalOperator);
+        INSERT_ELEMENT(TokenType::LogicalOperator);
+        INSERT_ELEMENT(TokenType::Arrow);
 #undef INSERT_ELEMENT
 
         return result;

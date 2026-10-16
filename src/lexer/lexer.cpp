@@ -48,7 +48,7 @@ std::unique_ptr<Token> Lexer::GetAlphaNumToken()
     const SourceLocation location{.line = line, .column = column};
     TokenType type;
     if (!GetTypeByLexeme(lexeme, type))
-        return std::make_unique<Token>(Token(lexeme, TokenType::ID, location));
+        return std::make_unique<Token>(Token(lexeme, TokenType::Id, location));
 
     return std::make_unique<Token>(Token(lexeme, type, location));
 }
@@ -68,7 +68,7 @@ std::unique_ptr<Token> Lexer::GetNumToken()
     const std::string lexeme = ss.str();
     const SourceLocation location{.line = line, .column = column};
 
-    return std::make_unique<Token>(Token(lexeme, TokenType::NUMBER, location));
+    return std::make_unique<Token>(Token(lexeme, TokenType::Number, location));
 }
 
 std::unique_ptr<Token> Lexer::GetToken()
