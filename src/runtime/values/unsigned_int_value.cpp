@@ -12,5 +12,5 @@ std::unique_ptr<RuntimeValue> UnsignedIntValue::Clone() const
 
 std::ostream &UnsignedIntValue::Print(std::ostream &out) const
 {
-    return out << value;
+    return out << value << "u";
 }
