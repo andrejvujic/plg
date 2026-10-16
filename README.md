@@ -8,7 +8,7 @@ project contains a lexer, parser, semantic analyzer, and tree-walk interpreter.
 - `int`, `uint`, and `bool` values
 - Variable declarations and assignments
 - Arithmetic, comparison, and logical expressions
-- `if` statements and `for` loops
+- `if` statements, `for` loops and `while` loops
 - Function declarations, calls, parameters, and return values
 - Recursive and nested function calls
 - Lexical environments and semantic symbol tables
