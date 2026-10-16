@@ -3,7 +3,7 @@ function fib(uint n) -> uint {
          return 1u;
     if (n == 2u)
         return 1u;
-    return fib(n - 1u) + fib(n - 2u);
+    return fib(n - 1) + fib(n - 2u);
 }
 
 uint fib15 = fib(15u);

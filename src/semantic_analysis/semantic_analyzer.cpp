@@ -206,9 +206,10 @@ bool SemanticAnalyzer::AnalyzeReturnStatement(const std::unique_ptr<Statement> &
         return false;
     }
 
+    const auto isExpressionValid = AnalyzeExpression(returnStatement->GetValue());
     const auto returnType = ResolveExpressionType(returnStatement->GetValue());
     if (returnType == functionSymbol->GetType())
-        return true;
+        return isExpressionValid;
 
     PrintErrorPrefix(std::cerr, returnStatement)
         << "Invalid return type, expected \""
@@ -348,8 +349,15 @@ bool SemanticAnalyzer::AnalyzeCallArguments(const std::vector<std::unique_ptr<Ex
     if (arguments.size() != parameterTypes.size())
         return false;
 
+    auto result = true;
     for (size_t index = 0; index < arguments.size(); ++index)
     {
+        if (!AnalyzeExpression(arguments[index]))
+        {
+            result = false;
+            continue;
+        }
+
         auto argumentType = ResolveExpressionType(arguments[index]);
         if (argumentType != parameterTypes[index])
         {
@@ -357,11 +365,11 @@ bool SemanticAnalyzer::AnalyzeCallArguments(const std::vector<std::unique_ptr<Ex
                 << "Positional argument at position " << index
                 << " is of wrong type, expected \"" << parameterTypes[index] << "\" but got \"" << argumentType << "\""
                 << std::endl;
-            return false;
+            result = false;
         }
     }
 
-    return true;
+    return result;
 }
 
 bool SemanticAnalyzer::AnalyzeAssignmentExpression(const std::unique_ptr<Expression> &expression)
@@ -410,15 +418,16 @@ bool SemanticAnalyzer::AnalyzeBinaryExpression(const std::unique_ptr<Expression>
 {
     const BinaryExpression *e = dynamic_cast<const BinaryExpression *>(expression.get());
 
+    const auto leftResult = AnalyzeExpression(e->GetLeft());
+    const auto rightResult = AnalyzeExpression(e->GetRight());
+    if (!leftResult || !rightResult)
+        return false;
+
     const auto leftType = ResolveExpressionType(e->GetLeft());
     const auto rightType = ResolveExpressionType(e->GetRight());
 
     if (leftType == Types::Unknown || rightType == Types::Unknown)
-    {
-        const auto leftResult = AnalyzeExpression(e->GetLeft());
-        const auto rightResult = AnalyzeExpression(e->GetRight());
-        return leftResult && rightResult;
-    }
+        return false;
 
     if (leftType != rightType)
     {
