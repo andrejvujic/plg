@@ -121,7 +121,7 @@ std::unique_ptr<RuntimeValue> RuntimeOperations::Eq(std::unique_ptr<RuntimeValue
     {
         auto aa = dynamic_cast<UnsignedIntValue *>(a.get());
         auto bb = dynamic_cast<UnsignedIntValue *>(b.get());
-        return std::make_unique<BoolValue>(aa->GetValue() - bb->GetValue());
+        return std::make_unique<BoolValue>(aa->GetValue() == bb->GetValue());
     }
 
     if (a->GetType() == RuntimeValueType::Bool)

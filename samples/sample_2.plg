@@ -1,7 +1,9 @@
 function fib(uint n) -> uint {
-    if (n < 1u) return 0u;
-    if ((n == 1u) || (n == 2u)) return 1u;
+    if (n == 1u)
+         return 1u;
+    if (n == 2u)
+        return 1u;
     return fib(n - 1u) + fib(n - 2u);
 }
 
-uint fib15 = fib(15);
+uint fib15 = fib(15u);
