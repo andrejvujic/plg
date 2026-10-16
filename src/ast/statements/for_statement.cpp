@@ -36,6 +36,7 @@ void ForStatement::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> ForStatement::Execute(TreeWalkInterpreter &interpreter) const
 {
+    ScopedEnvironment e(interpreter);
     init->Execute(interpreter);
     for (;;)
     {

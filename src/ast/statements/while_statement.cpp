@@ -14,8 +14,8 @@ const std::unique_ptr<Statement> &WhileStatement::GetBody() const
 
 std::unique_ptr<RuntimeValue> WhileStatement::Execute(TreeWalkInterpreter &interpreter) const
 {
-    // Without this nything defined in condition will belong to parent scope.
-    // ScopedEnvironment e(interpreter);
+    // Without this anything defined in the condition expression will belong to the parent scope.
+    ScopedEnvironment e(interpreter);
     for (;;)
     {
         auto c = condition->Execute(interpreter);

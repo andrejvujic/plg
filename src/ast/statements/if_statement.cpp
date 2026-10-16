@@ -36,6 +36,7 @@ void IfStatement::Print(AstPrinter &printer) const
 
 std::unique_ptr<RuntimeValue> IfStatement::Execute(TreeWalkInterpreter &interpreter) const
 {
+    ScopedEnvironment e(interpreter);
     auto c = condition->Execute(interpreter);
     if (c->GetType() != RuntimeValueType::Bool)
         std::exit(EXIT_FAILURE);
